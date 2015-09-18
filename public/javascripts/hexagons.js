@@ -37,25 +37,26 @@ var HexagonScene = function(renderer, camera) {
     directionalLight.position.set( 0, 0.5, -1 );
     baseObject.add( directionalLight );
 
-    var mouseDown = false;
+    var moveCamera = false;
+    var paintHexagons = false;
     renderer.domElement.addEventListener( 'mousedown', function(event) {
         if( event.button == 2 ){
-            mouseDown = true;
+            moveCamera = true;
             event.preventDefault();
         }
 
-        if( event.button == 0 && highlightedObject !== undefined ){
-            highlightedObject.color.set(0xdec079);
-            highlightedObject.obj.material.color.set(0xdec079);
-            highlightedObject.obj.material.color.multiplyScalar(0.5);
+        if( event.button == 0 ){
+            paintHexagons = true;
         }
     });
 
     renderer.domElement.addEventListener( 'mouseup', function(event) {
         if( event.button == 2 ){
-            mouseDown = false;
+            moveCamera = false;
             event.preventDefault();
         }
+        if( event.button == 0 )
+            paintHexagons = false;
     });
 
     renderer.domElement.addEventListener('contextmenu', function(event){
@@ -69,7 +70,7 @@ var HexagonScene = function(renderer, camera) {
     var highlightedObject;
 
     renderer.domElement.addEventListener( 'mousemove', function(event) {
-        if( mouseDown ){
+        if( moveCamera ){
             camera.position.x -= event.movementX;
             camera.position.y -= event.movementY;
         }else {
@@ -94,6 +95,12 @@ var HexagonScene = function(renderer, camera) {
                 };
 
                 obj.material.color.multiplyScalar(0.5);
+
+                if( paintHexagons ){
+                    highlightedObject.color.set(0xdec079);
+                    highlightedObject.obj.material.color.set(0xdec079);
+                    highlightedObject.obj.material.color.multiplyScalar(0.5);
+                }
             }
         }
     });
