@@ -4,3 +4,8 @@
 .idea/
 node_modules/
 db/
+meangame.iml
+public/javascripts/lib/rendererstats.js
+public/javascripts/lib/stats.js
+public/javascripts/lib/three.js
+public/javascripts/lib/three.min.js
