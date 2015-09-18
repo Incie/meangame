@@ -97,8 +97,8 @@ var HexagonScene = function(renderer, camera) {
                 obj.material.color.multiplyScalar(0.5);
 
                 if( paintHexagons ){
-                    highlightedObject.color.set(0xdec079);
-                    highlightedObject.obj.material.color.set(0xdec079);
+                    highlightedObject.color.set(color.color);
+                    highlightedObject.obj.material.color.set(color.color);
                     highlightedObject.obj.material.color.multiplyScalar(0.5);
                 }
             }
@@ -107,9 +107,11 @@ var HexagonScene = function(renderer, camera) {
 
     camera.position.z = 50;
 
+    var color = { };
+
 	return {
 		sceneNode: baseObject,
-		update: function() {
-		}
+		update: function() {},
+        setColor: function(c){ color = c; }
 	}
 };

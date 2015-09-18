@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Hexeditor</title>
+    <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script src="javascripts/editorcontroller.js"></script>
+    <script src="javascripts/lib/three.js"></script>
+    <script src="javascripts/lib/stats.js"></script>
+    <script src="javascripts/lib/rendererstats.js"></script>
+    <script src="javascripts/hexagons.js"></script>
+</head>
+<body ng-app="hexeditor">
+<div >
+    <div ng-controller="hexcontroller" class="stretch">
+        <div hexeditorgui class="interface"></div>
+        <div id="hexeditorview" on-resize></div>
+        <div id="stats" class="stats"></div>
+    </div>
+</div>
+</body>
+</html>

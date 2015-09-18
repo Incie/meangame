@@ -54,6 +54,21 @@ hexEditor.controller('hexcontroller', ['$scope', function ($scope) {
         rendererStats.update($scope.renderer);
         stats.update();
     };
+
+    $scope.colors = [
+        {name: 'void', color: 0x000000},
+        {name: 'water', color: 0x6688dd},
+        {name: 'land', color: 0xffffff}
+    ];
+
+    $scope.selectedColor = $scope.colors[2];
+    firstScene.setColor($scope.selectedColor);
+
+    $scope.$watch('selectedColor', function(newvalue){
+        console.log(newvalue);
+        firstScene.setColor(newvalue);
+    });
+
     render();
 }]);
 

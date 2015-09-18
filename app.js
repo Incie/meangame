@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var mongojs = require('mongojs');
-var leveldb = mongojs('samurailevels', ['samurailevels']);
+var db = mongojs('samurailevels', ['samurailevels']);
 
 var app = express();
 
@@ -16,14 +16,27 @@ app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+var getAbsolutePath = function(relativePath){
+    return path.join(__dirname, '/public/', relativePath);
+};
+
+var files = {
+    index: getAbsolutePath('index.html'),
+    editor: getAbsolutePath('editor.html')
+};
 
 app.get('/', function(req, res){
     console.log( 'get req on / ' + req.connection.remoteAddress );
-    res.sendFile('index.html');
+    res.sendFile(files.index);
+});
+
+app.get('/editor', function(req, res){
+    console.log( 'get req on /editor ' + req.connection.remoteAddress );
+    res.sendFile(files.editor);
 });
 
 app.get('/levels', function(req, res){
-    leveldb.samurailevels.find(function( err, docs) {
+    db.samurailevels.find({},{name:1, _id:0}, function( err, docs) {
         res.json(docs);
     });
 });
