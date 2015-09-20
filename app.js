@@ -35,8 +35,8 @@ app.get('/editor', function(req, res){
     res.sendFile(files.editor);
 });
 
-app.get('/levels', function(req, res){
-    db.samurailevels.find({},{name:1, _id:0}, function( err, docs) {
+app.get('/api/maps', function(req, res){
+    db.samurailevels.find({},{name:1, size:1,_id:0}, function( err, docs) {
         res.json(docs);
     });
 });

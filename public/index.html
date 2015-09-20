@@ -1,13 +1,21 @@
 <!doctype html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Samurai</title>
-    </head>
-    <body ng-app="hexeditor">
-        <div>
-            <a href="/index.thml">Play</a>
-            <a href="/editor">Editor</a>
-        </div>
-    </body>
+<head>
+    <meta charset="utf-8">
+    <title>Samurai</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script src="/javascripts/playcontroller.js"></script>
+</head>
+<body ng-app="playmodule">
+<div ng-controller="playcontroller">
+    <div>
+        <button ng-click="showSetup()">Play</button>
+        <a href="/editor">
+            <button>Editor</button>
+        </a>
+    </div>
+    <div play-setup maps="maplist" set="setNumPlayers">
+    </div>
+</div>
+</body>
 </html>

@@ -1,0 +1,20 @@
+<div style="display: none; padding-top:50px" id="playpanel">
+    <div>
+        <label>Players:
+            <button ng-repeat="n in [2,3,4]" ng-click="set(n)">
+                {{n}}
+            </button>
+        </label></div>
+    <div>
+        <label>
+            Map:
+            <select>
+                <option ng-repeat="map in maps" value="{{map.name}}">{{map.name}}</option>
+            </select>
+        </label>
+    </div>
+    <div>
+        <button ng-click="startNewGame()">Start</button>
+    </div>
+    <div id="gamelink">link here perhaps</div>
+</div>
