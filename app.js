@@ -36,7 +36,8 @@ app.get('/editor', function(req, res){
 });
 
 app.get('/api/maps', function(req, res){
-    db.samurailevels.find({},{name:1, size:1,_id:0}, function( err, docs) {
+    var limitResponse = {name:1, size:1,_id:0};
+    db.samurailevels.find({},limitResponse, function( err, docs) {
         res.json(docs);
     });
 });

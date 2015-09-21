@@ -58,7 +58,7 @@ hexEditor.controller('hexcontroller', ['$scope', function ($scope) {
     $scope.colors = [
         {name: 'void', color: 0x000000},
         {name: 'water', color: 0x6688dd},
-        {name: 'land', color: 0xffffff}
+        {name: 'land', color: 0xefde8d}
     ];
 
     $scope.selectedColor = $scope.colors[2];
@@ -83,6 +83,7 @@ hexEditor.directive('onResize', ['$window', function ($window) {
         transclude: true,
         link: function (scope, element, attrs) {
             angular.element($window).on('resize', function () {
+                    console.log('resize-event');
                     scope.onSize();
                 }
             );
