@@ -42,6 +42,14 @@ app.get('/api/maps', function(req, res){
     });
 });
 
-app.listen(3000, function() {
-    console.log('listening on 3000');
+app.post('/api/maps/post', function(req, res){
+    console.log('someone posted a map');
+    console.log(req.body);
+
+    res.json('you did it');
+});
+
+var port = (process.env.PORT || '3000')
+app.listen(port, function() {
+    console.log('listening on '+port);
 });
