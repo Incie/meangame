@@ -5,11 +5,11 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var mongojs = require('mongojs');
-var db = mongojs('samurailevels', ['samurailevels']);
+var db = mongojs('samurai', ['samurai']);
 
 var app = express();
 
-app.use(logger('dev'));
+//app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -37,7 +37,7 @@ app.get('/editor', function(req, res){
 
 app.get('/api/maps', function(req, res){
     var limitResponse = {name:1, size:1,_id:0};
-    db.samurailevels.find({},limitResponse, function( err, docs) {
+    db.samurai.find({},limitResponse, function( err, docs) {
         res.json(docs);
     });
 });

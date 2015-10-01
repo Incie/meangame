@@ -1,12 +1,10 @@
 var tjs = function() {
     var scene = new THREE.Scene();
-    renderer = new THREE.WebGLRenderer({antialias: true});
-
-    var camera = new THREE.OrthographicCamera(0, 150, 0, 150, -5000, 5000);
-    camera.position.x = 300;
-    camera.position.y = 300;
-    camera.position.z = 500;
-
+    var renderer = new THREE.WebGLRenderer({antialias: true});
+    var camera = new THREE.OrthographicCamera(0, window.innerWidth, 0, window.innerHeight, -5000, 5000);
+    camera.position.set(300,300,500);
+    camera.updateProjectionMatrix();
+    scene.add(camera);
 
     //Statistics
     var statsElement = document.getElementById('stats');
@@ -20,41 +18,47 @@ var tjs = function() {
     statsElement.appendChild(rendererStats.domElement);
 
     var updateStats = function() {
-        rendererStats.update($scope.renderer);
+        rendererStats.update(renderer);
         stats.update();
     };
 
-    var updateSize = function(){
-        camera.right = win.width;
-        camera.bottom = win.height;
-        camera.updateProjectionMatrix();
+    var renderScene = function() {
+        requestAnimationFrame(renderScene);
 
-        $scope.renderer.setSize(win.width, win.height);
-    }
-
+        renderer.render(scene, camera);
+        updateStats();
+    };
 
     return {
-        win: {width: window.innerWidth, height: window.innerHeight},
-        render: function () {
-            requestAnimationFrame(render);
-
-            firstScene.update();
-            $scope.renderer.render(scene, camera);
-            updateStats();
+        render:function () {renderScene();},
+        resize:function(width, height){
+            renderer.setSize(width, height);
+            camera.right = width;
+            camera.bottom = height;
+            camera.updateProjectionMatrix();
         },
-        resize: function(width, height){
-            win.width = window.innerWidth;
-            win.height = window.innerHeight;
-            updateSize();
-        },
-        setDomElement: function(domElement){
+        setDomElement:function(domElement){
             domElement.appendChild(renderer.domElement);
         },
-        addSceneObject: function(object){
+        addSceneObject:function(object){
             scene.add(object);
         },
-        rendererEventListener: function(type, callback){
-            renderer.addEventListener(type, callback);
+        rendererEventListener:function(type, callback){
+            renderer.domElement.addEventListener(type, callback);
+        },
+        getCamera: function() { return camera; },
+        raycaster: function(objects, mouseCoord){
+            var raycaster = new THREE.Raycaster();
+            var mouse = new THREE.Vector2(mouseCoord.x, mouseCoord.y);
+
+            raycaster.setFromCamera(mouse, camera);
+            var intersects = raycaster.intersectObjects(objects);
+
+            if( intersects.length > 0 ){
+                return { success: true, object: intersects[0].object };
+            }
+
+            return {success:false};
         }
-    };
+    }
 };
