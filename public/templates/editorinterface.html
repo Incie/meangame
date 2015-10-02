@@ -1,15 +1,20 @@
 <div>
-    <label>Name <input type="text" ng-show=""/></label>
+    <label>Name <input type="text" ng-model="metadata.name"/></label>
 </div>
 <div>
-    <label>Size X:<input type="number>"/></label>
+    <label>Size X:<input type="number" ng-model="metadata.size.x"/></label>
 </div>
 <div>
-    <label>Size Y:<input type="number>"/></label>
+    <label>Size Y:<input type="number>" ng-model="metadata.size.y"/></label>
 </div>
 <div>
-    <button>Set</button>
+    <button ng-click="setupBoard()">Set</button>
+    <button>Send Board</button>
 </div>
+
+<div id="messages">
+</div>
+
 <div>
     <div ng-repeat="color in colors">
         <label><input type="radio" ng-model="$parent.selectedColor" ng-value="color">{{color.name}}</label>

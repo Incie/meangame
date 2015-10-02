@@ -23,6 +23,8 @@ var HexagonBoard = function() {
 	var baseObject = new THREE.Object3D();
 
     var createBoard = function(sizeX, sizeY, startingColor){
+        baseObject.remove(baseObject.getObjectByName('hexagons'));
+
         var hexagons = new THREE.Object3D();
         hexagons.name = 'hexagons';
 

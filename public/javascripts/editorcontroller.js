@@ -20,11 +20,13 @@ hexEditor.controller('hexcontroller', ['$scope', function ($scope) {
     var normalizedMouseCoords = {x:0, y:0};
     var moveCamera = false;
     var paintHexagons = false;
+    var hoverObject = {oldColor: new THREE.Color};
     var camera = $scope.TJS.getCamera();
 
     var onMouseDown = function(event) {
         if( event.button == 0 ){
             paintHexagons = true;
+            hoverAndPaint();
         }
 
         if( event.button == 2 ){
@@ -53,7 +55,6 @@ hexEditor.controller('hexcontroller', ['$scope', function ($scope) {
         return false;
     };
 
-    var hoverObject = {oldColor: new THREE.Color};
     var onMouseMove = function(event) {
         normalizedMouseCoords.x = (event.clientX / window.innerWidth) * 2 - 1;
         normalizedMouseCoords.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -63,12 +64,22 @@ hexEditor.controller('hexcontroller', ['$scope', function ($scope) {
             camera.position.y -= event.movementY;
         }
 
+        hoverAndPaint();
+    };
+
+    var hoverAndPaint = function() {
         if( hoverObject.obj !== undefined ){
             hoverObject.obj.material.color.copy( hoverObject.oldColor );
             hoverObject.obj = undefined;
         }
 
         var hexagons = hexagonBoard.sceneNode.getObjectByName('hexagons');
+
+        if( hexagons === undefined ){
+            console.log('error: no object named hexagons');
+            return;
+        }
+
         var result = $scope.TJS.raycaster(hexagons.children, normalizedMouseCoords);
         if( result.success ){
             hoverObject.obj = result.object;
@@ -105,14 +116,16 @@ hexEditor.controller('hexcontroller', ['$scope', function ($scope) {
     $scope.TJS.rendererEventListener('mousemove', onMouseMove);
     $scope.TJS.rendererEventListener('contextmenu', onContextMenu);
 
+    $scope.setupBoard = function(){
+        hexagonBoard.createBoard($scope.metadata.size.x, $scope.metadata.size.y, $scope.selectedColor.color);
+        camera.position.set( hexagonBoard.bounds.centerX - window.innerWidth/2, hexagonBoard.bounds.centerY - window.innerHeight/2, 500);
+    };
+
     var hexagonBoard = HexagonBoard();
-    hexagonBoard.createBoard(5,5, $scope.colors[1].color);
     $scope.TJS.addSceneObject(hexagonBoard.sceneNode);
 
     $scope.TJS.setDomElement(document.getElementById('hexeditorview'));
     $scope.TJS.render();
-
-    camera.position.set( hexagonBoard.bounds.centerX - window.innerWidth/2, hexagonBoard.bounds.centerY - window.innerHeight/2, 500);
 }]);
 
 hexEditor.directive('hexeditorgui', function () {
