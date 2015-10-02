@@ -10,12 +10,10 @@
 <div ng-controller="playcontroller">
     <div>
         <button ng-click="showSetup()">Play</button>
-        <a href="/editor">
-            <button>Editor</button>
-        </a>
+        <button ng-click="showEditorSetup()">Editor</button>
     </div>
-    <div play-setup maps="maplist" set="setNumPlayers">
-    </div>
+    <div play-setup maps="maplist" set="setNumPlayers"></div>
+    <div edit-setup maps="maplist" editnew="editnewmap" editclone="editselectedmap"></div>
 </div>
 </body>
 </html>

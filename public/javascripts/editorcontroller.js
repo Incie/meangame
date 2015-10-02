@@ -1,6 +1,6 @@
 var hexEditor = angular.module('hexeditor', []);
 
-hexEditor.controller('hexcontroller', ['$scope', function ($scope) {
+hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $http) {
     $scope.TJS = new tjs();
 
     $scope.metadata = {
@@ -9,10 +9,10 @@ hexEditor.controller('hexcontroller', ['$scope', function ($scope) {
     };
 
     $scope.colors = [
-        {name: 'void', color: 0x000000},
-        {name: 'water', color: 0x6688dd},
-        {name: 'land', color: 0xefde8d},
-        {name: 'city', color: 0xaf8e2d}
+        {name: 'void', color: 0x000000, typeId: 0},
+        {name: 'water', color: 0x6688dd, typeId: 1},
+        {name: 'land', color: 0xefde8d, typeId: 2},
+        {name: 'city', color: 0xaf8e2d, typeId: 3}
     ];
 
     $scope.selectedColor = $scope.colors[2];
@@ -75,10 +75,8 @@ hexEditor.controller('hexcontroller', ['$scope', function ($scope) {
 
         var hexagons = hexagonBoard.sceneNode.getObjectByName('hexagons');
 
-        if( hexagons === undefined ){
-            console.log('error: no object named hexagons');
+        if( hexagons === undefined )
             return;
-        }
 
         var result = $scope.TJS.raycaster(hexagons.children, normalizedMouseCoords);
         if( result.success ){
@@ -117,8 +115,21 @@ hexEditor.controller('hexcontroller', ['$scope', function ($scope) {
     $scope.TJS.rendererEventListener('contextmenu', onContextMenu);
 
     $scope.setupBoard = function(){
-        hexagonBoard.createBoard($scope.metadata.size.x, $scope.metadata.size.y, $scope.selectedColor.color);
+        hexagonBoard.createBoard($scope.metadata.size.x, $scope.metadata.size.y, $scope.selectedColor);
         camera.position.set( hexagonBoard.bounds.centerX - window.innerWidth/2, hexagonBoard.bounds.centerY - window.innerHeight/2, 500);
+    };
+
+    $scope.sendBoard = function(){
+        var board = hexagonBoard.export();
+        var size = hexagonBoard.size;
+        var name = $scope.metadata.name;
+
+        $http.post( '/api/maps/post', {name: name, size: size, data: board }).then( function(response){
+            console.log('postsuccess ', response);
+        },
+        function(response){
+            console.log('posterror ', response);
+        });
     };
 
     var hexagonBoard = HexagonBoard();

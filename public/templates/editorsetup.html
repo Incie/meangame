@@ -1,0 +1,13 @@
+<div style="display: none; padding-top:50px" id="editorpanel">
+    <div>
+        <button ng-click="editnew()">New Map</button><button ng-click="editclone()">Clone Map</button>
+    </div>
+    <div>
+        <label>
+            Map:
+            <select ng-model="selectedMap">
+                <option ng-repeat="map in maps" value="{{map.name}}">{{map.name}}</option>
+            </select>
+        </label>
+    </div>
+</div>

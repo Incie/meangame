@@ -5,6 +5,8 @@ var HexagonBoard = function() {
         centerX: 0, centerY: 0
     };
 
+    var boardSize = {x:0, y:0};
+
     var calcBounds = function( sizeX, sizeY, width, height ){
         bounds.x0 = 0;
         bounds.y0 = 0;
@@ -22,7 +24,7 @@ var HexagonBoard = function() {
 
 	var baseObject = new THREE.Object3D();
 
-    var createBoard = function(sizeX, sizeY, startingColor){
+    var createBoard = function(sizeX, sizeY, startState){
         baseObject.remove(baseObject.getObjectByName('hexagons'));
 
         var hexagons = new THREE.Object3D();
@@ -35,15 +37,22 @@ var HexagonBoard = function() {
         var height = Math.sqrt(3) / 2 * width;
         var halfPI = Math.PI / 2;
 
+        boardSize.x = sizeX;
+        boardSize.y = sizeY;
+
         for( var y = 0; y < sizeY; y += 1 ){
             for( var x = 0; x < sizeX; x += 1 ){
-                var material = new THREE.MeshPhongMaterial( { color: startingColor, wireframe: false, shininess: 1.0 } );
+                var material = new THREE.MeshPhongMaterial( { color: startState.color, wireframe: false, shininess: 1.0 } );
                 var hexagon = new THREE.Mesh( geometry, material );
                 hexagon.rotation.set( halfPI, halfPI, 0);
                 hexagon.position.set( x * (width / 4 * 3), y * height, 0 );
 
                 if( (x % 2) == 1 )
                     hexagon.position.y += height / 2;
+
+                hexagon.userData.x = x;
+                hexagon.userData.y = y;
+                hexagon.userData.type = startState.typeId;
 
                 hexagons.add(hexagon);
             }
@@ -60,9 +69,23 @@ var HexagonBoard = function() {
     directionalLight.position.set( 0, 0.5, -1 );
     baseObject.add( directionalLight );
 
+    var exportBoard = function() {
+        var board = [];
+        var hexagons = baseObject.getObjectByName('hexagons');
+
+        for( var i = 0; i < hexagons.children.length; i += 1 ){
+            var hex = hexagons.children[i];
+            board.push( {x:hex.userData.x, y:hex.userData.y, type:hex.userData.type} );
+        }
+
+        return board;
+    }
+
 	return {
 		sceneNode: baseObject,
+        bounds: bounds,
+        size: boardSize,
         createBoard: createBoard,
-        bounds: bounds
+        export: exportBoard
 	}
 };

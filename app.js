@@ -44,9 +44,30 @@ app.get('/api/maps', function(req, res){
 
 app.post('/api/maps/post', function(req, res){
     console.log('someone posted a map');
-    console.log(req.body);
 
-    res.json('you did it');
+    var map = req.body;
+
+    db.samurai.find({name: map.name}, function(err, docs){
+        if( err ){
+            res.send({success:false, message: err});
+            return;
+        }
+
+        if( docs.length > 0 ){
+            res.send({success:false, message: 'name already exists'});
+            return;
+        }
+
+        db.samurai.insert( req.body, function(err, docs){
+            if( err ) {
+                console.log('error, ', err);
+                res.send({success:false, error: err});
+                return;
+            }
+
+            res.send({success: true});
+        });
+    });
 });
 
 var port = (process.env.PORT || '3000')
