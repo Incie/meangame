@@ -8,6 +8,23 @@ canvas {
     height: 100%;
 }
 
+.outer {
+    width: 100%;
+    text-align: center;
+}
+
+.inner {
+    width: 50%;
+    border: 1px solid;
+    margin: auto;
+    padding-top: 25px;
+    padding-bottom: 25px;
+}
+
+.subitem{
+    padding-top: 10px;
+}
+
 .stretch {
     width: 99%;
     height: 99%;

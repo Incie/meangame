@@ -12,10 +12,10 @@
     <button ng-click="sendBoard()">Send Board</button>
 </div>
 
-<div id="messages">
+<div id="messages" style="padding-top:20px">
 </div>
 
-<div>
+<div style="padding-top:20px;">
     <div ng-repeat="color in colors">
         <label><input type="radio" ng-model="$parent.selectedColor" ng-value="color">{{color.name}}</label>
     </div>

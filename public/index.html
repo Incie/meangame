@@ -2,18 +2,23 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Samurai</title>
+    <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="/javascripts/playcontroller.js"></script>
+    <title>Samurai</title>
 </head>
 <body ng-app="playmodule">
 <div ng-controller="playcontroller">
-    <div>
-        <button ng-click="showSetup()">Play</button>
-        <button ng-click="showEditorSetup()">Editor</button>
+    <div class="outer">
+        <div class="inner">
+            <button ng-click="showSetup()">Play</button>
+            <button ng-click="showEditorSetup()">Editor</button>
+
+            <div play-setup class="subitem" maps="maplist" set="setNumPlayers"></div>
+            <div edit-setup class="subitem" maps="maplist" editnew="editnewmap" editclone="editselectedmap"></div>
+            <div id="messages" class="subitem"></div>
+        </div>
     </div>
-    <div play-setup maps="maplist" set="setNumPlayers"></div>
-    <div edit-setup maps="maplist" editnew="editnewmap" editclone="editselectedmap"></div>
 </div>
 </body>
 </html>

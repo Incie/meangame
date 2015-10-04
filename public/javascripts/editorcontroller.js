@@ -9,7 +9,7 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
     };
 
     $scope.colors = [
-        {name: 'void', color: 0x000000, typeId: 0},
+        {name: 'void', color: 0x111111, typeId: 0},
         {name: 'water', color: 0x6688dd, typeId: 1},
         {name: 'land', color: 0xefde8d, typeId: 2},
         {name: 'city', color: 0xaf8e2d, typeId: 3}
@@ -32,10 +32,6 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
         if( event.button == 2 ){
             moveCamera = true;
             event.preventDefault();
-        }
-
-        if( event.button == 0 ){
-            paintHexagons = true;
         }
     };
 
@@ -88,6 +84,7 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
 
         if( paintHexagons ){
             if( hoverObject.obj !== undefined ){
+                hoverObject.obj.userData.type = $scope.selectedColor.typeId;
                 hoverObject.obj.material.color.setHex($scope.selectedColor.color);
                 hoverObject.obj.material.color.multiplyScalar(0.75);
                 hoverObject.oldColor.setHex($scope.selectedColor.color);
@@ -119,17 +116,52 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
         camera.position.set( hexagonBoard.bounds.centerX - window.innerWidth/2, hexagonBoard.bounds.centerY - window.innerHeight/2, 500);
     };
 
+    $scope.cloneBoard = function(boardObject){
+        hexagonBoard.createBoardFrom(boardObject, $scope.colors);
+        camera.position.set( hexagonBoard.bounds.centerX - window.innerWidth/2, hexagonBoard.bounds.centerY - window.innerHeight/2, 500);
+
+        $scope.metadata.name = boardObject.name;
+        $scope.metadata.size = boardObject.size;
+    };
+
+
+    var parseURL = function(){
+        var params = location.search.substr(1);
+        params.split('&').forEach(function(param){
+            var paramsplit = param.split('=');
+            var name = paramsplit[0];
+            var value = paramsplit[1];
+
+            if( name == 'clone' ){
+                var url = 'api/maps/get/' + value;
+                $http.get(url).then(function(response){
+                    console.log(response);
+                    if( response.data.success ){
+                        $scope.cloneBoard(response.data.map);
+                    }
+                });
+            }
+        });
+    };
+
+    parseURL();
+
+
     $scope.sendBoard = function(){
         var board = hexagonBoard.export();
         var size = hexagonBoard.size;
         var name = $scope.metadata.name;
 
-        $http.post( '/api/maps/post', {name: name, size: size, data: board }).then( function(response){
-            console.log('postsuccess ', response);
-        },
-        function(response){
-            console.log('posterror ', response);
-        });
+        $http.post( '/api/maps/post', {name: name, size: size, data: board }).then(
+            function(response){ postMessage(response.data); },
+            function(response){ postMessage(response.data); }
+        );
+    };
+
+    var postMessage = function(data){
+        console.log(data);
+        var element = document.getElementById('messages');
+        element.innerHTML = data.message + '<br/>' + element.innerHTML;
     };
 
     var hexagonBoard = HexagonBoard();

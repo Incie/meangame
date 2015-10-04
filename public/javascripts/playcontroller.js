@@ -10,8 +10,15 @@ playModule.controller('playcontroller', ['$scope', '$http', '$window', function(
         $scope.players = num;
     };
 
-    $http.get('/api/maps').then( function(response){
-        $scope.maplist = response.data;
+    $http.get('/api/maps').then( function(successResponse){
+        if( successResponse.success === false ){
+            postMessage('error fetching maps' + errorResponse.message);
+        }
+
+        $scope.maplist = successResponse.data;
+    },
+    function(errorResponse){
+        postMessage('Error fetching maps: ' + errorResponse.message);
     });
 
     $scope.startNewGame = function(){
@@ -35,12 +42,17 @@ playModule.controller('playcontroller', ['$scope', '$http', '$window', function(
     };
 
     $scope.editnewmap = function() {
-        console.log('edit new map');
         $window.location.href = '/editor';
     };
 
     $scope.editselectedmap = function() {
-        console.log('edit ', $scope.selectedMap);
+        $window.location.href = '/editor?clone=' + $scope.selectedMap.name;
+    };
+
+    var postMessage = function(msg){
+        console.log(msg);
+        var element = document.getElementById('messages');
+        element.innerHTML = msg + '<br/>' + element.innerHTML;
     };
 }]);
 

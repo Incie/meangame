@@ -35,10 +35,40 @@ app.get('/editor', function(req, res){
     res.sendFile(files.editor);
 });
 
+app.get('/editor/:map', function(req, res){
+   res.sendFile(files.editor);
+});
+
 app.get('/api/maps', function(req, res){
+    console.log('/api/maps');
     var limitResponse = {name:1, size:1,_id:0};
-    db.samurai.find({},limitResponse, function( err, docs) {
+    db.samurai.find({},limitResponse, function( err, docs ) {
+        if( err ) {console.log(err);res.send({success:false, message: 'db error' }); }
         res.json(docs);
+    });
+});
+
+app.get('/api/maps/get/:name', function(req, res){
+    var mapName = req.params.name;
+    console.log(mapName);
+
+    db.samurai.find({name: mapName}, {_id:0}, function(err, docs){
+        if( err ) {
+            res.send({success:false, message: 'db error'});
+            return;
+        }
+
+        console.log(docs);
+
+        if( docs.length === 0 ){
+            res.send({success:false, message: 'map "' +mapName+ '" not found'});
+            return;
+        }
+
+        var mapObject = docs[0];
+        console.log(mapObject);
+        res.send({success:true, map: mapObject});
+
     });
 });
 
@@ -54,18 +84,27 @@ app.post('/api/maps/post', function(req, res){
         }
 
         if( docs.length > 0 ){
-            res.send({success:false, message: 'name already exists'});
+            db.samurai.update( {_id: docs[0]._id}, { $set : {data: map.data}}, function(err, docs){
+                if( err ){
+                    console.log(err);
+                    res.send({success: false, message: 'could not update map'});
+                    return;
+                }
+
+                res.send({success: true, message: 'map updated'});
+            });
+
             return;
         }
 
         db.samurai.insert( req.body, function(err, docs){
             if( err ) {
                 console.log('error, ', err);
-                res.send({success:false, error: err});
+                res.send({success:false, message: err});
                 return;
             }
 
-            res.send({success: true});
+            res.send({success: true, message: 'map saved'});
         });
     });
 });

@@ -24,6 +24,37 @@ var HexagonBoard = function() {
 
 	var baseObject = new THREE.Object3D();
 
+    var createBoardFrom = function(boardObject, states){
+        createBoard(boardObject.size.x, boardObject.size.y, states[0]);
+
+        var hexagons = baseObject.getObjectByName('hexagons');
+        var hexes = hexagons.children;
+
+        var getObject = function(x,y){
+            for( var i = 0; i < hexes.length; i += 1 ){
+                var hex = hexes[i];
+                if( hex.userData.x == x && hex.userData.y == y )
+                    return hex;
+            }
+        };
+
+        var getState = function(typeId){
+            for( var s = 0; s < states.length; s+= 1){
+                if(typeId == states[s].typeId)
+                    return states[s];
+            }
+            return states[0];
+        };
+
+        boardObject.data.forEach(function(hexData){
+            var state = getState(hexData.type);
+            var hex = getObject(hexData.x, hexData.y);
+
+            hex.material.color.setHex(state.color);
+        });
+
+    };
+
     var createBoard = function(sizeX, sizeY, startState){
         baseObject.remove(baseObject.getObjectByName('hexagons'));
 
@@ -86,6 +117,7 @@ var HexagonBoard = function() {
         bounds: bounds,
         size: boardSize,
         createBoard: createBoard,
+        createBoardFrom: createBoardFrom,
         export: exportBoard
 	}
 };
