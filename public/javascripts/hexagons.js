@@ -55,6 +55,12 @@ var HexagonBoard = function() {
 
     };
 
+    var textures = [
+        THREE.ImageUtils.loadTexture('/img/square.png'),
+        THREE.ImageUtils.loadTexture('/img/circle.png'),
+        THREE.ImageUtils.loadTexture('/img/star.png')
+        ];
+
     var createBoard = function(sizeX, sizeY, startState){
         baseObject.remove(baseObject.getObjectByName('hexagons'));
 
@@ -73,7 +79,8 @@ var HexagonBoard = function() {
 
         for( var y = 0; y < sizeY; y += 1 ){
             for( var x = 0; x < sizeX; x += 1 ){
-                var material = new THREE.MeshPhongMaterial( { color: startState.color, wireframe: false, shininess: 1.0 } );
+                var material = new THREE.MeshPhongMaterial( { color: startState.color, wireframe: false, shininess: 1.0,
+                    map: textures[ (x + y*sizeX) % 3] } );
                 var hexagon = new THREE.Mesh( geometry, material );
                 hexagon.rotation.set( halfPI, halfPI, 0);
                 hexagon.position.set( x * (width / 4 * 3), y * height, 0 );

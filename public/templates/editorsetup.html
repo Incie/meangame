@@ -1,12 +1,12 @@
 <div style="display: none; padding-top:50px" id="editorpanel">
     <div>
-        <button ng-click="editnew()">New Map</button><button ng-click="editclone()">Clone Map</button>
+        <button ng-click="$parent.editNewMap()">New Map</button><button ng-click="$parent.cloneMap()">Clone Map</button>
     </div>
     <div>
         <label>
             Map:
-            <select ng-model="selectedMap">
-                <option ng-repeat="map in maps" value="{{map.name}}">{{map.name}}</option>
+            <select ng-model="$parent.mapservice.selectedMap">
+                <option ng-repeat="map in $parent.mapservice.maps" value="{{map}}">{{map.name}}</option>
             </select>
         </label>
     </div>
