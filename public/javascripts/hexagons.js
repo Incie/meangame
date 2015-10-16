@@ -22,6 +22,18 @@ var HexagonBoard = function() {
         console.log(bounds);
     };
 
+
+
+    var getObjectAt = function(x,y){
+        var hexagons = baseObject.getObjectByName('hexagons');
+        var hexes = hexagons.children;
+        for( var i = 0; i < hexes.length; i += 1 ){
+            var hex = hexes[i];
+            if( hex.userData.x == x && hex.userData.y == y )
+                return hex;
+        }
+    };
+
 	var baseObject = new THREE.Object3D();
 
     var createBoardFrom = function(boardObject, states){
@@ -51,15 +63,50 @@ var HexagonBoard = function() {
             var hex = getObject(hexData.x, hexData.y);
 
             hex.material.color.setHex(state.color);
+            hex.userData.type = state.typeId;
         });
-
     };
 
     var textures = [
-        THREE.ImageUtils.loadTexture('/img/square.png'),
-        THREE.ImageUtils.loadTexture('/img/circle.png'),
-        THREE.ImageUtils.loadTexture('/img/star.png')
-        ];
+        {name: "square", map: THREE.ImageUtils.loadTexture('/img/square.png')},
+        {name: "circle", map: THREE.ImageUtils.loadTexture('/img/circle.png')},
+        {name: "star", map: THREE.ImageUtils.loadTexture('/img/star.png')}
+    ];
+
+    var getTextureByName = function(name){
+        for( var i = 0; i < textures.length; i += 1 ){
+            if( textures[i].name == name )
+                return textures[i];
+        }
+
+        return textures[2]; //TODO: replace with invalid texture
+    };
+
+    var addSingleCityType = function(hex, typeName){
+        var planeMaterial = new THREE.MeshPhongMaterial({color: 0xFFFFFF, shininess: 1.0, map: getTextureByName(typeName).map, transparent: true});
+        var planeGeometry = new THREE.BoxGeometry(radius, radius, 0.1, 1, 1, 1);
+        var planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+        planeMesh.position.y += 50;
+        planeMesh.rotation.x = Math.PI / 2.0;
+
+        if( hex.userData.city === undefined ){
+            hex.userData.city = {};
+        }
+
+        hex.userData.city[typeName] = true;
+
+        hex.add(planeMesh);
+    };
+
+    var addCityElement = function(hex, type){
+        addSingleCityType(hex, type);
+    };
+
+    var removeCityElement = function(hex, type) {
+
+    };
+
+    var radius = 20;
 
     var createBoard = function(sizeX, sizeY, startState){
         baseObject.remove(baseObject.getObjectByName('hexagons'));
@@ -67,7 +114,7 @@ var HexagonBoard = function() {
         var hexagons = new THREE.Object3D();
         hexagons.name = 'hexagons';
 
-        var radius = 20;
+
         var geometry = new THREE.CylinderGeometry( radius, radius-3, 10, 6 );
 
         var width = radius * 2;
@@ -79,8 +126,7 @@ var HexagonBoard = function() {
 
         for( var y = 0; y < sizeY; y += 1 ){
             for( var x = 0; x < sizeX; x += 1 ){
-                var material = new THREE.MeshPhongMaterial( { color: startState.color, wireframe: false, shininess: 1.0,
-                    map: textures[ (x + y*sizeX) % 3] } );
+                var material = new THREE.MeshPhongMaterial( { color: startState.color, wireframe: false, shininess: 1.0} );
                 var hexagon = new THREE.Mesh( geometry, material );
                 hexagon.rotation.set( halfPI, halfPI, 0);
                 hexagon.position.set( x * (width / 4 * 3), y * height, 0 );
@@ -117,12 +163,37 @@ var HexagonBoard = function() {
         }
 
         return board;
-    }
+    };
+
+    var showAll = function(){
+        var hexagons = baseObject.getObjectByName('hexagons');
+        for( var i = 0; i < hexagons.children.length; i += 1 ){
+            var child = hexagons.children[i];
+            child.visible = true;
+        }
+    };
+
+    var showOnly = function(type){
+        var hexagons = baseObject.getObjectByName('hexagons');
+        for( var i = 0; i < hexagons.children.length; i += 1 ){
+            var child = hexagons.children[i];
+
+            if( child.userData.type == type )
+                child.visible = true;
+            else
+                child.visible = false;
+        }
+    };
 
 	return {
 		sceneNode: baseObject,
         bounds: bounds,
         size: boardSize,
+
+        addCityElement: addCityElement,
+        removeCityElement: removeCityElement,
+        showOnly: showOnly,
+        showAll: showAll,
         createBoard: createBoard,
         createBoardFrom: createBoardFrom,
         export: exportBoard

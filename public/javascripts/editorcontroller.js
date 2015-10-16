@@ -15,18 +15,56 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
         {name: 'city', color: 0xaf8e2d, typeId: 3}
     ];
 
+    $scope.editMode = 'paint';
+
+    $scope.$watch('editMode', function(newValue, oldValue){
+        if( newValue == 'paint' ){
+            hexagonBoard.showAll();
+        } else if( newValue == 'city' ){
+            hexagonBoard.showOnly($scope.colors[3].typeId);
+        }
+    });
+
+    $scope.cityModel = { circle: false, star: false, square: false };
+    $scope.$watch( "cityModel.circle", function(newValue){
+        if( selectedHex === undefined )
+            return;
+
+        if( newValue == true ){
+            hexagonBoard.addCityElement(selectedHex, "circle");
+        }
+    });
+
     $scope.selectedColor = $scope.colors[2];
 
     var normalizedMouseCoords = {x:0, y:0};
     var moveCamera = false;
     var paintHexagons = false;
+
+    var selectedHex;
     var hoverObject = {oldColor: new THREE.Color};
     var camera = $scope.TJS.getCamera();
 
     var onMouseDown = function(event) {
         if( event.button == 0 ){
-            paintHexagons = true;
-            hoverAndPaint();
+            hover();
+            if( $scope.editMode == "paint" ){
+                paintHexagons = true;
+                paint();
+            } else if( $scope.editMode == "city" ){
+                selectedHex = hoverObject.obj;
+
+                if( selectedHex.userData.city === undefined ){
+                    $scope.cityModel.circle = false;
+                    $scope.cityModel.square = false;
+                    $scope.cityModel.star = false;
+                }
+                else{
+                    $scope.cityModel.circle = selectedHex.userData.city.circle || false;
+                    $scope.cityModel.square = selectedHex.userData.city.square || false;
+                    $scope.cityModel.star = selectedHex.userData.city.star || false;
+                }
+            }
         }
 
         if( event.button == 2 ){
@@ -60,10 +98,23 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
             camera.position.y -= event.movementY;
         }
 
-        hoverAndPaint();
+        hover();
+        if( $scope.editMode == "paint" ){
+            if( paintHexagons )
+                paint();
+        }
     };
 
-    var hoverAndPaint = function() {
+    var paint = function(){
+        if( hoverObject.obj !== undefined ){
+            hoverObject.obj.userData.type = $scope.selectedColor.typeId;
+            hoverObject.obj.material.color.setHex($scope.selectedColor.color);
+            hoverObject.obj.material.color.multiplyScalar(0.75);
+            hoverObject.oldColor.setHex($scope.selectedColor.color);
+        }
+    };
+
+    var hover = function() {
         if( hoverObject.obj !== undefined ){
             hoverObject.obj.material.color.copy( hoverObject.oldColor );
             hoverObject.obj = undefined;
@@ -80,15 +131,6 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
             hoverObject.oldColor.copy(result.object.material.color);
 
             result.object.material.color.multiplyScalar(0.75);
-        }
-
-        if( paintHexagons ){
-            if( hoverObject.obj !== undefined ){
-                hoverObject.obj.userData.type = $scope.selectedColor.typeId;
-                hoverObject.obj.material.color.setHex($scope.selectedColor.color);
-                hoverObject.obj.material.color.multiplyScalar(0.75);
-                hoverObject.oldColor.setHex($scope.selectedColor.color);
-            }
         }
     };
 

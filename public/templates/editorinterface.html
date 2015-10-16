@@ -15,11 +15,21 @@
 <div id="messages" style="padding-top:20px">
 </div>
 
-<div style="padding-top:20px;">
-    <div ng-repeat="color in colors">
+<div>
+    <label><input type="radio" value="paint" ng-model="editMode"> Paint </label>
+    <label><input type="radio" value="city" ng-model="editMode"> City </label>
+</div>
+<div style="padding-top:20px;" ng-show="editMode=='paint'">
+    <div ng-repeat="color in colors" >
         <label><input type="radio" ng-model="$parent.selectedColor" ng-value="color">{{color.name}}</label>
     </div>
     <div>
         {{selectedColor}}
     </div>
+</div>
+
+<div style="padding-top:20px" ng-show="editMode=='city'">
+    <label><input type="checkbox" ng-model="cityModel.square"> Square </label>
+    <label><input type="checkbox" ng-model="cityModel.circle"> Circle </label>
+    <label><input type="checkbox" ng-model="cityModel.star"> Star </label>
 </div>
