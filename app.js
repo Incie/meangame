@@ -10,8 +10,8 @@ var db = mongojs('samurai', ['samurai']);
 var app = express();
 
 //app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: '2mb'}));
+app.use(bodyParser.urlencoded({ extended: false, limit: '2mb'}));
 app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -58,54 +58,59 @@ app.get('/api/maps/get/:name', function(req, res){
             return;
         }
 
-        console.log(docs);
-
         if( docs.length === 0 ){
             res.send({success:false, message: 'map "' +mapName+ '" not found'});
             return;
         }
 
         var mapObject = docs[0];
-        console.log(mapObject);
         res.send({success:true, map: mapObject});
 
     });
 });
 
+
+var updateMap = function(map, docs, response){
+    if( map.size.x*map.size.y != map.data.length ){
+        console.log('size mismatch');
+        response.send({success:false, message: 'size mismatch'});
+        return;
+    }
+
+    db.samurai.update( {_id: docs[0]._id}, { $set : {data: map.data, size: map.size}}, function(err, docs){
+        if( err ){
+            console.log(err);
+            response.send({success: false, message: 'could not update map'});
+            return;
+        }
+
+        response.send({success: true, message: 'map updated'});
+    });
+};
+
 app.post('/api/maps/post', function(req, res){
-    console.log('someone posted a map');
+    console.log('/api/maps/post');
 
     var map = req.body;
 
     db.samurai.find({name: map.name}, function(err, docs){
         if( err ){
-            res.send({success:false, message: err});
-            return;
+            res.send({success:false, message: 'db error'});
+            console.log(err);
         }
-
-        if( docs.length > 0 ){
-            db.samurai.update( {_id: docs[0]._id}, { $set : {data: map.data}}, function(err, docs){
-                if( err ){
-                    console.log(err);
-                    res.send({success: false, message: 'could not update map'});
+        else if( docs.length > 0 )
+            updateMap(map, docs, res);
+        else {
+            db.samurai.insert( req.body, function(err, docs){
+                if( err ) {
+                    console.log('error, ', err);
+                    res.send({success:false, message: err});
                     return;
                 }
 
-                res.send({success: true, message: 'map updated'});
+                res.send({success: true, message: 'map saved'});
             });
-
-            return;
         }
-
-        db.samurai.insert( req.body, function(err, docs){
-            if( err ) {
-                console.log('error, ', err);
-                res.send({success:false, message: err});
-                return;
-            }
-
-            res.send({success: true, message: 'map saved'});
-        });
     });
 });
 

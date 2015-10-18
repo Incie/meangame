@@ -64,6 +64,13 @@ var HexagonBoard = function() {
 
             hex.material.color.setHex(state.color);
             hex.userData.type = state.typeId;
+
+            if( state.typeId == 3 ){
+                if( hexData.city !== undefined ){
+                    hex.userData.city = hexData.city;
+                    generateCityObjects(hex);
+                }
+            }
         });
     };
 
@@ -82,28 +89,131 @@ var HexagonBoard = function() {
         return textures[2]; //TODO: replace with invalid texture
     };
 
-    var addSingleCityType = function(hex, typeName){
-        var planeMaterial = new THREE.MeshPhongMaterial({color: 0xFFFFFF, shininess: 1.0, map: getTextureByName(typeName).map, transparent: true});
+    var addSingleObject = function(hex, name, map, xTranslate, zTranslate, radius){
+        var planeMaterial = new THREE.MeshPhongMaterial({color: 0xFFFFFF, shininess: 1.0, map: map, transparent: true});
         var planeGeometry = new THREE.BoxGeometry(radius, radius, 0.1, 1, 1, 1);
         var planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
         planeMesh.position.y += 50;
+        planeMesh.position.x += xTranslate;
+        planeMesh.position.z += zTranslate;
         planeMesh.rotation.x = Math.PI / 2.0;
-
-        if( hex.userData.city === undefined ){
-            hex.userData.city = {};
-        }
-
-        hex.userData.city[typeName] = true;
-
+        planeMesh.name = name;
         hex.add(planeMesh);
     };
 
+    var addSingleCityType = function(hex){
+        var name;
+        if( existsAndTrue(hex.userData.city.circle) )
+            name = "circle";
+        else if( existsAndTrue(hex.userData.city.star) )
+            name = "star";
+        else if( existsAndTrue(hex.userData.city.square) )
+            name = "square";
+        else {
+            console.log("invalid citytype ", hex.userData.city);
+            return;
+        }
+
+        addSingleObject(hex, name, getTextureByName(name).map, 0, 0, radius);
+    };
+
+    var existsAndTrue = function(object){
+        if( object !== undefined ){
+            if( object == true )
+                return true;
+        }
+        return false;
+    };
+
+    var addDoubleCities = function(hex){
+        var xTranslate = 0;
+        var zTranslate = -5;
+        var cityRadius = radius * 0.7;
+
+        if( existsAndTrue(hex.userData.city.circle) ){
+            addSingleObject(hex, "circle", getTextureByName("circle").map, xTranslate, zTranslate, cityRadius);
+            zTranslate = 5;
+        }
+
+        if( existsAndTrue(hex.userData.city.square) ){
+            addSingleObject(hex, "square", getTextureByName("square").map, xTranslate, zTranslate, cityRadius);
+            zTranslate = 5;
+        }
+
+        if( existsAndTrue(hex.userData.city.star) ){
+            addSingleObject(hex, "star", getTextureByName("star").map, xTranslate, zTranslate, cityRadius);
+        }
+    };
+
+    var addAllCities = function(hex){
+        var xTranslate = 5;
+        var zTranslate = 0;
+        var cityRadius = radius * 0.7;
+
+        addSingleObject(hex, "circle", getTextureByName("circle").map, xTranslate, zTranslate, cityRadius);
+        xTranslate = -5;
+        zTranslate = 5;
+
+        addSingleObject(hex, "square", getTextureByName("square").map, xTranslate, zTranslate, cityRadius);
+        xTranslate = -5;
+        zTranslate = -5;
+
+        addSingleObject(hex, "star", getTextureByName("star").map, xTranslate, zTranslate, cityRadius);
+    };
+
+    var countCities = function(cityObject) {
+        if( cityObject === undefined )
+            return 0;
+
+        var count = 0;
+        if( cityObject.circle !== undefined && cityObject.circle == true )
+            count += 1;
+
+        if( cityObject.star !== undefined && cityObject.star == true )
+            count += 1;
+
+        if( cityObject.square !== undefined && cityObject.square == true )
+            count += 1;
+
+        return count;
+    };
+
+    var generateCityObjects = function(hex){
+        var cityCount = countCities(hex.userData.city);
+
+        removeAllCityObjects(hex);
+
+        if( cityCount == 1 )
+            addSingleCityType(hex);
+        else if( cityCount == 2 ){
+            addDoubleCities(hex);
+        } else if( cityCount == 3 ){
+            addAllCities(hex);
+        }
+    };
+
     var addCityElement = function(hex, type){
-        addSingleCityType(hex, type);
+        if( hex.userData.city === undefined )
+            hex.userData.city = {};
+
+        hex.userData.city[type] = true;
+
+        generateCityObjects(hex);
+    };
+
+    var removeAllCityObjects = function(hex){
+        hex.remove( hex.getObjectByName('circle') );
+        hex.remove( hex.getObjectByName('star') );
+        hex.remove( hex.getObjectByName('square') );
     };
 
     var removeCityElement = function(hex, type) {
+        if( hex === undefined ) return;
+        if( hex.userData.city === undefined ) return;
+        if( hex.userData.city[type] === undefined ) return;
 
+        hex.userData.city[type] = false;
+        generateCityObjects(hex);
     };
 
     var radius = 20;
@@ -159,7 +269,18 @@ var HexagonBoard = function() {
 
         for( var i = 0; i < hexagons.children.length; i += 1 ){
             var hex = hexagons.children[i];
-            board.push( {x:hex.userData.x, y:hex.userData.y, type:hex.userData.type} );
+            var boardObject = {x:hex.userData.x, y:hex.userData.y, type:hex.userData.type};
+
+            if( boardObject.type == 3 && hex.userData.city !== undefined ){
+                boardObject.city = {};
+                var cities = ["circle", "star", "square"];
+                cities.forEach(function(city){
+                    if( existsAndTrue(hex.userData.city[city]) )
+                        boardObject.city[city] = true;
+                });
+            }
+
+            board.push( boardObject );
         }
 
         return board;
@@ -167,6 +288,10 @@ var HexagonBoard = function() {
 
     var showAll = function(){
         var hexagons = baseObject.getObjectByName('hexagons');
+
+        if( hexagons === undefined )
+            return;
+
         for( var i = 0; i < hexagons.children.length; i += 1 ){
             var child = hexagons.children[i];
             child.visible = true;

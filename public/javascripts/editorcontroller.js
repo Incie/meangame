@@ -32,6 +32,30 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
 
         if( newValue == true ){
             hexagonBoard.addCityElement(selectedHex, "circle");
+        } else {
+            hexagonBoard.removeCityElement(selectedHex, "circle");
+        }
+    });
+
+    $scope.$watch( "cityModel.square", function(newValue){
+        if( selectedHex === undefined )
+            return;
+
+        if( newValue == true ){
+            hexagonBoard.addCityElement(selectedHex, "square");
+        } else {
+            hexagonBoard.removeCityElement(selectedHex, "square");
+        }
+    });
+
+    $scope.$watch( "cityModel.star", function(newValue){
+        if( selectedHex === undefined )
+            return;
+
+        if( newValue == true ){
+            hexagonBoard.addCityElement(selectedHex, "star");
+        } else {
+            hexagonBoard.removeCityElement(selectedHex, "star");
         }
     });
 
@@ -46,24 +70,26 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
     var camera = $scope.TJS.getCamera();
 
     var onMouseDown = function(event) {
-        if( event.button == 0 ){
+        if (event.button == 0) {
             hover();
-            if( $scope.editMode == "paint" ){
+            if ($scope.editMode == "paint") {
                 paintHexagons = true;
                 paint();
-            } else if( $scope.editMode == "city" ){
+            } else if ($scope.editMode == "city") {
                 selectedHex = hoverObject.obj;
 
-                if( selectedHex.userData.city === undefined ){
-                    $scope.cityModel.circle = false;
-                    $scope.cityModel.square = false;
-                    $scope.cityModel.star = false;
-                }
-                else{
-                    $scope.cityModel.circle = selectedHex.userData.city.circle || false;
-                    $scope.cityModel.square = selectedHex.userData.city.square || false;
-                    $scope.cityModel.star = selectedHex.userData.city.star || false;
-                }
+                $scope.$apply(function(){
+                    if (selectedHex.userData.city === undefined) {
+                        $scope.cityModel.circle = false;
+                        $scope.cityModel.square = false;
+                        $scope.cityModel.star = false;
+                    }
+                    else {
+                        $scope.cityModel.circle = selectedHex.userData.city.circle || false;
+                        $scope.cityModel.square = selectedHex.userData.city.square || false;
+                        $scope.cityModel.star = selectedHex.userData.city.star || false;
+                    }
+                });
             }
         }
 

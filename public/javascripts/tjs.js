@@ -43,7 +43,7 @@ var tjs = function() {
         addSceneObject:function(object){
             scene.add(object);
         },
-        rendererEventListener:function(type, callback){
+        rendererEventListener:function(type, callback, scope){
             renderer.domElement.addEventListener(type, callback);
         },
         getCamera: function() { return camera; },
