@@ -37,15 +37,42 @@ app.post('/game/create', function(req, res){
     //---> errormessage
 
     //create game in db
+    //generate game id
+     //check if game id exists
     //--> clone data from map for playing
+
+    //create playerdata with all tiles avail in db
     //send back ID
 
     console.log(req.body);
+
+
     res.send('baschbavha');
+});
+
+app.post('/game/:gameid/turn', function(req, res){
+    //send move as [ {x, y, type, num} ]
+
+
+    //get game
+    // gameid not found?
+
+    //this players turn?
+    //validate move?
+
+    //register move
+    //check board-state
+    // change occupied cities if needed
+
+    //remove used drawn tiles
+    //draw new tiles
 });
 
 app.get('/game/:gameid', function(req, res){
     console.log('/game/'+req.params.gameid);
+
+    //look up game i
+    //send board
 });
 
 app.get('/editor', function(req, res){
