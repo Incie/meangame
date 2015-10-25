@@ -1,4 +1,4 @@
-var playModule = angular.module('playmodule', []);
+var playModule = angular.module('menumodule', ['ngCookies']);
 
 playModule.factory('MapService', ['$http', function($http) {
     var mapservice = {};
@@ -30,12 +30,13 @@ playModule.factory('MapService', ['$http', function($http) {
     return mapservice;
 }]);
 
-playModule.controller('playcontroller', ['$scope', '$http', '$window', 'MapService', function($scope, $http, $window, mapservice){
+playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies', 'MapService', function($scope, $http, $window, $cookies, mapservice){
     $scope.mapservice = mapservice;
-
+    $scope.playerName = 'noname';
     $scope.players = 4;
 
     $scope.setNumPlayers = function(num){
+        console.log(num);
         $scope.players = num;
     };
 
@@ -66,6 +67,24 @@ playModule.controller('playcontroller', ['$scope', '$http', '$window', 'MapServi
     $scope.cloneMap = function() {
         var obj = $scope.mapservice.selectedMap;
         $window.location.href = '/editor?clone=' + obj.name;
+    };
+
+    $scope.createNewGame = function(){
+        var newGameObject = {
+            name:$scope.playerName,
+            map:$scope.mapservice.selectedMap,
+            players:$scope.players
+        };
+
+        $http.post('/game/create', newGameObject).then(function(response){
+            console.log(response);
+
+            $cookies.put('player-name', $scope.playerName);
+
+            var gamelink = document.getElementById('gamelink');
+            gamelink.innerHTML = $scope.playerName + '<br/>' + $scope.mapservice.selectedMap + '<br/>' + $scope.players;
+            gamelink.innerHTML = gamelink.innerHTML + '<br/>' + response.data;
+        });
     };
 
     var postMessage = function(msg){

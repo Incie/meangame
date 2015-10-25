@@ -30,13 +30,27 @@ app.get('/', function(req, res){
     res.sendFile(files.index);
 });
 
+app.post('/game/create', function(req, res){
+    //map exist?
+    //valid players?
+    //player too many games created?
+    //---> errormessage
+
+    //create game in db
+    //--> clone data from map for playing
+    //send back ID
+
+    console.log(req.body);
+    res.send('baschbavha');
+});
+
+app.get('/game/:gameid', function(req, res){
+    console.log('/game/'+req.params.gameid);
+});
+
 app.get('/editor', function(req, res){
     console.log( 'get req on /editor ' + req.connection.remoteAddress );
     res.sendFile(files.editor);
-});
-
-app.get('/editor/:map', function(req, res){
-   res.sendFile(files.editor);
 });
 
 app.get('/api/maps', function(req, res){

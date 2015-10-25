@@ -131,6 +131,7 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
         }
     };
 
+
     var paint = function(){
         if( hoverObject.obj !== undefined ){
             hoverObject.obj.userData.type = $scope.selectedColor.typeId;

@@ -4,21 +4,22 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
-    <script src="/javascripts/playcontroller.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-cookies.min.js"></script>
+    <script src="/javascripts/menucontroller.js"></script>
     <title>Samurai</title>
 </head>
-<body ng-app="playmodule">
-<div ng-controller="playcontroller">
-    <div class="outer">
-        <div class="inner">
-            <button ng-click="showSetup()">Play</button>
-            <button ng-click="showEditorSetup()">Editor</button>
+<body ng-app="menumodule">
+    <div ng-controller="menucontroller">
+        <div class="outer">
+            <div class="inner">
+                <button ng-click="showSetup()">Play</button>
+                <button ng-click="showEditorSetup()">Editor</button>
 
-            <div play-setup class="subitem"></div>
-            <div edit-setup class="subitem"></div>
-            <div id="messages" class="subitem"></div>
+                <div play-setup class="subitem"></div>
+                <div edit-setup class="subitem"></div>
+                <div id="messages" class="subitem"></div>
+            </div>
         </div>
     </div>
-</div>
 </body>
 </html>

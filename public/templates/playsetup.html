@@ -1,20 +1,26 @@
 <div style="display: none; padding-top:50px" id="playpanel">
     <div>
-        <label>Players:
-            <button ng-repeat="n in [2,3,4]" ng-click="set(n)">
-                {{n}}
-            </button>
-        </label></div>
+        <label>Name: <input type="text" ng-model="$parent.playerName"/></label>
+    </div>
+    <div>
+        <label>Players:</label>
+            <!--<span ng-repeat="n in [2,3,4]">-->
+            <span>
+                <button ng-click="$parent.players = 2;">2</button>
+                <button ng-click="$parent.players = 3;">3</button>
+                <button ng-click="$parent.players = 4;">4</button>
+            </span>
+        </div>
     <div>
         <label>
             Map:
-            <select>
-                <option ng-repeat="map in maps" value="{{map.name}}">{{map.name}}</option>
+            <select ng-model="$parent.mapservice.selectedMap">
+                <option ng-repeat="map in $parent.mapservice.maps" value="{{map.name}}">{{map.name}}</option>
             </select>
         </label>
     </div>
     <div>
-        <button ng-click="startNewGame()">Start</button>
+        <button ng-click="$parent.createNewGame()">Create Game</button>
     </div>
-    <div id="gamelink">link here perhaps {{maps}}</div>
+    <div id="gamelink"></div>
 </div>
