@@ -30,9 +30,27 @@ app.get('/', function(req, res){
     res.sendFile(files.index);
 });
 
+/**
+ * request.body {
+ *  gameObject {
+ *  roomName
+ *  ownerName
+ *  mapName
+ *  numPlayers
+ *  isPrivate
+ *  password
+ *  }
+ * }
+ */
 app.post('/game/create', function(req, res){
-    //map exist?
-    //valid players?
+    var gameInfo = {};
+
+    //validate numPlayers - 2 to 4
+    //validate roomName
+    //validate ownerName
+    //validate mapName
+        //db.getMap
+
     //player too many games created?
     //---> errormessage
 
@@ -47,7 +65,18 @@ app.post('/game/create', function(req, res){
     console.log(req.body);
 
 
+
+    var map = {}; //db.getMap
+    samurai.createGame(gameInfo, map);
+
     res.send('baschbavha');
+});
+
+app.post('game/:gameid/join', function(req, res){
+    //get gameid object
+    //check if gameid object contains unassigned player
+    //if unassigned is found
+        //add name to game
 });
 
 app.post('/game/:gameid/turn', function(req, res){

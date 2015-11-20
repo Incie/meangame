@@ -1,6 +1,9 @@
 <div style="display: none; padding-top:50px" id="playpanel">
     <div>
-        <label>Name: <input type="text" ng-model="$parent.playerName"/></label>
+        <label>Room Name: <input type="text" ng-model="$parent.roomName"/></label>
+    </div>
+    <div>
+        <label>Your Name: <input type="text" ng-model="$parent.playerName"/></label>
     </div>
     <div>
         <label>Players:</label>
@@ -18,6 +21,10 @@
                 <option ng-repeat="map in $parent.mapservice.maps" value="{{map.name}}">{{map.name}}</option>
             </select>
         </label>
+    </div>
+    <div>
+        <label>Password: <input type="password" ng-model="$parent.password"/></label>
+        <label>Private: <input type="checkbox" ng-model="$parent.isPrivate"/></label>
     </div>
     <div>
         <button ng-click="$parent.createNewGame()">Create Game</button>

@@ -205,8 +205,9 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
                 var url = 'api/maps/get/' + value;
                 $http.get(url).then(function(response){
                     console.log(response);
-                    if( response.data.success ){
-                        $scope.cloneBoard(response.data.map);
+                    var responseObject = response.data;
+                    if( responseObject.success ){
+                        $scope.cloneBoard(responseObject.data);
                     }
                 });
             }

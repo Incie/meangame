@@ -3,8 +3,8 @@ var db = mongojs('samurai', ['samurai']);
 
 var dbModule = {};
 
-function fail( response, msg ) { var obj = {success: false, message: msg }; response.send(obj); return 0; };
-function success(msg){ return { success: true, message:msg }; };
+function fail( response, msg ) { var obj = {success: false, message: msg }; response.send(obj); return 0; }
+function success(msg){ return { success: true, message:msg }; }
 
 var updateMap = function(map, docs, response){
     if( map.size.x*map.size.y != map.data.length ){
@@ -52,7 +52,7 @@ dbModule.sendMapList = function(response){
         mapList.maps = docs;
         response.send(mapList);
     });
-}
+};
 
 dbModule.getMap = function(response, mapName){
     db.samurai.find({name: mapName}, {_id:0}, function(err, docs){
@@ -63,8 +63,10 @@ dbModule.getMap = function(response, mapName){
             return fail(res, 'map not found: ' + mapName);
 
         var mapObject = docs[0];
-        response.send(success(mapName, mapObject));
+        var responseObject = success(mapName, 'ok');
+        responseObject.data = mapObject;
+        response.send(responseObject);
     });
-}
+};
 
 module.exports.dbModule = dbModule;

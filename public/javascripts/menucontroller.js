@@ -10,7 +10,7 @@ playModule.factory('MapService', ['$http', function($http) {
         if(a.length > 0)
             return a[a.length-1];
         return undefined;
-    }
+    };
 
     $http.get('/api/maps').then(
         function(successResponse){
@@ -19,7 +19,7 @@ playModule.factory('MapService', ['$http', function($http) {
                 return;
             }
 
-            mapservice.maps = successResponse.data;
+            mapservice.maps = successResponse.data.maps;
             mapservice.selectedMap = mapservice.maps[0];
         },
         function(errorResponse){
