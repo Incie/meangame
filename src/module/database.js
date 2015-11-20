@@ -57,10 +57,10 @@ dbModule.sendMapList = function(response){
 dbModule.getMap = function(response, mapName){
     db.samurai.find({name: mapName}, {_id:0}, function(err, docs){
         if( err )
-            return fail(res, 'error getting map: ' + err)
+            return fail(response, 'error getting map: ' + err)
 
         if( docs.length === 0 )
-            return fail(res, 'map not found: ' + mapName);
+            return fail(response, 'map not found: ' + mapName);
 
         var mapObject = docs[0];
         var responseObject = success(mapName, 'ok');
