@@ -3,9 +3,11 @@ var path = require('path');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var validate = require('validator');
 
 var samurai = require('./module/samurai').samurai;
 var db = require('./module/database').dbModule;
+var gamedb = require('./module/gamedb').gamedb;
 
 var app = express();
 
@@ -43,33 +45,39 @@ app.get('/', function(req, res){
  * }
  */
 app.post('/game/create', function(req, res){
-    var gameInfo = {};
+    console.log('gamecreate, incoming data: ' + req.body);
+    var gameInfo = req.body;
 
-    //validate numPlayers - 2 to 4
-    //validate roomName
-    //validate ownerName
-    //validate mapName
-        //db.getMap
+    //Validate
+    if( !validate.isInt(gameInfo.numPlayers, {min: 2, max:4}) ){
+        res.send({success: false, message: 'Num players must be a number between 2 and 4'});
+        return;
+    }
 
-    //player too many games created?
-    //---> errormessage
+    //Validate stringlengths
+    validate.escape(gameInfo.roomName);
+    validate.escape(gameInfo.ownerName);
+    validate.escape(gameInfo.mapName);
 
-    //create game in db
-    //generate game id
-     //check if game id exists
-    //--> clone data from map for playing
+    db.getMap(gameInfo.mapName, function(mapObject){
+        console.log('getmap');
 
-    //create playerdata with all tiles avail in db
-    //send back ID
+        if( !mapObject.success ) {
+            console.log('getmap failed' + mapObject);
+            res.send(mapObject);
+            return;
+        }
 
-    console.log(req.body);
+        var map = {}; //db.getMap
+        samurai.createGame(gameInfo, mapObject.mapData, function(gameObject){
+            console.log('create game');
 
-
-
-    var map = {}; //db.getMap
-    samurai.createGame(gameInfo, map);
-
-    res.send('baschbavha');
+            gamedb.createGame(gameObject, function(responseObject){
+                console.log('gamedb createGame' + responseObject);
+                res.send(responseObject);
+            });
+        });
+    });
 });
 
 app.post('game/:gameid/join', function(req, res){
@@ -97,8 +105,12 @@ app.post('/game/:gameid/turn', function(req, res){
     //draw new tiles
 });
 
+//req.params.gameid
+//req.body.refreshData = {true/false}
+//req.body.hasTurn = {integer}
 app.get('/game/:gameid', function(req, res){
     console.log('/game/'+req.params.gameid);
+
 
     //look up game i
     //send board
@@ -111,21 +123,27 @@ app.get('/editor', function(req, res){
 
 app.get('/api/maps', function(req, res){
     console.log('/api/maps');
-    db.sendMapList(res);
+    db.getMapList(function(mapObject){
+        res.send(mapObject);
+    });
 });
 
 app.get('/api/maps/get/:name', function(req, res){
     var mapName = req.params.name;
     console.log(mapName);
 
-    db.getMap(res, mapName);
+    db.getMap(mapName, function(mapObject){
+        res.send(mapObject);
+    });
 });
 
 app.post('/api/maps/post', function(req, res){
     console.log('/api/maps/post');
 
-    var map = req.body;
-    db.saveMap(res, map);
+    var mapData = req.body;
+    db.saveMap(mapData, function(mapObject){
+        res.send(mapObject);
+    });
 });
 
 var port = (process.env.PORT || '3000')

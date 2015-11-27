@@ -4,17 +4,17 @@ var db = mongojs('samuraigame', ['samuraigame']);
 
 var gamedb = {};
 
-gamedb.createGame = function( response, gameObject ){
-    db.samuraigame.insert( gameObject, function(docs, err){
+gamedb.createGame = function( gameObject, callback ){
+    db.samuraigame.insert( gameObject, function(err, docs){
         if( err ){
-            response.send({success: false, message: err });
+            callback({success: false, message: err });
             return;
         }
 
-        response.send({success: true, message: 'game created', gameid: gameObject.gameid });
+        var gameId = gameObject.gameid;
+        var response = {success: true, message: 'game created', gameid: gameId };
+        callback(response);
     });
 };
-
-
 
 module.exports.gamedb = gamedb;

@@ -3,16 +3,16 @@ var samurai = {};
 
 //gameInfo { roomName, ownerName, numPlayers, mapName, password, isPrivate }
 //mapObject { name, size {x,y}, data }
-samurai.createGame = function(gameInfo, mapObject){
+samurai.createGame = function(gameInfo, mapObject, callback){
     var gameObject = {};
     gameObject.roomName = gameInfo.roomName;
     gameObject.numPlayers = gameInfo.numPlayers;
     gameObject.ownerName = gameInfo.ownerName;
     gameObject.mapName = gameInfo.mapName;
 
-    gameObject.map = mapObject.clone();
+    gameObject.map = mapObject;
 
-    gameObject.players = samurai.createPlayers(gameobject.numPlayers);
+    gameObject.players = samurai.createPlayers(gameObject.numPlayers);
     gameObject.players[0].name = gameObject.ownerName;
 
     gameObject.status = 'waiting for players';
@@ -20,10 +20,11 @@ samurai.createGame = function(gameInfo, mapObject){
     gameObject.playerTurn = Math.floor( (Math.random() * 123456) ) % gameInfo.numPlayers;
     gameObject.gameid = samurai.createRandomId();
 
-    return gameObject;
+    callback(gameObject);
 };
 
 samurai.createPlayers = function(numPlayers){
+    var players = [];
     for( var i = 0; i < numPlayers; i += 1 ){
         var player = {};
         player.name = 'unassigned';
@@ -31,7 +32,11 @@ samurai.createPlayers = function(numPlayers){
         player.usedCards = [];
         player.hand = [];
         samurai.dealHand(player.hand, player.deck);
+
+        players.push(player);
     }
+
+    return players;
 };
 
 samurai.dealHand = function(hand, deck){
@@ -55,11 +60,13 @@ samurai.createDeck = function(){
         deck.push( {suite: 'samurai', size: s} );
     }
 
-    var ronin = { suite: ronin, quick: true, size: 1 };
-    var boat1 = { suite: boat, quick: true, size: 1 };
-    var boat2 = { suite: boat, quick: true, size: 2 };
+    var ronin = { suite: 'ronin', quick: true, size: 1 };
+    var boat1 = { suite: 'boat', quick: true, size: 1 };
+    var boat2 = { suite: 'boat', quick: true, size: 2 };
 
-    deck.push( ronin, ronin.clone(), boat1, boat1.clone(), boat2.clone() );
+    deck.push( ronin, ronin, boat1, boat1, boat2 );
+
+    return deck;
 };
 
 

@@ -207,7 +207,7 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
                     console.log(response);
                     var responseObject = response.data;
                     if( responseObject.success ){
-                        $scope.cloneBoard(responseObject.data);
+                        $scope.cloneBoard(responseObject.mapData);
                     }
                 });
             }

@@ -3,69 +3,81 @@ var db = mongojs('samurai', ['samurai']);
 
 var dbModule = {};
 
-function fail( response, msg ) { var obj = {success: false, message: msg }; response.send(obj); return 0; }
+function fail( response, msg ) { var obj = {success: false, message: msg }; return obj; }
 function success(msg){ return { success: true, message:msg }; }
 
-var updateMap = function(map, docs, response){
+var updateMap = function(map, docs, callback){
     if( map.size.x*map.size.y != map.data.length ){
         console.log('error updating map: size mismatch');
-        return fail(response, 'size mismatch');
+        callback(fail(response, 'size mismatch'));
+        return;
     }
 
     db.samurai.update( {_id: docs[0]._id}, { $set : {data: map.data, size: map.size}}, function(err, docs){
         if( err ){
             console.log('error updating map: ', err);
-            return fail(response, 'could not update map');
+            callback(fail(response, 'could not update map'));
+            return;
         }
 
-        response.send(success('map updated'));
+        callback(success('map updated'));
     });
 };
 
-dbModule.saveMap = function(response, map){
+dbModule.saveMap = function(map, callback){
     db.samurai.find({name: map.name}, function(err, docs){
         if( err ){
             console.log('error saving map: ', err);
-            return fail(response, 'error saving map');
+            callback(fail(response, 'error saving map'));
+            return;
         }
         else if( docs.length > 0 )
-            return updateMap(map, docs, response);
+            return updateMap(map, docs, callback);
         else {
             db.samurai.insert( req.body, function(err, docs){
                 if( err ) {
                     console.log('error inserting map, ', err);
-                    return fail(response, 'err');
+                    callback(fail(response, 'err'));
+                    return;
                 }
 
-                response.send(success('map saved'));
+                callback(success('map saved'));
             });
         }
     });
 };
 
-dbModule.sendMapList = function(response){
+dbModule.getMapList = function(callback){
     var limitResponse = {name:1, size:1,_id:0};
     db.samurai.find({},limitResponse, function( err, docs ) {
-        if( err )
-            return fail(response, 'error trying to get maps' + err);
-        var mapList = success(''+docs.length+' maps');
-        mapList.maps = docs;
-        response.send(mapList);
+        if( err ) {
+            callback(fail('error trying to get maps' + err));
+            return;
+        }
+
+        var mapObject = success(''+docs.length+' maps');
+        mapObject.mapList = docs;
+        callback(mapObject);
     });
 };
 
-dbModule.getMap = function(response, mapName){
+dbModule.getMap = function(mapName, callback){
     db.samurai.find({name: mapName}, {_id:0}, function(err, docs){
-        if( err )
-            return fail(res, 'error getting map: ' + err)
+        if( err ) {
+            callback(fail('error getting map: ' + err));
+            return;
+        }
 
-        if( docs.length === 0 )
-            return fail(res, 'map not found: ' + mapName);
+        if( docs.length === 0 ){
+            callback(fail('map not found: ' + mapName));
+            return;
+        }
 
-        var mapObject = docs[0];
-        var responseObject = success(mapName, 'ok');
-        responseObject.data = mapObject;
-        response.send(responseObject);
+        var mapData = docs[0];
+        var mapObject = success(mapName, 'ok');
+        mapObject.mapData = mapData;
+
+        callback(mapObject)
     });
 };
 
