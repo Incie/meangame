@@ -15,10 +15,16 @@ canvas {
 
 .inner {
     width: 50%;
-    border: 1px solid;
+    border: 1px solid darkblue;
+    border-radius: 4px;
     margin: auto;
     padding-top: 25px;
     padding-bottom: 25px;
+}
+
+.samuraiheader {
+    border-bottom: 1px solid darkgrey;
+    border-radius: 4px;
 }
 
 .subitem{
@@ -45,3 +51,6 @@ canvas {
     right: 0px;
     top: 0px;
 }
+
+.navbar-nav > li > a {padding-top:10px !important; padding-bottom:10px !important;}
+.navbar {min-height:35px !important}

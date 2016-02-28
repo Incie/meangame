@@ -1,33 +1,35 @@
-<div style="display: none; padding-top:50px" id="playpanel">
-    <div>
-        <label>Room Name: <input type="text" ng-model="$parent.roomName"/></label>
+<div class="col-lg-2"></div>
+<div class="form-inline col-lg-8" style="padding-top:50px; border: 1px solid pink; display:none;" id="playpanel">
+    <div class="form-group col-lg-12">
+        <label class="control-label col-lg-2" for="name"> Room </label>
+        <input id="name" type="text" class="col-lg-8" ng-model="$parent.roomName" placeholder="Enter a room name"/>
     </div>
-    <div>
-        <label>Your Name: <input type="text" ng-model="$parent.playerName"/></label>
+    <div class="form-group col-lg-12">
+        <label class="control-label col-lg-2">Your Name </label>
+        <input class="col-lg-10" type="text" ng-model="$parent.playerName"/>
     </div>
-    <div>
-        <label>Players:</label>
+    <div class="form-group col-lg-12">
+        <label class="control-label col-lg-2">Players</label>
             <!--<span ng-repeat="n in [2,3,4]">-->
-            <span>
+            <span class="col-lg-2">
                 <button ng-click="$parent.players = 2;">2</button>
                 <button ng-click="$parent.players = 3;">3</button>
                 <button ng-click="$parent.players = 4;">4</button>
             </span>
         </div>
-    <div>
-        <label>
-            Map:
-            <select ng-model="$parent.mapservice.selectedMap">
-                <option ng-repeat="map in $parent.mapservice.maps" value="{{map.name}}">{{map.name}}</option>
-            </select>
-        </label>
+    <div class="form-group col-lg-12">
+        <label class="col-lg-4">Map</label>
+        <select class="col-lg-8" ng-model="$parent.mapservice.selectedMap">
+            <option ng-repeat="map in $parent.mapservice.maps" value="{{map.name}}">{{map.name}}</option>
+        </select>
     </div>
-    <div>
+    <div class="form-group col-lg-12">
         <label>Password: <input type="password" ng-model="$parent.password"/></label>
         <label>Private: <input type="checkbox" ng-model="$parent.isPrivate"/></label>
     </div>
-    <div>
+    <div class="form-group col-lg-12">
         <button ng-click="$parent.createNewGame()">Create Game</button>
     </div>
     <div id="gamelink"></div>
 </div>
+<div style="clear:both"></div>
