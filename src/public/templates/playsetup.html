@@ -1,33 +1,30 @@
 <div class="col-lg-2"></div>
-<div class="form-inline col-lg-8" style="padding-top:50px; border: 1px solid pink; display:none;" id="playpanel">
+<div class="form-inline col-lg-8 smallpadding"id="playpanel">
     <div class="form-group col-lg-12">
-        <label class="control-label col-lg-2" for="name"> Room </label>
-        <input id="name" type="text" class="col-lg-8" ng-model="$parent.roomName" placeholder="Enter a room name"/>
+        <label class="control-label col-lg-3" for="name"> Room </label>
+        <input class="col-lg-9" id="name" type="text" ng-model="$parent.roomName" placeholder="Enter a room name"/>
     </div>
-    <div class="form-group col-lg-12">
-        <label class="control-label col-lg-2">Your Name </label>
-        <input class="col-lg-10" type="text" ng-model="$parent.playerName"/>
+    <div class="form-group col-lg-12 smallpadding">
+        <label class="control-label col-lg-3">Your Name </label>
+        <input class="col-lg-9" type="text" ng-model="$parent.playerName" placeholder="Enter your name"/>
     </div>
-    <div class="form-group col-lg-12">
-        <label class="control-label col-lg-2">Players</label>
-            <!--<span ng-repeat="n in [2,3,4]">-->
-            <span class="col-lg-2">
-                <button ng-click="$parent.players = 2;">2</button>
-                <button ng-click="$parent.players = 3;">3</button>
-                <button ng-click="$parent.players = 4;">4</button>
+    <div class="form-group col-lg-12 smallpadding">
+        <label class="control-label col-lg-3">Players</label>
+            <span class="col-lg-3">
+                <button class="btn btn-xs" ng-class="{'btn-primary': $parent.players == 2}" ng-click="$parent.players = 2;">2</button>
+                <button class="btn btn-xs" ng-class="{'btn-primary': $parent.players == 3}" ng-click="$parent.players = 3;">3</button>
+                <button class="btn btn-xs" ng-class="{'btn-primary': $parent.players == 4}" ng-click="$parent.players = 4;">4</button>
             </span>
-        </div>
-    <div class="form-group col-lg-12">
-        <label class="col-lg-4">Map</label>
-        <select class="col-lg-8" ng-model="$parent.mapservice.selectedMap">
+        <label class="col-lg-3">Map</label>
+        <select class="col-lg-3" ng-model="$parent.mapservice.selectedMap">
             <option ng-repeat="map in $parent.mapservice.maps" value="{{map.name}}">{{map.name}}</option>
         </select>
     </div>
-    <div class="form-group col-lg-12">
-        <label>Password: <input type="password" ng-model="$parent.password"/></label>
-        <label>Private: <input type="checkbox" ng-model="$parent.isPrivate"/></label>
+    <div class="form-group col-lg-12 smallpadding">
+        <label class="col-lg-3">Password</label> <input class="col-lg-3" type="password" ng-model="$parent.password"/>
+        <label class="col-lg-3">Private</label>  <input class="col-lg-1" type="checkbox" ng-model="$parent.isPrivate"/>
     </div>
-    <div class="form-group col-lg-12">
+    <div class="form-group col-lg-12 smallpadding">
         <button ng-click="$parent.createNewGame()">Create Game</button>
     </div>
     <div id="gamelink"></div>

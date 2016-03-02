@@ -1,4 +1,4 @@
-var playModule = angular.module('menumodule', ['ngCookies']);
+var playModule = angular.module('menumodule', ['ngCookies', 'ui.router']);
 
 playModule.factory('MapService', ['$http', function($http) {
     var mapservice = {};
@@ -19,7 +19,7 @@ playModule.factory('MapService', ['$http', function($http) {
                 return;
             }
 
-            mapservice.maps = successResponse.data.maps;
+            mapservice.maps = successResponse.data.mapList;
             mapservice.selectedMap = mapservice.maps[0];
         },
         function(errorResponse){
@@ -30,9 +30,20 @@ playModule.factory('MapService', ['$http', function($http) {
     return mapservice;
 }]);
 
+playModule.config(function($stateProvider, $urlRouterProvider) {
+    $urlRouterProvider.otherwise('/');
+    $stateProvider
+        .state('home', { url: '/', templateUrl: 'templates/home.html'})
+        .state('about', { url: '/about', templateUrl: 'templates/about.html'})
+        .state('play', { url: '/play', templateUrl: 'templates/playsetup.html'})
+        .state('editor', { url: '/edit', templateUrl: 'templates/editorsetup.html'});
+});
+
 playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies', 'MapService', function($scope, $http, $window, $cookies, mapservice){
+    $scope.navClass = { 'btn':true, 'btn-sm':true, 'btn-primary':true };
+
     $scope.mapservice = mapservice;
-    $scope.playerName = 'noname';
+    $scope.playerName = '';
     $scope.players = 4;
 
     $scope.setNumPlayers = function(num){
@@ -42,22 +53,6 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
 
     $scope.startNewGame = function(){
         var element = document.getElementById('gamelink');
-    };
-
-    $scope.showSetup = function() {
-        var editElement = document.getElementById('editorpanel');
-        editElement.style.display = 'none';
-
-        var element = document.getElementById('playpanel');
-        element.style.display = 'inline';
-    };
-
-    $scope.showEditorSetup = function() {
-        var playElement = document.getElementById('playpanel');
-        playElement.style.display = 'none';
-
-        var editElement = document.getElementById('editorpanel');
-        editElement.style.display = 'inline';
     };
 
     $scope.editNewMap = function() {

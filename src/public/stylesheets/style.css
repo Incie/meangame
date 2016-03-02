@@ -22,11 +22,6 @@ canvas {
     padding-bottom: 25px;
 }
 
-.samuraiheader {
-    border-bottom: 1px solid darkgrey;
-    border-radius: 4px;
-}
-
 .subitem{
     padding-top: 10px;
 }
@@ -34,6 +29,15 @@ canvas {
 .stretch {
     width: 99%;
     height: 99%;
+}
+
+.navigate {
+    border-bottom: 1px solid blue;
+    border-top: 1px solid blue;
+}
+
+.smallpadding {
+    padding-top: 2px;
 }
 
 .interface {
@@ -52,5 +56,5 @@ canvas {
     top: 0px;
 }
 
-.navbar-nav > li > a {padding-top:10px !important; padding-bottom:10px !important;}
-.navbar {min-height:35px !important}
+/*.navbar-nav > li > a {padding-top:10px !important; padding-bottom:10px !important;}*/
+/*.navbar {min-height:35px !important}*/

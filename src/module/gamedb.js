@@ -17,4 +17,57 @@ gamedb.createGame = function( gameObject, callback ){
     });
 };
 
+gamedb.registerNewPlayer = function( gameId, playerName, callback ){
+    db.samuraigame.find({gameid: gameId}, function(err, docs){
+        if( err ) {
+            callback({success: false, message: err});
+            return;
+        }
+
+        if( docs.length == 0 ){
+            callback({success: false, message: 'invalid gameid'});
+            return;
+        }
+
+        var gameObject = docs[0];
+
+        var players = gameObject.players;
+        var freePlayerIndex = -1;
+        for( var i = 0; i < players.length; i += 1 ){
+            //TODO: Check Duplicate names
+
+            if( players[i].name === 'unassigned' ){
+                freePlayerIndex = i;
+                break;
+            }
+        }
+
+        if( freePlayerIndex === -1 ){
+            callback({success: false, message: 'room full'});
+            return;
+        }
+
+        var updateStatement = { $set: {}};
+        updateStatement.$set['players.'+freePlayerIndex+'.name'] = playerName;
+
+        if( (freePlayerIndex+1) == gameObject.numPlayers ) {
+            updateStatement.$set['status'] = 'game started';
+        }
+
+        db.samuraigame.update({gameid: gameId}, updateStatement, function(err, docs){
+            if( err ){
+                callback({success:false, message: 'error trying to add player to game, ' + err});
+                return;
+            }
+
+            if( docs.length === 0 ){
+                callback({success: false, message: 'error adding player to game; game not found'})
+                return;
+            }
+
+            callback({success: true, message: 'game joined'});
+        });
+    });
+}
+
 module.exports.gamedb = gamedb;

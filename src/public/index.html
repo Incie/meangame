@@ -6,23 +6,26 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-cookies.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>
     <script src="/javascripts/menucontroller.js"></script>
     <title>Samurai</title>
 </head>
 <body ng-app="menumodule">
     <div ng-controller="menucontroller">
         <div class="outer">
-            <div class="inner">
-                <h2 class="samuraiheader">Samurai</h2>
+            <div class="inner clearfix">
+                <h2>Samurai</h2>
 
-                <div class="navbar" style="border-bottom: 1px solid blue; border-top: 1px solid blue;">
-                    <button class="btn btn-sm btn-primary" ng-click="showSetup()">Play</button>
-                    <button class="btn btn-sm btn-primary" ng-click="showEditorSetup()">Editor</button>
+                <div class="navigate">
+                    <button ng-class="navClass" ui-sref="home">Home</button>
+                    <button ng-class="navClass" ui-sref="play">Play</button>
+                    <button ng-class="navClass" ui-sref="editor">Editor</button>
+                    <button ng-class="navClass" ui-sref="about">About</button>
                 </div>
 
-                <div play-setup class="subitem"></div>
-                <div edit-setup class="subitem"></div>
-                <div id="messages" class="subitem"></div>
+                <div style="padding-top:50px;">
+                    <div ui-view></div>
+                </div>
             </div>
         </div>
     </div>

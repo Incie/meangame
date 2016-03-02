@@ -80,11 +80,27 @@ app.post('/game/create', function(req, res){
     });
 });
 
-app.post('game/:gameid/join', function(req, res){
-    //get gameid object
-    //check if gameid object contains unassigned player
-    //if unassigned is found
-        //add name to game
+/*
+    joinObject {
+        playerName
+        password
+    }
+ */
+app.post('/game/join/:gameid', function(req, res){
+    var gameId = req.params.gameid;
+    var playerName = req.body.playerName;
+
+    console.log( gameId, playerName );
+
+    if( playerName === undefined ){
+        //send a join page form?
+        res.send({success: false});
+        return;
+    }
+
+    gamedb.registerNewPlayer(gameId, playerName, function(gameObject){
+        res.send(gameObject);
+    });
 });
 
 app.post('/game/:gameid/turn', function(req, res){

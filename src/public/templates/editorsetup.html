@@ -1,13 +1,20 @@
-<div style="display: none; padding-top:50px" id="editorpanel">
+<div id="editorpanel">
+    <div class="col-lg-4"></div>
     <div>
-        <button ng-click="$parent.editNewMap()">New Map</button><button ng-click="$parent.cloneMap()">Clone Map</button>
-    </div>
-    <div>
-        <label>
-            Map:
-            <select ng-model="$parent.mapservice.selectedMap">
-                <option ng-repeat="map in $parent.mapservice.maps" value="{{map}}">{{map.name}}</option>
-            </select>
-        </label>
+        <span class="col-lg-2">
+            <button class="btn btn-primary" ng-click="$parent.editNewMap()">New Map</button>
+        </span>
+        <span class="col-lg-2">
+            <div>
+                <button class="btn btn-primary" ng-click="$parent.cloneMap()">Clone Map</button>
+            </div>
+            <div class="smallpadding">
+                <label> Map </label>
+                <select ng-model="$parent.mapservice.selectedMap">
+                    <option ng-repeat="map in $parent.mapservice.maps" value="map">{{map.name}}</option>
+                </select>
+            </div>
+        </span>
     </div>
 </div>
+<div style="clear:both"></div>
