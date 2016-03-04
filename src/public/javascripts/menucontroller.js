@@ -60,8 +60,8 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
     };
 
     $scope.cloneMap = function() {
-        var obj = $scope.mapservice.selectedMap;
-        $window.location.href = '/editor?clone=' + obj.name;
+        var selectedMap = $scope.mapservice.selectedMap;
+        $window.location.href = '/editor?clone=' + selectedMap;
     };
 
     $scope.createNewGame = function(){
@@ -88,19 +88,3 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
         element.innerHTML = msg + '<br/>' + element.innerHTML;
     };
 }]);
-
-playModule.directive('playSetup', function(){
-    return {
-        transclude: true,
-        scope: { maps: "=", set: "=" },
-        templateUrl: '/templates/playsetup.html'
-    };
-});
-
-playModule.directive('editSetup', function(){
-    return {
-        transclude: true,
-        scope: {  },
-        templateUrl: '/templates/editorsetup.html'
-    };
-});
