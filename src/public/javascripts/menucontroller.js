@@ -36,7 +36,8 @@ playModule.config(function($stateProvider, $urlRouterProvider) {
         .state('home', { url: '/', templateUrl: 'templates/home.html'})
         .state('about', { url: '/about', templateUrl: 'templates/about.html'})
         .state('play', { url: '/play', templateUrl: 'templates/playsetup.html'})
-        .state('editor', { url: '/edit', templateUrl: 'templates/editorsetup.html'});
+        .state('editor', { url: '/edit', templateUrl: 'templates/editorsetup.html'})
+        .state('join', {url: '/join', templateUrl: 'templates/joingame.html'});
 });
 
 playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies', 'MapService', function($scope, $http, $window, $cookies, mapservice){
@@ -67,8 +68,11 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
     $scope.createNewGame = function(){
         var newGameObject = {
             name:$scope.playerName,
+            roomName: 'testroom 1234',
             map:$scope.mapservice.selectedMap,
-            players:$scope.players
+            players:$scope.players,
+            isPrivate: false,
+            passphrase: 'abcd'
         };
 
         $http.post('/game/create', newGameObject).then(function(response){
