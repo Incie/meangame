@@ -80,6 +80,13 @@ app.post('/game/create', function(req, res){
     });
 });
 
+    //game/EKWALa/admin/status
+app.get('/game/admin/status/:gameid', function(req, res){
+    gamedb.getGameStatus(req.params.gameid, function(responseObject){
+        res.send(responseObject);
+    });
+});
+
 /*
     joinObject {
         playerName

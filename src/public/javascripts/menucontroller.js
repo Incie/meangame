@@ -37,6 +37,7 @@ playModule.config(function($stateProvider, $urlRouterProvider) {
         .state('about', { url: '/about', templateUrl: 'templates/about.html'})
         .state('play', { url: '/play', templateUrl: 'templates/playsetup.html'})
         .state('editor', { url: '/edit', templateUrl: 'templates/editorsetup.html'})
+        .state('admin', { url: '/admin', templateUrl: 'templates/adminstatus.html'})
         .state('join', {url: '/join', templateUrl: 'templates/joingame.html'});
 });
 
@@ -46,6 +47,27 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
     $scope.mapservice = mapservice;
     $scope.playerName = '';
     $scope.players = 4;
+
+    $scope.joinGamePlayerID = 'vypvyp';
+    $scope.joinGameID = 'E6UuCO';
+
+    $scope.joinGame = function() {
+        console.log('/join/'+$scope.joinGameID);
+        $http.post( '/game/join/'+$scope.joinGameID, {playerName: $scope.joinGamePlayerID}).then(function(response){
+            console.log(response);
+        });
+    };
+
+    $scope.adminGameID = 'E6UuCO';
+    $scope.adminGameObject = undefined;
+    $scope.adminStatus = function() {
+        console.log('admin status');
+        var url = '/game/admin/status/'+$scope.adminGameID;
+        $http.get(url).then(function(response){
+            console.log(response);
+            $scope.adminGameObject = response.data.gameObject;
+        });
+    };
 
     $scope.setNumPlayers = function(num){
         console.log(num);
@@ -67,10 +89,10 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
 
     $scope.createNewGame = function(){
         var newGameObject = {
-            name:$scope.playerName,
+            ownerName:$scope.playerName,
             roomName: 'testroom 1234',
-            map:$scope.mapservice.selectedMap,
-            players:$scope.players,
+            mapName:$scope.mapservice.selectedMap,
+            numPlayers:$scope.players,
             isPrivate: false,
             passphrase: 'abcd'
         };

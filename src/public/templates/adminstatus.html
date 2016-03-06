@@ -1,0 +1,27 @@
+<div class="col-offset-2 col-md-8">
+    <div><input type="text" placeholder="Game ID" ng-model="$parent.adminGameID">
+        <button class="btn btn-primary" ng-click="adminStatus()">Click</button></div>
+
+    <div class="center-block">
+        <h2>{{$parent.adminGameObject.roomName}}</h2>
+        <div ng-repeat="player in $parent.adminGameObject.players" class="col-md-3" style="float:left; border: 1px solid black; border-radius: 2px;">
+
+            <h4><strong>{{player.name}}</strong></h4>
+
+            <div ng-repeat="card in player.hand" class="btn-success" style="border: 1px solid black; border-radius: 2px;">
+                {{card.suite}}{{card.size}}
+            </div>
+            <div style="height:5px;"></div>
+
+            <div ng-repeat="card in player.deck" class="btn-info" style="border: 1px solid black; border-radius: 2px;">
+                {{card.suite}}{{card.size}}
+            </div>
+
+            <div style="height:5px;"></div>
+
+            <div ng-repeat="card in player.usedCards" class="btn-danger" style="border: 1px solid black; border-radius: 2px;">
+                {{card.suite}}{{card.size}}
+            </div>
+        </div>
+    </div>
+</div>

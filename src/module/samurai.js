@@ -45,7 +45,7 @@ samurai.dealHand = function(hand, deck){
         if( randomNumber < deck.length && randomNumber >= 0 ){
             var randomIndex = Math.floor(randomNumber);
             var card = deck.splice(randomIndex, 1);
-            hand.push(card);
+            hand.push(card[0]);
         }
     }
 };

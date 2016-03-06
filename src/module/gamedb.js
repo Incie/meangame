@@ -4,6 +4,17 @@ var db = mongojs('samuraigame', ['samuraigame']);
 
 var gamedb = {};
 
+gamedb.getGameStatus = function(gameid, callback){
+    db.samuraigame.find({gameid: gameid}, {map:0, _id:0}, function(err, docs) {
+        if (err) {
+            callback({success: false, message: err});
+            return;
+        }
+
+        callback({success: true, gameObject: docs[0]});
+    });
+};
+
 gamedb.createGame = function( gameObject, callback ){
     db.samuraigame.insert( gameObject, function(err, docs){
         if( err ){
@@ -68,6 +79,6 @@ gamedb.registerNewPlayer = function( gameId, playerName, callback ){
             callback({success: true, message: 'game joined'});
         });
     });
-}
+};
 
 module.exports.gamedb = gamedb;
