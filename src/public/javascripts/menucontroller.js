@@ -49,7 +49,7 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
     $scope.players = 4;
 
     $scope.joinGamePlayerID = 'vypvyp';
-    $scope.joinGameID = 'E6UuCO';
+    $scope.joinGameID = $cookies.get('gameid');
 
     $scope.joinGame = function() {
         console.log('/join/'+$scope.joinGameID);
@@ -58,7 +58,7 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
         });
     };
 
-    $scope.adminGameID = 'E6UuCO';
+    $scope.adminGameID = $cookies.get('gameid');
     $scope.adminGameObject = undefined;
     $scope.adminStatus = function() {
         console.log('admin status');
@@ -90,7 +90,7 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
     $scope.createNewGame = function(){
         var newGameObject = {
             ownerName:$scope.playerName,
-            roomName: 'testroom 1234',
+            roomName: $scope.roomName,
             mapName:$scope.mapservice.selectedMap,
             numPlayers:$scope.players,
             isPrivate: false,
@@ -101,10 +101,12 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
             console.log(response);
 
             $cookies.put('player-name', $scope.playerName);
+            $cookies.put('gameid', response.data.gameid);
 
             var gamelink = document.getElementById('gamelink');
             gamelink.innerHTML = $scope.playerName + '<br/>' + $scope.mapservice.selectedMap + '<br/>' + $scope.players;
-            gamelink.innerHTML = gamelink.innerHTML + '<br/>' + response.data;
+            gamelink.innerHTML = gamelink.innerHTML + '<br/>';
+            gamelink.innerHTML += '<a href="'+response.data.gameid+'">GAME</a>'
         });
     };
 
