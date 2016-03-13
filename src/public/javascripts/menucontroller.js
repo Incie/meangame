@@ -14,6 +14,7 @@ playModule.factory('MapService', ['$http', function($http) {
 
     $http.get('/api/maps').then(
         function(successResponse){
+            console.log('maps returned');
             if( successResponse.success === false ){
                 postMessage('error fetching maps ' + errorResponse.message);
                 return;
@@ -41,8 +42,10 @@ playModule.config(function($stateProvider, $urlRouterProvider) {
         .state('join', {url: '/join', templateUrl: 'templates/joingame.html'});
 });
 
-playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies', 'MapService', function($scope, $http, $window, $cookies, mapservice){
+playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies', 'MapService', '$location', function($scope, $http, $window, $cookies, mapservice, $location){
     $scope.navClass = { 'btn':true, 'btn-sm':true, 'btn-primary':true };
+
+    console.log('' + $location.search('game') );
 
     $scope.mapservice = mapservice;
     $scope.playerName = '';

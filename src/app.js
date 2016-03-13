@@ -11,7 +11,7 @@ var gamedb = require('./module/gamedb').gamedb;
 
 var app = express();
 
-//app.use(logger('dev'));
+app.use(logger('dev'));
 app.use(bodyParser.json({limit: '2mb'}));
 app.use(bodyParser.urlencoded({ extended: false, limit: '2mb'}));
 app.use(cookieParser());
@@ -24,7 +24,8 @@ var getAbsolutePath = function(relativePath){
 
 var files = {
     index: getAbsolutePath('index.html'),
-    editor: getAbsolutePath('editor.html')
+    editor: getAbsolutePath('editor.html'),
+    game: getAbsolutePath('game.html')
 };
 
 app.get('/', function(req, res){
@@ -80,19 +81,12 @@ app.post('/game/create', function(req, res){
     });
 });
 
-    //game/EKWALa/admin/status
 app.get('/game/admin/status/:gameid', function(req, res){
     gamedb.getGameStatus(req.params.gameid, function(responseObject){
         res.send(responseObject);
     });
 });
 
-/*
-    joinObject {
-        playerName
-        password
-    }
- */
 app.post('/game/join/:gameid', function(req, res){
     var gameId = req.params.gameid;
     var playerName = req.body.playerName;
@@ -113,6 +107,7 @@ app.post('/game/join/:gameid', function(req, res){
 app.post('/game/:gameid/turn', function(req, res){
     //send move as [ {x, y, type, num} ]
 
+    res.send('abc');
 
     //get game
     // gameid not found?
@@ -134,9 +129,14 @@ app.post('/game/:gameid/turn', function(req, res){
 app.get('/game/:gameid', function(req, res){
     console.log('/game/'+req.params.gameid);
 
+    res.send('nothing here yet');
 
     //look up game i
     //send board
+});
+
+app.get('/game/', function(req, res){
+    res.sendFile(files.game);
 });
 
 app.get('/editor', function(req, res){
