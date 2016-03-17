@@ -51,23 +51,32 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
     $scope.playerName = '';
     $scope.players = 4;
 
-    $scope.joinGamePlayerID = 'vypvyp';
+    $scope.joinGamePlayerID = '';
     $scope.joinGameID = $cookies.get('gameid');
+
+    $scope.games = [];
+
+    $http.get('/api/game/admin/games').then(function(response){
+        console.log(response);
+        $scope.games = response.data.games;
+    });
+
 
     $scope.joinGame = function() {
         console.log('/join/'+$scope.joinGameID);
-        $http.post( '/game/join/'+$scope.joinGameID, {playerName: $scope.joinGamePlayerID}).then(function(response){
+        $http.post( '/api/game/join/'+$scope.joinGameID, {playerName: $scope.joinGamePlayerID}).then(function(response){
             console.log(response);
         });
     };
 
     $scope.adminGameID = $cookies.get('gameid');
     $scope.adminGameObject = undefined;
-    $scope.adminStatus = function() {
-        console.log('admin status');
-        var url = '/game/admin/status/'+$scope.adminGameID;
+    $scope.adminStatus = function(gameid) {
+        console.log(gameid);
+        var adminGameID = gameid || $scope.adminGameID;
+
+        var url = '/api/game/admin/status/'+adminGameID;
         $http.get(url).then(function(response){
-            console.log(response);
             $scope.adminGameObject = response.data.gameObject;
         });
     };
@@ -100,7 +109,7 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
             passphrase: 'abcd'
         };
 
-        $http.post('/game/create', newGameObject).then(function(response){
+        $http.post('/api/game/create', newGameObject).then(function(response){
             console.log(response);
 
             $cookies.put('player-name', $scope.playerName);

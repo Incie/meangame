@@ -15,6 +15,17 @@ gamedb.getGameStatus = function(gameid, callback){
     });
 };
 
+gamedb.getAllGames = function(callback){
+    db.samuraigame.find({}, {roomName:1, numPlayers:1, gameid: 1}, function(err,docs){
+        if( err ){
+            callback({success: false, message: err});
+            return;
+        }
+
+        callback({success: true, games: docs});
+    });
+};
+
 gamedb.createGame = function( gameObject, callback ){
     db.samuraigame.insert( gameObject, function(err, docs){
         if( err ){

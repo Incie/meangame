@@ -3,11 +3,8 @@ var path = require('path');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var validate = require('validator');
 
-var samurai = require('./module/samurai').samurai;
-var db = require('./module/database').dbModule;
-var gamedb = require('./module/gamedb').gamedb;
+var api = require('./module/api').api;
 
 var app = express();
 
@@ -28,112 +25,17 @@ var files = {
     game: getAbsolutePath('game.html')
 };
 
-app.get('/', function(req, res){
-    console.log( 'get req on / ' + req.connection.remoteAddress );
-    res.sendFile(files.index);
-});
+app.get( '/api/maps',                   api.getMapList);
+app.post('/api/maps/post',              api.saveMap);
+app.get( '/api/maps/get/:name',         api.getMap);
 
-/**
- * request.body {
- *  gameObject {
- *  roomName
- *  ownerName
- *  mapName
- *  numPlayers
- *  isPrivate
- *  password
- *  }
- * }
- */
-app.post('/game/create', function(req, res){
-    console.log('gamecreate, incoming data: ' + req.body);
-    var gameInfo = req.body;
+app.get( '/api/game/:gameid',               api.getGameInfo);
+app.post('/api/game/:gameid/turn',          api.gameTurn);
+app.post('/api/game/create',                api.createGame);
+app.post('/api/game/join/:gameid',          api.joinGame);
 
-    //Validate
-    if( !validate.isInt(gameInfo.numPlayers, {min: 2, max:4}) ){
-        res.send({success: false, message: 'Num players must be a number between 2 and 4'});
-        return;
-    }
-
-    //Validate stringlengths
-    validate.escape(gameInfo.roomName);
-    validate.escape(gameInfo.ownerName);
-    validate.escape(gameInfo.mapName);
-
-    db.getMap(gameInfo.mapName, function(mapObject){
-        console.log('getmap');
-
-        if( !mapObject.success ) {
-            console.log('getmap failed' + mapObject);
-            res.send(mapObject);
-            return;
-        }
-
-        var map = {}; //db.getMap
-        samurai.createGame(gameInfo, mapObject.mapData, function(gameObject){
-            console.log('create game');
-
-            gamedb.createGame(gameObject, function(responseObject){
-                console.log('gamedb createGame' + responseObject);
-                res.send(responseObject);
-            });
-        });
-    });
-});
-
-app.get('/game/admin/status/:gameid', function(req, res){
-    gamedb.getGameStatus(req.params.gameid, function(responseObject){
-        res.send(responseObject);
-    });
-});
-
-app.post('/game/join/:gameid', function(req, res){
-    var gameId = req.params.gameid;
-    var playerName = req.body.playerName;
-
-    console.log( gameId, playerName );
-
-    if( playerName === undefined ){
-        //send a join page form?
-        res.send({success: false});
-        return;
-    }
-
-    gamedb.registerNewPlayer(gameId, playerName, function(gameObject){
-        res.send(gameObject);
-    });
-});
-
-app.post('/game/:gameid/turn', function(req, res){
-    //send move as [ {x, y, type, num} ]
-
-    res.send('abc');
-
-    //get game
-    // gameid not found?
-
-    //this players turn?
-    //validate move?
-
-    //register move
-    //check board-state
-    // change occupied cities if needed
-
-    //remove used drawn tiles
-    //draw new tiles
-});
-
-//req.params.gameid
-//req.body.refreshData = {true/false}
-//req.body.hasTurn = {integer}
-app.get('/game/:gameid', function(req, res){
-    console.log('/game/'+req.params.gameid);
-
-    res.send('nothing here yet');
-
-    //look up game i
-    //send board
-});
+app.get( '/api/game/admin/status/:gameid',  api.adminGetGameStatus);
+app.get( '/api/game/admin/games',           api.adminGetGames);
 
 app.get('/game/', function(req, res){
     res.sendFile(files.game);
@@ -144,30 +46,11 @@ app.get('/editor', function(req, res){
     res.sendFile(files.editor);
 });
 
-app.get('/api/maps', function(req, res){
-    console.log('/api/maps');
-    db.getMapList(function(mapObject){
-        res.send(mapObject);
-    });
+app.get('/', function(req, res){
+    console.log( 'get req on / ' + req.connection.remoteAddress );
+    res.sendFile(files.index);
 });
 
-app.get('/api/maps/get/:name', function(req, res){
-    var mapName = req.params.name;
-    console.log(mapName);
-
-    db.getMap(mapName, function(mapObject){
-        res.send(mapObject);
-    });
-});
-
-app.post('/api/maps/post', function(req, res){
-    console.log('/api/maps/post');
-
-    var mapData = req.body;
-    db.saveMap(mapData, function(mapObject){
-        res.send(mapObject);
-    });
-});
 
 var port = (process.env.PORT || '3000')
 app.listen(port, function() {

@@ -1,6 +1,16 @@
 <div class="col-offset-2 col-md-8">
-    <div><input type="text" placeholder="Game ID" ng-model="$parent.adminGameID">
-        <button class="btn btn-primary" ng-click="adminStatus()">Click</button></div>
+    <div>
+        <div class="col-lg-6">
+            <input type="text" placeholder="Game ID" ng-model="$parent.adminGameID">
+            <button class="btn btn-primary" ng-click="adminStatus()">Click</button>
+        </div>
+        <div class="col-lg-6">
+            <div ng-repeat="game in games" class="btn-info" ng-click="adminStatus(game.gameid)">
+                <span>{{game.gameid}}</span>
+                <span>{{game.numPlayers}}</span>
+            </div>
+        </div>
+    </div>
 
     <div class="center-block">
         <h2>{{$parent.adminGameObject.roomName}}</h2>
