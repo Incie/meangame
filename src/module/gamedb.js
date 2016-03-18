@@ -4,6 +4,17 @@ var db = mongojs('samuraigame', ['samuraigame']);
 
 var gamedb = {};
 
+gamedb.getGameInfoFor = function(gameid, callback){
+    db.samuraigame.find({gameid:gameid}, {map:1, roomName: 1, mapName: 1, playerTurn: 1, status: 1, numPlayers: 1, _id: 0}, function(err, docs){
+        if( err ){
+            callback({success: false, error: err});
+            return;
+        }
+
+        callback({success: true, game: docs[0] });
+    });
+};
+
 gamedb.getGameStatus = function(gameid, callback){
     db.samuraigame.find({gameid: gameid}, {map:0, _id:0}, function(err, docs) {
         if (err) {

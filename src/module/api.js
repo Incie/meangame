@@ -110,12 +110,10 @@ API.gameTurn = function(req, res){
 //req.body.refreshData = {true/false}
 //req.body.hasTurn = {integer}
 API.getGameInfo = function(req, res){
-    console.log('/api/game/'+req.params.gameid);
-
-    res.send('nothing here yet');
-
-    //look up game i
-    //send board
+    var gameid = req.cookies.gameid;
+    gamedb.getGameInfoFor(gameid, function(responseObject){
+        res.send(responseObject);
+    });
 };
 
 API.getMapList = function(req, res){
@@ -135,11 +133,9 @@ API.getMap = function(req, res) {
 };
 
 
-API.saveMap = function(req, res){
-    console.log('/api/maps/post');
-
+API.saveOrUpdateMap = function(req, res){
     var mapData = req.body;
-    db.saveMap(mapData, function(mapObject){
+    db.saveOrUpdateMap(mapData, function(mapObject){
         res.send(mapObject);
     });
 };

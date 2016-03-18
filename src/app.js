@@ -25,17 +25,20 @@ var files = {
     game: getAbsolutePath('game.html')
 };
 
-app.get( '/api/maps',                   api.getMapList);
-app.post('/api/maps/post',              api.saveMap);
-app.get( '/api/maps/get/:name',         api.getMap);
+/** app.all('*', api.Athenticate() ) **/
 
-app.get( '/api/game/:gameid',               api.getGameInfo);
-app.post('/api/game/:gameid/turn',          api.gameTurn);
-app.post('/api/game/create',                api.createGame);
-app.post('/api/game/join/:gameid',          api.joinGame);
+app.get( '/api/maps',               api.getMapList);
+app.post('/api/maps/',              api.saveOrUpdateMap);
+app.get( '/api/maps/:name',         api.getMap);
+app.delete('api/maps/:name',        function(res,req){res.send('NYI');})
 
-app.get( '/api/game/admin/status/:gameid',  api.adminGetGameStatus);
-app.get( '/api/game/admin/games',           api.adminGetGames);
+app.post('/api/game/',                  api.createGame);
+app.get( '/api/game/:gameid',           api.getGameInfo);
+app.put( '/api/game/:gameid',           api.gameTurn);
+app.post('/api/game/:gameid',           api.joinGame);
+
+app.get( '/api/game/admin/games',       api.adminGetGames);
+app.get( '/api/game/admin/:gameid',     api.adminGetGameStatus);
 
 app.get('/game/', function(req, res){
     res.sendFile(files.game);

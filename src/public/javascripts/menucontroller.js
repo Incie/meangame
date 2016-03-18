@@ -61,10 +61,13 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
         $scope.games = response.data.games;
     });
 
+    $scope.openGame = function() {
+        $cookies.put('gameid', $scope.joinGameID);
+    };
 
     $scope.joinGame = function() {
         console.log('/join/'+$scope.joinGameID);
-        $http.post( '/api/game/join/'+$scope.joinGameID, {playerName: $scope.joinGamePlayerID}).then(function(response){
+        $http.post( '/api/game/'+$scope.joinGameID, {playerName: $scope.joinGamePlayerID}).then(function(response){
             console.log(response);
         });
     };
@@ -75,7 +78,7 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
         console.log(gameid);
         var adminGameID = gameid || $scope.adminGameID;
 
-        var url = '/api/game/admin/status/'+adminGameID;
+        var url = '/api/game/admin/'+adminGameID;
         $http.get(url).then(function(response){
             $scope.adminGameObject = response.data.gameObject;
         });
@@ -109,7 +112,7 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
             passphrase: 'abcd'
         };
 
-        $http.post('/api/game/create', newGameObject).then(function(response){
+        $http.post('/api/game', newGameObject).then(function(response){
             console.log(response);
 
             $cookies.put('player-name', $scope.playerName);

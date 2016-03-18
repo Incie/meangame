@@ -24,7 +24,7 @@ var updateMap = function(map, docs, callback){
     });
 };
 
-dbModule.saveMap = function(map, callback){
+dbModule.saveOrUpdateMap = function(map, callback){
     db.samurai.find({name: map.name}, function(err, docs){
         if( err ){
             console.log('error saving map: ', err);

@@ -202,7 +202,7 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
             var value = paramsplit[1];
 
             if( name == 'clone' ){
-                var url = 'api/maps/get/' + value;
+                var url = 'api/maps/' + value;
                 $http.get(url).then(function(response){
                     console.log(response);
                     var responseObject = response.data;
@@ -222,7 +222,7 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
         var size = hexagonBoard.size;
         var name = $scope.metadata.name;
 
-        $http.post( '/api/maps/post', {name: name, size: size, data: board }).then(
+        $http.post( '/api/maps', {name: name, size: size, data: board }).then(
             function(response){ postMessage(response.data); },
             function(response){ postMessage(response.data); }
         );
