@@ -48,7 +48,7 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
     console.log('' + $location.search('game') );
 
     $scope.mapservice = mapservice;
-    $scope.playerName = '';
+    $scope.playerName = $cookies.get('player-name') || '';
     $scope.players = 4;
 
     $scope.joinGamePlayerID = '';
@@ -63,6 +63,8 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
 
     $scope.openGame = function() {
         $cookies.put('gameid', $scope.joinGameID);
+        $cookies.put('player-name', $scope.playerName);
+        location.href = '/game';
     };
 
     $scope.joinGame = function() {
@@ -81,6 +83,15 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
         var url = '/api/game/admin/'+adminGameID;
         $http.get(url).then(function(response){
             $scope.adminGameObject = response.data.gameObject;
+            console.log($scope.adminGameObject);
+        });
+    };
+
+    $scope.adminDeleteGame = function(gameid){
+        console.log('deleting gameid: ' + gameid)
+        $http.delete('/api/game/admin/'+gameid).then(function(response){
+            console.log(response);
+            location.reload();
         });
     };
 

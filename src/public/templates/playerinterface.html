@@ -1,0 +1,23 @@
+<div class="interface" style="width: 150px; background-color: white;">
+    <div class="interface">{{game.roomName}}</div>
+    <div ng-repeat="state in game.state">({{state.turn}}){{state.player}}</div>
+</div>
+<div class="interface black clearfix">
+    <span class="col-md-2" ng-style="playerStyle" style="color: black; border-radius: 4px;">{{player.name}}</span>
+    <span class="col-md-2">{{game.playerTurn}}</span>
+    <span class="col-md-2">{{game.mapName}}</span>
+    <span class="col-md-3 btn btn-xs btn-default" ng-class="{flash:hasNewMessage}" ng-click="clearMessage()">{{lastmessage}}</span>
+    <span class="col-md-3 pull-right">
+        <button class="btn btn-success btn-xs" ng-click="setupGame()">Update</button>
+        <button class="btn btn-success btn-xs" ng-click="finishTurn()">Finish Turn</button>
+        <button class="btn btn-danger btn-xs" ng-click="resetTurn()">Reset Turn</button>
+    </span>
+</div>
+<div class="btn btn-default interface"
+     ng-class="{'btn-success': card.played, 'btn-info': card.selected }"
+     ng-click="toggleCard($index)"
+     ng-repeat="card in player.hand">
+
+    <img class="card" ng-src="{{getSuiteSource(card.suite)}}">
+    <img class="card" ng-src="{{getNumberSource(card.size)}}">
+</div>

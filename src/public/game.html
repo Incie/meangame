@@ -9,12 +9,22 @@
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-cookies.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>
+
+    <script src="/javascripts/lib/three.js"></script>
+    <script src="/javascripts/lib/stats.js"></script>
+    <script src="/javascripts/lib/rendererstats.js"></script>
+    <script src="/javascripts/tjs.js"></script>
+
+    <script src="/javascripts/hexagonboard.js"></script>
+    <script src="/javascripts/cameracontroller.js"></script>
     <script src="/javascripts/gamecontroller.js"></script>
+
+
 </head>
 
 <body ng-app="gamemodule">
     <div ng-controller="gamecontroller">
-        <game-board></game-board>
+        <game-board on-resize></game-board>
     </div>
 </body>
 </html>

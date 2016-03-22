@@ -4,14 +4,78 @@ var db = mongojs('samuraigame', ['samuraigame']);
 
 var gamedb = {};
 
-gamedb.getGameInfoFor = function(gameid, callback){
-    db.samuraigame.find({gameid:gameid}, {map:1, roomName: 1, mapName: 1, playerTurn: 1, status: 1, numPlayers: 1, _id: 0}, function(err, docs){
+gamedb.getGameInfoFor = function(gameid, playerid, callback){
+    db.samuraigame.find({gameid:gameid}, {map:1, roomName: 1, mapName: 1, playerTurn: 1, status: 1, numPlayers: 1, players: 1, turnCounter: 1, state: 1, _id: 0}, function(err, docs){
         if( err ){
             callback({success: false, error: err});
             return;
         }
 
-        callback({success: true, game: docs[0] });
+        var gameObject = docs[0];
+        var game = {};
+
+        gameObject.players.forEach( function(player) {
+            if( player.name == playerid ) {
+                game['player'] = {};
+                game.player.name = player.name;
+                game.player.hand = player.hand;
+                game.player.color = player.color;
+            }
+        });
+
+        if( game.player === undefined ){
+            callback({success: false, error: 'player not found'});
+            return;
+        }
+
+        game.map = gameObject.map;
+        game.roomName = gameObject.roomName;
+        game.mapName = gameObject.mapName;
+        game.playerTurn = gameObject.playerTurn;
+        game.status = gameObject.status;
+        game.numPlayers = gameObject.numPlayers;
+        game.turnCounter = gameObject.turnCounter;
+        game.state = gameObject.state;
+
+        callback({success: true,  game: game});
+    });
+};
+
+gamedb.getGameObject = function(gameid, callback){
+    db.samuraigame.find({gameid:gameid}, function(err, docs){
+        if( err ) {
+            callback({success: false, error: err});
+            return;
+        }
+
+        callback({success: true, game: docs[0]});
+    });
+};
+
+gamedb.updateGameObject = function(gameObject, callback){
+    db.samuraigame.update({_id: gameObject._id}, gameObject, function(err, docs){
+        if( err ){
+            callback({success: false, error: err});
+            return;
+        }
+
+        return callback({success: true, message: 'yay' });
+    });
+};
+
+gamedb.deleteGameObject = function(gameid, callback){
+    if( gameid === undefined ) {
+        callback({success: false, error: 'Cant delete'});
+        return;
+    }
+
+    db.samuraigame.remove({gameid:gameid}, function(err, docs){
+        if( err ){
+            callback({success: false, error: err});
+            return;
+        }
+
+        callback({success: true, message: 'deleted game: '+gameid});
     });
 };
 
@@ -82,6 +146,7 @@ gamedb.registerNewPlayer = function( gameId, playerName, callback ){
 
         var updateStatement = { $set: {}};
         updateStatement.$set['players.'+freePlayerIndex+'.name'] = playerName;
+        updateStatement.$set['state.'+freePlayerIndex+'.player'] = playerName;
 
         if( (freePlayerIndex+1) == gameObject.numPlayers ) {
             updateStatement.$set['status'] = 'game started';
@@ -98,6 +163,7 @@ gamedb.registerNewPlayer = function( gameId, playerName, callback ){
                 return;
             }
 
+            console.log('Player '+playerName+' joined game ' + gameId);
             callback({success: true, message: 'game joined'});
         });
     });

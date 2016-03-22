@@ -2,19 +2,16 @@ var tjs = function() {
     var scene = new THREE.Scene();
     var renderer = new THREE.WebGLRenderer({antialias: true});
     var camera = new THREE.OrthographicCamera(0, window.innerWidth, 0, window.innerHeight, -5000, 5000);
-    camera.position.set(300,300,500);
+    camera.position.set(0,0,250);
     camera.updateProjectionMatrix();
     scene.add(camera);
 
     //Statistics
     var statsElement = document.getElementById('stats');
     var stats = new Stats();
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.right = '100px';
     statsElement.appendChild(stats.domElement);
 
     var rendererStats = new THREEx.RendererStats();
-    rendererStats.domElement.style.right = '0px';
     statsElement.appendChild(rendererStats.domElement);
 
     var updateStats = function() {
@@ -42,6 +39,14 @@ var tjs = function() {
         },
         addSceneObject:function(object){
             scene.add(object);
+        },
+        removeSceneObject: function(name){
+            var oldObject = scene.getObjectByName(name);
+            if( oldObject )
+                scene.remove(oldObject);
+        },
+        getSceneObject: function(name){
+            return scene.getObjectByName(name);
         },
         rendererEventListener:function(type, callback, scope){
             renderer.domElement.addEventListener(type, callback);

@@ -1,8 +1,58 @@
-body { margin: 0; padding: 0; }
+body {
+    margin: 0;
+    padding: 0;
+}
 
 canvas {
+    display: block;
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
+}
+
+.stats {
+    position:absolute;
+    left: 0;
+    top: 0;
+}
+
+.playerinterface {
+    position:absolute;
+    left: 0;
+    bottom: 0;
+}
+
+.interface {
+    margin-left: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 4px;
+}
+
+.card {
+    width: 64px;
+    height: 64px;
+}
+
+.black {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.white {
+    border: 1px solid black;
+    background-color: #ffffff;
+}
+
+@keyframes flashanimation {
+    from {background-color: #ff0000;}
+    to {background-color: #ffffff; }
+}
+
+.flash {
+    animation-name: flashanimation;
+    animation-duration: 1s;
 }

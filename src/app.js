@@ -38,6 +38,7 @@ app.put( '/api/game/:gameid',           api.gameTurn);
 app.post('/api/game/:gameid',           api.joinGame);
 
 app.get( '/api/game/admin/games',       api.adminGetGames);
+app.delete('/api/game/admin/:gameid',   api.adminDeleteGame);
 app.get( '/api/game/admin/:gameid',     api.adminGetGameStatus);
 
 app.get('/game/', function(req, res){

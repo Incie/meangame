@@ -5,19 +5,6 @@ var validate = require('validator');
 
 var API = {};
 
-
-/**
- * request.body {
- *  gameObject {
- *  roomName
- *  ownerName
- *  mapName
- *  numPlayers
- *  isPrivate
- *  password
- *  }
- * }
- */
 API.createGame = function(req, res){
     console.log('gamecreate, incoming data: ' + req.body);
     var gameInfo = req.body;
@@ -42,7 +29,6 @@ API.createGame = function(req, res){
             return;
         }
 
-        var map = {}; //db.getMap
         samurai.createGame(gameInfo, mapObject.mapData, function(gameObject){
             console.log('create game');
 
@@ -68,6 +54,13 @@ API.adminGetGames = function(req,res){
     });
 };
 
+API.adminDeleteGame = function(req, res){
+    var gameid = req.params.gameid;
+    gamedb.deleteGameObject(gameid, function(status){
+        res.send(status);
+    });
+};
+
 
 API.joinGame = function(req, res){
     var gameId = req.params.gameid;
@@ -86,11 +79,43 @@ API.joinGame = function(req, res){
     });
 };
 
-
+//req.body.moves = [ {x,y,suite,size} ... ]
 API.gameTurn = function(req, res){
-    //send move as [ {x, y, type, num} ]
+    var gameid = req.cookies['gameid'];
+    var player = req.cookies['player-name'];
+    var moves = req.body.moves;
 
-    res.send('abc');
+    console.log('PROCESS GAME TURN');
+    console.log('getting gameid' + gameid);
+    gamedb.getGameObject(gameid, function(gameObject){
+        if( !gameObject.success ) {
+            console.log(gameObject);
+            res.send(gameObject);
+            return;
+        }
+
+        console.log('processing turn');
+        samurai.processTurn(gameObject.game, player, moves, function(status){
+            if( !status.success ) {
+                console.log(status);
+                res.send(status);
+                return;
+            }
+
+            console.log('updating game object');
+            gamedb.updateGameObject(status.game, function(update){
+                if( !update.success ){
+                    console.log('error', update);
+                    res.send(update);
+                    return;
+                }
+
+                console.log(update);
+                res.send(update);
+            });
+        });
+        // samurai
+    });
 
     //get game
     // gameid not found?
@@ -110,8 +135,9 @@ API.gameTurn = function(req, res){
 //req.body.refreshData = {true/false}
 //req.body.hasTurn = {integer}
 API.getGameInfo = function(req, res){
-    var gameid = req.cookies.gameid;
-    gamedb.getGameInfoFor(gameid, function(responseObject){
+    var gameid = req.cookies['gameid'];
+    var player = req.cookies['player-name'];
+    gamedb.getGameInfoFor(gameid, player, function(responseObject){
         res.send(responseObject);
     });
 };

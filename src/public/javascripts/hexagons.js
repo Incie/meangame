@@ -75,9 +75,9 @@ var HexagonBoard = function() {
     };
 
     var textures = [
-        {name: "square", map: THREE.ImageUtils.loadTexture('/img/square.png')},
-        {name: "circle", map: THREE.ImageUtils.loadTexture('/img/circle.png')},
-        {name: "star", map: THREE.ImageUtils.loadTexture('/img/star.png')}
+        {name: "square", map: THREE.ImageUtils.loadTexture('/img/buddhism64.png')},
+        {name: "circle", map: THREE.ImageUtils.loadTexture('/img/eastindia64.png')},
+        {name: "star", map: THREE.ImageUtils.loadTexture('/img/politics64.png')}
     ];
 
     var getTextureByName = function(name){
@@ -96,7 +96,8 @@ var HexagonBoard = function() {
         planeMesh.position.y += 50;
         planeMesh.position.x += xTranslate;
         planeMesh.position.z += zTranslate;
-        planeMesh.rotation.x = Math.PI / 2.0;
+        planeMesh.rotation.x = Math.PI/2;
+        planeMesh.rotation.z = Math.PI/2;
         planeMesh.name = name;
         hex.add(planeMesh);
     };
@@ -128,7 +129,7 @@ var HexagonBoard = function() {
     var addDoubleCities = function(hex){
         var xTranslate = 0;
         var zTranslate = -5;
-        var cityRadius = radius * 0.7;
+        var cityRadius = radius * 0.5;
 
         if( existsAndTrue(hex.userData.city.circle) ){
             addSingleObject(hex, "circle", getTextureByName("circle").map, xTranslate, zTranslate, cityRadius);
@@ -148,7 +149,7 @@ var HexagonBoard = function() {
     var addAllCities = function(hex){
         var xTranslate = 5;
         var zTranslate = 0;
-        var cityRadius = radius * 0.7;
+        var cityRadius = radius * 0.5;
 
         addSingleObject(hex, "circle", getTextureByName("circle").map, xTranslate, zTranslate, cityRadius);
         xTranslate = -5;

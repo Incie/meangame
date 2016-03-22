@@ -13,7 +13,12 @@
     </div>
 
     <div class="center-block">
-        <h2>{{$parent.adminGameObject.roomName}}</h2>
+        <div>
+            <span class="col-lg-11">
+                <h2>{{$parent.adminGameObject.roomName}}</h2>
+            </span>
+            <span ng-show="$parent.adminGameObject" class="col-lg-1"><button class="btn btn-danger btn-xs" ng-click="adminDeleteGame(adminGameObject.gameid)">X</button></span>
+        </div>
         <div ng-repeat="player in $parent.adminGameObject.players" class="col-md-3" style="float:left; border: 1px solid black; border-radius: 2px;">
 
             <h4><strong>{{player.name}}</strong></h4>
