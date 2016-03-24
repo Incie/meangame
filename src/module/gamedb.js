@@ -169,4 +169,4 @@ gamedb.registerNewPlayer = function( gameId, playerName, callback ){
     });
 };
 
-module.exports.gamedb = gamedb;
+module.exports = gamedb;

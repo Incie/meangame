@@ -4,7 +4,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var api = require('./module/api').api;
+var api = require('./module/api');
 
 var app = express();
 
@@ -25,12 +25,14 @@ var files = {
     game: getAbsolutePath('game.html')
 };
 
-/** app.all('*', api.Athenticate() ) **/
+/**
+app.all('*', api.Athenticate() )
+ **/
 
-app.get( '/api/maps',               api.getMapList);
-app.post('/api/maps/',              api.saveOrUpdateMap);
-app.get( '/api/maps/:name',         api.getMap);
-app.delete('api/maps/:name',        function(res,req){res.send('NYI');})
+app.get( '/api/maps',                   api.getMapList);
+app.post('/api/maps/',                  api.saveOrUpdateMap);
+app.get( '/api/maps/:name',             api.getMap);
+app.delete('api/maps/:name',            function(res,req){res.send('NYI');})
 
 app.post('/api/game/',                  api.createGame);
 app.get( '/api/game/:gameid',           api.getGameInfo);
@@ -56,7 +58,10 @@ app.get('/', function(req, res){
 });
 
 
-var port = (process.env.PORT || '3000')
+var port = (process.env.PORT || 3000);
 app.listen(port, function() {
-    console.log('listening on '+port);
+    console.log('Node Server ('+process.version+')');
+    console.log('Listening on '+port);
+    console.log('Platform: '+process.platform + ' '+process.arch+'('+process.pid+')');
+    console.log('cwd: '+process.cwd() );
 });

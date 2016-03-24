@@ -1,6 +1,7 @@
-var samurai = require('./samurai').samurai;
-var db = require('./database').dbModule;
-var gamedb = require('./gamedb').gamedb;
+var samurai = require('./samurai');
+var db = require('./database');
+var gamedb = require('./gamedb');
+var response = require('./response');
 var validate = require('validator');
 
 var API = {};
@@ -11,18 +12,15 @@ API.createGame = function(req, res){
 
     //Validate
     if( !validate.isInt(gameInfo.numPlayers, {min: 2, max:4}) ){
-        res.send({success: false, message: 'Num players must be a number between 2 and 4'});
+        res.send( response.error('Num players must be a number between 2 and 4') );
         return;
     }
 
-    //Validate stringlengths
-    validate.escape(gameInfo.roomName);
-    validate.escape(gameInfo.ownerName);
-    validate.escape(gameInfo.mapName);
+    gameInfo.roomName = validate.escape(gameInfo.roomName);
+    gameInfo.ownerName = validate.escape(gameInfo.ownerName);
+    gameInfo.mapName = validate.escape(gameInfo.mapName);
 
     db.getMap(gameInfo.mapName, function(mapObject){
-        console.log('getmap');
-
         if( !mapObject.success ) {
             console.log('getmap failed' + mapObject);
             res.send(mapObject);
@@ -116,24 +114,8 @@ API.gameTurn = function(req, res){
         });
         // samurai
     });
-
-    //get game
-    // gameid not found?
-
-    //this players turn?
-    //validate move?
-
-    //register move
-    //check board-state
-    // change occupied cities if needed
-
-    //remove used drawn tiles
-    //draw new tiles
 };
 
-//req.params.gameid
-//req.body.refreshData = {true/false}
-//req.body.hasTurn = {integer}
 API.getGameInfo = function(req, res){
     var gameid = req.cookies['gameid'];
     var player = req.cookies['player-name'];
@@ -167,4 +149,4 @@ API.saveOrUpdateMap = function(req, res){
 };
 
 
-module.exports.api = API;
+module.exports = API;
