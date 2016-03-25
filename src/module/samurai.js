@@ -1,6 +1,6 @@
+var response = require('./response');
 
 var samurai = {};
-
 var colors = [ 0xff0000, 0x00ff00, 0x0000ff, 0xffff00 ];
 
 
@@ -103,80 +103,108 @@ samurai.createRandomId = function(n){
     return randomId.join('');
 };
 
-samurai.processTurn = function(gameObject, player, moves, callback) {
-    var validPlayerTurn = false;
-    gameObject.players.every( function(p, index){
-        if( p.name == player ){
-            if( gameObject.playerTurn == index )
-                validPlayerTurn = true;
-                return false;
-        }
-
-        return true;
-    });
-
-    if( !validPlayerTurn ){
-        callback({success: false, error: 'Not your turn'});
-        return;
+function validPlayerTurn( gameObject, player ){
+    for( let i = 0; i < gameObject.players.length; i += 1 ){
+        if( gameObject.players[i].name == player && gameObject.playerTurn == i)
+            return true;
     }
 
-    var playerObject = gameObject.players.find(function(p) { return p.name == player; });
-    if( playerObject === undefined ){
-        callback({success: false, error: 'player not found in gameobj: '+player});
-        return;
-    }
+    return false;
+}
 
-    //Hand Validation
-    var cardNotFound = false;
-    var cards = [];
-    moves.every(function(move){
-        for( var i = 0; i < playerObject.hand.length; i += 1 ){
-            if( move.suite == playerObject.hand[i].suite &&
-                move.size == playerObject.hand[i].size ) {
-                move.playerCard = playerObject.hand.splice(i,1);
+function validateHand(playerMoves, playerHand) {
+    let validatedHand = true;
+    playerMoves.every( move => {
+        for( var i = 0; i < playerHand.length; i += 1 ){
+            if( move.suite == playerHand[i].suite && move.size == playerHand[i].size ) {
+                move.playerCard = playerHand.splice(i,1);
                 return true;
             }
         }
 
-        cardNotFound = true;
+        validatedHand = false;
         return false;
     });
 
-    if( cardNotFound ){
-        callback({success: false, error: 'invalid card found'});
-        return;
-    }
+    return validatedHand;
+}
 
-    //Map Validation
-    var validMapMoves = true;
-    moves.every(function(move){
-        var tile = gameObject.map.data.find(function(t){ return (move.x==t.x && move.y==t.y); });
+function validateMoves(mapObject, playerMoves, turnCount, playerColor, playerName){
+    let validMapMoves = true;
+    let normalMoveTaken = false;
+    playerMoves.every( move => {
+        var tile = mapObject.data.find( t => { return (move.x==t.x && move.y==t.y); } );
 
         if( !tile ) {
             validMapMoves = false;
             return false;
         }
 
+        if( move.suite != 'boat' && move.suite != 'ronin' ){
+            if( normalMoveTaken ){
+                validMapMoves = false;
+                return false;
+            }
+
+            normalMoveTaken = true;
+        }
+
+
+        if( tile.move !== undefined ){
+            validMapMoves = false;
+            return false;
+        }
+
+        if( move.suite == 'boat' && tile.type != 1 ) {
+            validMapMoves = false;
+            return false;
+        }
+
+        if( move.suite != 'boat' && tile.type != 2 ) {
+            validMapMoves = false;
+            return false;
+        }
+
         tile.move = {
-            color: playerObject.color,
-            player: player,
+            color: playerColor,
+            player: playerName,
             suite: move.suite,
             size: move.size,
-            turn: gameObject.turnCounter
+            turn: turnCount
         };
 
         return true;
     });
+    
+    return validMapMoves;
+}
 
-    if( !validMapMoves ){
-        callback({success: false, error: 'invalid map position found'});
+samurai.processTurn = function(gameObject, player, moves, callback) {
+    if( !validPlayerTurn(gameObject, player) ){
+        callback( response.fail('Not your turn') );
         return;
     }
 
-    moves.forEach( function(move){
-        playerObject.usedCards.push(move);
-    });
+    var playerObject = gameObject.players.find( p => { return p.name == player; } );
+    if( playerObject === undefined ){
+        callback({success: false, error: 'player not found in gameobj: '+player});
+        return;
+    }
 
+    if( !validateHand(moves, playerObject.hand) ){
+        callback( response.fail('Failed hand validation'));
+        return;
+    }
+
+    if( !validateMoves(gameObject.map, moves, gameObject.turnCounter, playerObject.color, playerObject.name) ) {
+        callback( response.fail('Failed map validation') );
+        return;
+    }
+
+    //Add cards to the spent pile
+    moves.forEach( move => { playerObject.usedCards.push(move); });
+
+    //Draw new cards
     while( playerObject.hand.length < 6 && playerObject.deck.length != 0 ){
         var cardIndex = Math.floor(playerObject.deck.length * Math.random());
         var draw = playerObject.deck.splice(cardIndex, 1);
