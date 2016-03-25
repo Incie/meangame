@@ -28,35 +28,23 @@ var hexagonboard = function(map) {
         return hexMesh;
     }
 
-    function getHexDataAt(coordX, coordY){
-        for( var i = 0; i < map.data.length; i += 1 ){
-            var tile = map.data[i];
-            if( tile.x == coordX && tile.y == coordY )
-                return tile;
+    map.data.forEach( tile => {
+        let hexObject = createHex(tile.x, tile.y, tile.type);
+        hexObject.userData.x = tile.x;
+        hexObject.userData.y = tile.y;
+        hexObject.userData.type = tile.type;
+        sceneObject.add( hexObject );
+
+        if( tile.move !== undefined ) {
+            let tileObject = planeGenerator.tile(tile.move);
+            tileObject.name = 'move';
+            hexObject.add(tileObject);
+            hexObject.material.color.setHex(tile.move.color);
         }
-    }
 
-    for( var y = 0; y < mapHeight; y += 1 ){
-        for( var x = 0; x < mapWidth; x += 1 ){
-            var i = x + y*mapWidth;
-            var tileData = getHexDataAt(x,y);
-            var hexObject = createHex(x,y, tileData.type);
-            hexObject.userData.x = x;
-            hexObject.userData.y = y;
-            hexObject.userData.type = tileData.type;
-            sceneObject.add( hexObject );
-
-            if( tileData.move !== undefined ) {
-                var tileObject = planeGenerator.tile(tileData.move);
-                tileObject.name = 'move';
-                hexObject.add(tileObject);
-                hexObject.material.color.setHex(tileData.move.color);
-            }
-
-            if( tileData.type == 3 )
-                hexObject.add(planeGenerator.city( tileData.city ) );
-        }
-    }
+        if( tile.type == 3 )
+            hexObject.add( planeGenerator.city(tile.city) );
+    });
 
     return {
         sceneObject: sceneObject

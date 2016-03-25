@@ -191,4 +191,4 @@ samurai.processTurn = function(gameObject, player, moves, callback) {
 };
 
 
-module.exports.samurai = samurai;
+module.exports = samurai;

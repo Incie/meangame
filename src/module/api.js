@@ -27,6 +27,8 @@ API.createGame = function(req, res){
             return;
         }
 
+        mapObject.mapData.data = db.optimizeMapData(mapObject.mapData.data);
+
         samurai.createGame(gameInfo, mapObject.mapData, function(gameObject){
             console.log('create game');
 

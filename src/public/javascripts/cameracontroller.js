@@ -7,7 +7,7 @@ var cameracontroller = function(tjs){
 
     function onMouseWheel(event){
         var zoom = 1;
-        if( event.wheelDelta < 0 )
+        if( event.deltaY < 0 )
             zoom = -1;
 
         var camera = tjs.getCamera();
@@ -42,7 +42,7 @@ var cameracontroller = function(tjs){
         }
     }
 
-    tjs.rendererEventListener('mousewheel', onMouseWheel);
+    tjs.rendererEventListener('wheel', onMouseWheel);
     tjs.rendererEventListener('mousedown', onMouseDown);
     tjs.rendererEventListener('mouseup', onMouseUp);
     tjs.rendererEventListener('mousemove', onMouseMove);

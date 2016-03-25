@@ -79,4 +79,8 @@ dbModule.getMap = function(mapName, callback){
     });
 };
 
+dbModule.optimizeMapData = function(mapData){
+    return mapData.filter( tile =>  { return (tile.type != 0) } );
+};
+
 module.exports = dbModule;

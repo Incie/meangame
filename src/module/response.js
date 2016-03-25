@@ -14,4 +14,6 @@ Response.error = function(message){
     }
 };
 
+Response.fail = Response.error;
+
 module.exports = Response;
