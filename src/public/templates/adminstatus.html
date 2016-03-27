@@ -1,4 +1,4 @@
-<div class="col-offset-2 col-md-8">
+<div class="col-offset-2 col-md-10" style="clear: both; border: 1px solid black; margin: auto;">
     <div>
         <div class="col-lg-6">
             <input type="text" placeholder="Game ID" ng-model="$parent.adminGameID">
@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <div class="center-block">
+    <div style="margin: auto;">
         <div>
             <span class="col-lg-11">
                 <h2>{{$parent.adminGameObject.roomName}}</h2>
@@ -36,6 +36,14 @@
 
             <div ng-repeat="card in player.usedCards" class="btn-danger" style="border: 1px solid black; border-radius: 2px;">
                 {{card.suite}}{{card.size}}
+            </div>
+        </div>
+        <div style="float: right" class="col-lg-6">
+            <div ng-repeat="move in $parent.adminGameObject.moveList" class="col-lg-12 btn-success" style="border-radius: 4px; border: 1px solid black;">
+                <div>Turn{{$index+1}}</div>
+                <div ng-repeat="tile in move" style="border-radius: 4px; border: 1px solid red;">
+                    {{tile.size}} - {{tile.suite}} ({{tile.x}},{{tile.y}})
+                </div>
             </div>
         </div>
     </div>
