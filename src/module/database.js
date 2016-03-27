@@ -31,17 +31,16 @@ dbModule.saveOrUpdateMap = function(map, callback){
         }
         else if( docs.length > 0 )
             return updateMap(map, docs, callback);
-        else {
-            db.samurai.insert( req.body, function(err, docs){
-                if( err ) {
-                    console.log('error inserting map, ', err);
-                    callback(response.fail(response, 'err'));
-                    return;
-                }
 
-                callback(response.success('map saved'));
-            });
-        }
+        db.samurai.insert( map, function(err, docs){
+            if( err ) {
+                console.log('error inserting map, ', err);
+                callback(response.fail(response, 'err'));
+                return;
+            }
+
+            callback(response.success('map saved'));
+        });
     });
 };
 

@@ -15,7 +15,7 @@ samurai.createGame = function(gameInfo, mapObject, callback){
 
     gameObject.map = mapObject;
 
-    gameObject.players = samurai.createPlayers(gameObject.numPlayers);
+    gameObject.players = createPlayers(gameObject.numPlayers);
     gameObject.players[0].name = gameObject.ownerName;
 
     gameObject.state = [];
@@ -40,25 +40,25 @@ samurai.createGame = function(gameInfo, mapObject, callback){
     callback(gameObject);
 };
 
-samurai.createPlayers = function(numPlayers){
+function createPlayers(numPlayers){
     var players = [];
     for( var i = 0; i < numPlayers; i += 1 ){
         var player = {};
         player.name = 'unassigned';
         player.turn = i;
-        player.deck = samurai.createDeck();
+        player.deck = createDeck();
         player.usedCards = [];
         player.hand = [];
         player.color = colors[i];
-        samurai.dealHand(player.hand, player.deck);
+        dealHand(player.hand, player.deck);
 
         players.push(player);
     }
 
     return players;
-};
+}
 
-samurai.dealHand = function(hand, deck){
+function dealHand(hand, deck){
     while( hand.length < 6 ){
         var randomNumber = Math.random() * deck.length;
         if( randomNumber < deck.length && randomNumber >= 0 ){
@@ -67,10 +67,10 @@ samurai.dealHand = function(hand, deck){
             hand.push(card[0]);
         }
     }
-};
+}
 
 //Todo What is in a complete deck?
-samurai.createDeck = function(){
+function createDeck() {
     var deck = [];
     for( var s = 1; s <= 4; s += 1 ){
         deck.push( {suite: 'rice', size: s} );
@@ -86,10 +86,10 @@ samurai.createDeck = function(){
     deck.push( ronin, ronin, boat1, boat1, boat2 );
 
     return deck;
-};
+}
 
 
-samurai.createRandomId = function(n){
+function createRandomId(n) {
     var randomId = [];
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmopqrtuvwxyz123456789";
 
@@ -101,7 +101,7 @@ samurai.createRandomId = function(n){
     }
 
     return randomId.join('');
-};
+}
 
 function validPlayerTurn( gameObject, player ){
     for( let i = 0; i < gameObject.players.length; i += 1 ){
