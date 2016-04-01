@@ -7,6 +7,13 @@ Response.success = function(message){
     }
 };
 
+Response.ok = function(object){
+    return {
+        success: true,
+        data: object
+    }
+};
+
 Response.error = function(message){
     return {
         success: false,

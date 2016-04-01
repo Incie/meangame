@@ -22,7 +22,7 @@ API.createGame = function(req, res){
 
     db.getMap(gameInfo.mapName, function(mapObject){
         if( !mapObject.success ) {
-            console.log('getmap failed' + mapObject);
+            console.log('getmap failed', mapObject);
             res.send(mapObject);
             return;
         }
@@ -40,7 +40,6 @@ API.createGame = function(req, res){
     });
 };
 
-
 API.adminGetGameStatus = function(req, res){
     gamedb.getGameStatus(req.params.gameid, function(responseObject){
         res.send(responseObject);
@@ -49,7 +48,6 @@ API.adminGetGameStatus = function(req, res){
 
 API.adminGetGames = function(req,res){
     gamedb.getAllGames( function(gameList){
-        console.log(gameList);
         res.send(gameList);
     });
 };
@@ -66,11 +64,9 @@ API.joinGame = function(req, res){
     var gameId = req.params.gameid;
     var playerName = req.body.playerName;
 
-    console.log( gameId, playerName );
-
+    console.log( 'player join game', gameId, playerName );
     if( playerName === undefined ){
-        //send a join page form?
-        res.send({success: false});
+        res.send(response.fail('Playername undefined'));
         return;
     }
 
@@ -85,7 +81,7 @@ API.gameTurn = function(req, res){
     var player = req.cookies['player-name'];
     var moves = req.body.moves;
 
-    console.log('PROCESS GAME TURN');
+    console.log('--PROCESS GAME TURN--');
     console.log('getting gameid' + gameid);
     gamedb.getGameObject(gameid, function(gameObject){
         if( !gameObject.success ) {

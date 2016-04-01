@@ -35,7 +35,7 @@ samurai.createGame = function(gameInfo, mapObject, callback){
     gameObject.turnCounter = 0;
     gameObject.moveList = [];
     gameObject.playerTurn = Math.floor( (Math.random() * 123456) ) % gameInfo.numPlayers;
-    gameObject.gameid = samurai.createRandomId();
+    gameObject.gameid = createRandomId();
 
     callback(gameObject);
 };
@@ -50,6 +50,7 @@ function createPlayers(numPlayers){
         player.usedCards = [];
         player.hand = [];
         player.color = colors[i];
+
         dealHand(player.hand, player.deck);
 
         players.push(player);
@@ -71,12 +72,12 @@ function dealHand(hand, deck){
 
 //Todo What is in a complete deck?
 function createDeck() {
-    var deck = [];
-    for( var s = 1; s <= 4; s += 1 ){
-        deck.push( {suite: 'rice', size: s} );
-        deck.push( {suite: 'buddha', size: s} );
-        deck.push( {suite: 'hat', size: s} );
-        deck.push( {suite: 'samurai', size: s} );
+    let deck = [];
+    for( let cardSize = 1; cardSize <= 4; cardSize += 1 ){
+        deck.push( {suite: 'rice', size: cardSize} );
+        deck.push( {suite: 'buddha', size: cardSize} );
+        deck.push( {suite: 'hat', size: cardSize} );
+        deck.push( {suite: 'samurai', size: cardSize} );
     }
 
     var ronin = { suite: 'ronin', quick: true, size: 1 };
@@ -149,7 +150,6 @@ function validateMoves(mapObject, playerMoves, turnCount, playerColor, playerNam
             normalMoveTaken = true;
         }
 
-
         if( tile.move !== undefined ){
             validMapMoves = false;
             return false;
@@ -201,6 +201,82 @@ samurai.processTurn = function(gameObject, player, moves, callback) {
         return;
     }
 
+
+    let cities = [];
+    let tileOffsets = [{x: 0, y: 1}, {x: 0, y: -1}, {x: 1, y: 0}, {x: -1, y: 0}];
+    let specialOffsets = [
+        [{x: 1, y:-1}, {x: -1, y:-1}], //%2 == 0
+        [{x: 1, y: 1}, {x: -1, y: 1}]  //%2 == 1
+    ];
+
+    for( let i = 0; i < moves.length; i += 1 ){
+        let move = moves[i];
+
+        //certain tiles can't trigger a score update
+        if( move.suite == 'boat' )
+            continue;
+
+        function findTilesFor(offset) {
+            let tile = gameObject.map.data.find( tile => { return (tile.x == move.x && tile.y == move.y ) } );
+            if( tile && tile.type == 3 )
+                cities.push(tile);
+        }
+
+        let specialOffset = specialOffsets[ move.x % 2 ]; //validate %2?
+        specialOffset.forEach(findTilesFor);
+        tileOffsets.forEach(findTilesFor);
+    }
+
+    for( let i = 0; i < cities.length; i += 1 ){
+        let city = cities[i];
+
+        let cityTiles = [];
+
+        function findCityTilesAround(offset){
+            let cityTile = gameObject.map.data.find( tile => { return (tile.x == (city.x+offset.x) && tile.y == (city.y+offset.y)) });
+            if( cityTile )
+                cityTiles.push(cityTile);
+        }
+
+        let specialOffset = specialOffsets[ city.x % 2 ];
+        specialOffset.forEach(findCityTilesAround);
+        tileOffsets.forEach(findCityTilesAround);
+        
+        let isCitySurrounded = true;
+        let cityInfluence = {};
+
+        cityTiles.forEach( tile => {
+            if( !tile.move ){
+                isCitySurrounded = false;
+                return;
+            }
+
+            //void or town
+            if( tile.type == 0 || tile.type == 3 )
+                return;
+
+            //count cityInfluence
+            let suite = tile.move.suite;
+            if( tile.move.suite == 'boat' || tile.move.suite == 'samurai' || tile.move.suite == 'ronin' )
+                suite = 'all';
+
+            if( cityInfluence[ tile.move.player ][suite] == undefined ){
+                cityInfluence[ tile.move.player ][suite] = 0;
+            }
+
+            cityInfluence[ tile.move.player ][suite] += tile.move.size;
+        });
+
+        if( isCitySurrounded ){
+            console.log(cityInfluence);
+            //calculate score
+            //validate score
+            //commit score
+            //mark city as inactive
+        }
+    }
+
+
     //Add cards to the spent pile
     moves.forEach( move => { playerObject.usedCards.push(move); });
 
@@ -211,7 +287,9 @@ samurai.processTurn = function(gameObject, player, moves, callback) {
         playerObject.hand.push( draw[0] );
     }
 
-    gameObject.moveList.push(moves);
+    //TODO: Mark who made the move
+    gameObject.moveList.push({player: playerObject.name, moves: moves});
+    // gameObject.moveList.push(moves);
     gameObject.turnCounter++;
     gameObject.playerTurn = (gameObject.playerTurn + 1) % gameObject.numPlayers;
 
