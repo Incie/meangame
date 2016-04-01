@@ -1,0 +1,12 @@
+* Game
+- hover picking 
+- move summary panel
+
+* Game backend
+- count score for surronded city tiles
+
+* Server
+- Login
+- JWT
+- user database
+- password security
