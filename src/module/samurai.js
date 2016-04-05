@@ -89,15 +89,15 @@ function dealHand(hand, deck){
 function createDeck() {
     let deck = [];
     for( let cardSize = 1; cardSize <= 4; cardSize += 1 ){
-        deck.push( {suite: 'rice', size: cardSize} );
-        deck.push( {suite: 'buddha', size: cardSize} );
-        deck.push( {suite: 'hat', size: cardSize} );
-        deck.push( {suite: 'samurai', size: cardSize} );
+        deck.push( {suite: SUITE.trade, size: cardSize} );
+        deck.push( {suite: SUITE.religion, size: cardSize} );
+        deck.push( {suite: SUITE.politics, size: cardSize} );
+        deck.push( {suite: SUITE.samurai, size: cardSize} );
     }
 
-    var ronin = { suite: 'ronin', quick: true, size: 1 };
-    var boat1 = { suite: 'boat', quick: true, size: 1 };
-    var boat2 = { suite: 'boat', quick: true, size: 2 };
+    let ronin = { suite: SUITE.ronin, quick: true, size: 1 };
+    let boat1 = { suite: SUITE.boat, quick: true, size: 1 };
+    let boat2 = { suite: SUITE.boat, quick: true, size: 2 };
 
     deck.push( ronin, ronin, boat1, boat1, boat2 );
 
@@ -156,7 +156,7 @@ function validateMoves(mapObject, playerMoves, turnCount, playerColor, playerNam
             return false;
         }
 
-        if( move.suite != 'boat' && move.suite != 'ronin' ){
+        if( move.suite != SUITE.boat && move.suite != SUITE.ronin ){
             if( normalMoveTaken ){
                 validMapMoves = false;
                 return false;
@@ -170,12 +170,12 @@ function validateMoves(mapObject, playerMoves, turnCount, playerColor, playerNam
             return false;
         }
 
-        if( move.suite == 'boat' && tile.type != 1 ) {
+        if( move.suite == SUITE.boat && tile.type != 1 ) {
             validMapMoves = false;
             return false;
         }
 
-        if( move.suite != 'boat' && tile.type != 2 ) {
+        if( move.suite != SUITE.boat && tile.type != 2 ) {
             validMapMoves = false;
             return false;
         }
@@ -228,7 +228,7 @@ samurai.processTurn = function(gameObject, player, moves, callback) {
         let move = moves[i];
 
         //certain tiles can't trigger a score update
-        if( move.suite == 'boat' )
+        if( move.suite == SUITE.boat )
             continue;
 
         function findTilesFor(offset) {
@@ -274,7 +274,7 @@ samurai.processTurn = function(gameObject, player, moves, callback) {
 
             //count cityInfluence
             let suite = tile.move.suite;
-            if( tile.move.suite == 'boat' || tile.move.suite == 'samurai' || tile.move.suite == 'ronin' )
+            if( suite == SUITE.boat || suite == SUITE.samurai ||suite == SUITE.ronin )
                 suite = 'all';
 
             //if( tile.move.suite == move_tile ) continue?

@@ -15,6 +15,17 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
         {name: 'city', color: 0xaf8e2d, typeId: 3}
     ];
 
+    $scope.CITYTYPE = {
+        religion: 'religion',
+        trade: 'trade',
+        politics: 'politics'
+    };
+
+    $scope.cityModel = {};
+    $scope.cityModel[$scope.CITYTYPE.religion] = false;
+    $scope.cityModel[$scope.CITYTYPE.trade] = false;
+    $scope.cityModel[$scope.CITYTYPE.politics] = false;
+
     $scope.editMode = 'paint';
 
     $scope.$watch('editMode', function(newValue, oldValue){
@@ -25,37 +36,37 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
         }
     });
 
-    $scope.cityModel = { circle: false, star: false, square: false };
-    $scope.$watch( "cityModel.circle", function(newValue){
+
+    $scope.$watch( "cityModel."+$scope.CITYTYPE.politics, function(newValue){
         if( selectedHex === undefined )
             return;
 
         if( newValue == true ){
-            hexagonBoard.addCityElement(selectedHex, "circle");
+            hexagonBoard.addCityElement(selectedHex, $scope.CITYTYPE.politics);
         } else {
-            hexagonBoard.removeCityElement(selectedHex, "circle");
+            hexagonBoard.removeCityElement(selectedHex, $scope.CITYTYPE.politics);
         }
     });
 
-    $scope.$watch( "cityModel.square", function(newValue){
+    $scope.$watch( "cityModel."+$scope.CITYTYPE.religion, function(newValue){
         if( selectedHex === undefined )
             return;
 
         if( newValue == true ){
-            hexagonBoard.addCityElement(selectedHex, "square");
+            hexagonBoard.addCityElement(selectedHex, $scope.CITYTYPE.religion);
         } else {
-            hexagonBoard.removeCityElement(selectedHex, "square");
+            hexagonBoard.removeCityElement(selectedHex, $scope.CITYTYPE.religion);
         }
     });
 
-    $scope.$watch( "cityModel.star", function(newValue){
+    $scope.$watch( "cityModel."+$scope.CITYTYPE.trade, function(newValue){
         if( selectedHex === undefined )
             return;
 
         if( newValue == true ){
-            hexagonBoard.addCityElement(selectedHex, "star");
+            hexagonBoard.addCityElement(selectedHex, $scope.CITYTYPE.trade);
         } else {
-            hexagonBoard.removeCityElement(selectedHex, "star");
+            hexagonBoard.removeCityElement(selectedHex, $scope.CITYTYPE.trade);
         }
     });
 
@@ -80,14 +91,14 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
 
                 $scope.$apply(function(){
                     if (selectedHex.userData.city === undefined) {
-                        $scope.cityModel.circle = false;
-                        $scope.cityModel.square = false;
-                        $scope.cityModel.star = false;
+                        $scope.cityModel[$scope.CITYTYPE.trade]    = false;
+                        $scope.cityModel[$scope.CITYTYPE.religion] = false;
+                        $scope.cityModel[$scope.CITYTYPE.politics] = false;
                     }
                     else {
-                        $scope.cityModel.circle = selectedHex.userData.city.circle || false;
-                        $scope.cityModel.square = selectedHex.userData.city.square || false;
-                        $scope.cityModel.star = selectedHex.userData.city.star || false;
+                        $scope.cityModel[$scope.CITYTYPE.trade]    = selectedHex.userData.city[$scope.CITYTYPE.trade]    || false;
+                        $scope.cityModel[$scope.CITYTYPE.religion] = selectedHex.userData.city[$scope.CITYTYPE.religion] || false;
+                        $scope.cityModel[$scope.CITYTYPE.politics] = selectedHex.userData.city[$scope.CITYTYPE.politics] || false;
                     }
                 });
             }

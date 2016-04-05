@@ -74,10 +74,15 @@ var HexagonBoard = function() {
         });
     };
 
+    var TYPE = {
+        politics: 'politics',
+        trade: 'trade',
+        religion: 'religion'
+    };
     var textures = [
-        {name: "square", map: THREE.ImageUtils.loadTexture('/img/buddhism64.png')},
-        {name: "circle", map: THREE.ImageUtils.loadTexture('/img/eastindia64.png')},
-        {name: "star", map: THREE.ImageUtils.loadTexture('/img/politics64.png')}
+        {name: TYPE.religion, map: THREE.ImageUtils.loadTexture('/img/buddhism64.png')},
+        {name: TYPE.trade, map: THREE.ImageUtils.loadTexture('/img/eastindia64.png')},
+        {name: TYPE.politics, map: THREE.ImageUtils.loadTexture('/img/politics64.png')}
     ];
 
     var getTextureByName = function(name){
@@ -104,12 +109,12 @@ var HexagonBoard = function() {
 
     var addSingleCityType = function(hex){
         var name;
-        if( existsAndTrue(hex.userData.city.circle) )
-            name = "circle";
-        else if( existsAndTrue(hex.userData.city.star) )
-            name = "star";
-        else if( existsAndTrue(hex.userData.city.square) )
-            name = "square";
+        if( existsAndTrue(hex.userData.city[TYPE.trade]) )
+            name = TYPE.trade;
+        else if( existsAndTrue(hex.userData.city[TYPE.politics]) )
+            name = TYPE.politics;
+        else if( existsAndTrue(hex.userData.city[TYPE.religion]) )
+            name = TYPE.religion;
         else {
             console.log("invalid citytype ", hex.userData.city);
             return;
@@ -131,18 +136,21 @@ var HexagonBoard = function() {
         var zTranslate = -5;
         var cityRadius = radius * 0.5;
 
-        if( existsAndTrue(hex.userData.city.circle) ){
-            addSingleObject(hex, "circle", getTextureByName("circle").map, xTranslate, zTranslate, cityRadius);
+        let type = TYPE.trade;
+        if( existsAndTrue(hex.userData.city[type]) ){
+            addSingleObject(hex, type, getTextureByName(type).map, xTranslate, zTranslate, cityRadius);
             zTranslate = 5;
         }
 
-        if( existsAndTrue(hex.userData.city.square) ){
-            addSingleObject(hex, "square", getTextureByName("square").map, xTranslate, zTranslate, cityRadius);
+        type = TYPE.religion;
+        if( existsAndTrue(hex.userData.city[type]) ){
+            addSingleObject(hex, type, getTextureByName(type).map, xTranslate, zTranslate, cityRadius);
             zTranslate = 5;
         }
 
-        if( existsAndTrue(hex.userData.city.star) ){
-            addSingleObject(hex, "star", getTextureByName("star").map, xTranslate, zTranslate, cityRadius);
+        type = TYPE.politics;
+        if( existsAndTrue(hex.userData.city[type]) ){
+            addSingleObject(hex, type, getTextureByName(type).map, xTranslate, zTranslate, cityRadius);
         }
     };
 
@@ -151,15 +159,15 @@ var HexagonBoard = function() {
         var zTranslate = 0;
         var cityRadius = radius * 0.5;
 
-        addSingleObject(hex, "circle", getTextureByName("circle").map, xTranslate, zTranslate, cityRadius);
+        addSingleObject(hex, TYPE.trade, getTextureByName(TYPE.trade).map, xTranslate, zTranslate, cityRadius);
         xTranslate = -5;
         zTranslate = 5;
 
-        addSingleObject(hex, "square", getTextureByName("square").map, xTranslate, zTranslate, cityRadius);
+        addSingleObject(hex, TYPE.religion, getTextureByName(TYPE.religion).map, xTranslate, zTranslate, cityRadius);
         xTranslate = -5;
         zTranslate = -5;
 
-        addSingleObject(hex, "star", getTextureByName("star").map, xTranslate, zTranslate, cityRadius);
+        addSingleObject(hex, TYPE.politics, getTextureByName(TYPE.politics).map, xTranslate, zTranslate, cityRadius);
     };
 
     var countCities = function(cityObject) {
@@ -167,14 +175,20 @@ var HexagonBoard = function() {
             return 0;
 
         var count = 0;
-        if( cityObject.circle !== undefined && cityObject.circle == true )
-            count += 1;
-
-        if( cityObject.star !== undefined && cityObject.star == true )
-            count += 1;
-
-        if( cityObject.square !== undefined && cityObject.square == true )
-            count += 1;
+        for( var key in TYPE ){
+            if( !TYPE.hasOwnProperty(key) )
+                continue;
+            if( cityObject[key] !== undefined && cityObject[key] == true )
+                count += 1;
+        }
+        // if( cityObject[TYPE.trade] !== undefined && cityObject[TYPE.trade] == true )
+        //     count += 1;
+        //
+        // if( cityObject[TYPE.politics] !== undefined && cityObject[TYPE.politics] == true )
+        //     count += 1;
+        //
+        // if( cityObject[TYPE.religion] !== undefined && cityObject[TYPE.religion] == true )
+        //     count += 1;
 
         return count;
     };
@@ -203,9 +217,9 @@ var HexagonBoard = function() {
     };
 
     var removeAllCityObjects = function(hex){
-        hex.remove( hex.getObjectByName('circle') );
-        hex.remove( hex.getObjectByName('star') );
-        hex.remove( hex.getObjectByName('square') );
+        hex.remove( hex.getObjectByName(TYPE.religion) );
+        hex.remove( hex.getObjectByName(TYPE.politics) );
+        hex.remove( hex.getObjectByName(TYPE.trade) );
     };
 
     var removeCityElement = function(hex, type) {
@@ -274,7 +288,7 @@ var HexagonBoard = function() {
 
             if( boardObject.type == 3 && hex.userData.city !== undefined ){
                 boardObject.city = {};
-                var cities = ["circle", "star", "square"];
+                var cities = [TYPE.trade, TYPE.religion, TYPE.politics];
                 cities.forEach(function(city){
                     if( existsAndTrue(hex.userData.city[city]) )
                         boardObject.city[city] = true;
@@ -304,10 +318,7 @@ var HexagonBoard = function() {
         for( var i = 0; i < hexagons.children.length; i += 1 ){
             var child = hexagons.children[i];
 
-            if( child.userData.type == type )
-                child.visible = true;
-            else
-                child.visible = false;
+            child.visible = (child.userData.type == type);
         }
     };
 
@@ -315,6 +326,7 @@ var HexagonBoard = function() {
 		sceneNode: baseObject,
         bounds: bounds,
         size: boardSize,
+        types: TYPE,
 
         addCityElement: addCityElement,
         removeCityElement: removeCityElement,
