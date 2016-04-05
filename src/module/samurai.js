@@ -88,18 +88,23 @@ function dealHand(hand, deck){
 //Todo What is in a complete deck?
 function createDeck() {
     let deck = [];
-    for( let cardSize = 1; cardSize <= 4; cardSize += 1 ){
+    for( let cardSize = 2; cardSize <= 4; cardSize += 1 ){
         deck.push( {suite: SUITE.trade, size: cardSize} );
         deck.push( {suite: SUITE.religion, size: cardSize} );
         deck.push( {suite: SUITE.politics, size: cardSize} );
-        deck.push( {suite: SUITE.samurai, size: cardSize} );
     }
+
+    let samurai1 = {suite: SUITE.samurai, size: 1 };
+    let samurai2 = {suite: SUITE.samurai, size: 2 };
+    let samurai3 = {suite: SUITE.samurai, size: 3 };
+    deck.push( samurai1, samurai1, samurai2, samurai2, samurai3 );
 
     let ronin = { suite: SUITE.ronin, quick: true, size: 1 };
     let boat1 = { suite: SUITE.boat, quick: true, size: 1 };
     let boat2 = { suite: SUITE.boat, quick: true, size: 2 };
+    deck.push( ronin, boat1, boat1, boat2 );
 
-    deck.push( ronin, ronin, boat1, boat1, boat2 );
+    //TODO: MISSING SWAP AND MOVE TILE
 
     return deck;
 }
