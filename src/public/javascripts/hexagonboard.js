@@ -54,12 +54,9 @@ var hexagonboard = function(map) {
 var planeGenerator = (function() {
     var cityTextures = {
         textures: [
-            {name: "star", map: THREE.ImageUtils.loadTexture('/img/buddhism64.png')},
-            {name: "square", map: THREE.ImageUtils.loadTexture('/img/eastindia64.png')},
-            {name: "circle", map: THREE.ImageUtils.loadTexture('/img/politics64.png')},
-            // {name: "religion", map: THREE.ImageUtils.loadTexture('/img/buddhism64.png')},
-            // {name: "trade", map: THREE.ImageUtils.loadTexture('/img/eastindia64.png')},
-            // {name: "politics", map: THREE.ImageUtils.loadTexture('/img/politics64.png')},
+            {name: "religion", map: THREE.ImageUtils.loadTexture('/img/buddhism64.png')},
+            {name: "trade", map: THREE.ImageUtils.loadTexture('/img/eastindia64.png')},
+            {name: "politics", map: THREE.ImageUtils.loadTexture('/img/politics64.png')},
 
             {name: "samurai", map: THREE.ImageUtils.loadTexture('/img/samurai64.png')},
             {name: "1", map: THREE.ImageUtils.loadTexture('/img/1.png')},
@@ -122,17 +119,8 @@ var planeGenerator = (function() {
     }
 
     function tile(card){
-        var type = '1';
-        // if( card.suite == 'hat' ) type = 'politics';
-        // if( card.suite == 'buddha' ) type = 'religion';
-        // if( card.suite == 'rice' ) type = 'trade';
-        if( card.suite == 'hat' ) type = 'circle';
-        if( card.suite == 'buddha' ) type = 'star';
-        if( card.suite == 'rice' ) type = 'square';
-        if( type == '1' ) type = card.suite;
-
         var numberTexture = cityTextures.get(card.size);
-        var typeTexture = cityTextures.get(type);
+        var typeTexture = cityTextures.get(card.suite);
         var properties = getCityProperties(2);
 
         var tileObject = new THREE.Object3D();

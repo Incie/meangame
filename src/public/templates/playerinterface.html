@@ -1,8 +1,8 @@
-<div class="interface" style="width: 350px; background-color: white;">
+<div class="interface col-lg-12" style="width: 350px; background-color: white;">
     <div class="interface">{{game.roomName}}</div>
-    <div ng-repeat="state in game.state">({{state.turn}}){{state.player}} <span ng-repeat="(k,v) in state.score">-{{k}}({{v}})</span></div>
+    <div ng-repeat="state in game.state"> <span class="col-lg-3">({{state.turn}}){{state.player}} </span><span ng-repeat="(k,v) in state.score" class="col-lg-3"><img ng-src="{{getScoreSource(k)}}">({{v}})</span></div>
 </div>
-<div class="interface black clearfix">
+<div class="interface black clearfix col-lg-12">
     <span class="col-md-2" ng-style="playerStyle" style="color: black; border-radius: 4px;">{{player.name}}</span>
     <span class="col-md-2">{{game.playerTurn}}</span>
     <span class="col-md-2">{{game.mapName}}</span>

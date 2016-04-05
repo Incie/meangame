@@ -125,17 +125,21 @@
             });
         };
 
+        $scope.getScoreSource = function(scoreType){
+            var type = scoreType;
+            if (scoreType == 'religion') type = 'buddhism';
+            if (scoreType == 'trade') type = 'eastindia';
+
+            return '/img/' + type + '16.png';
+        };
         $scope.getNumberSource = function (number) {
             return '/img/' + number + '.png';
         };
         $scope.getSuiteSource = function (suite) {
-            var type = '1';
-            if (suite == 'hat') type = 'politics';
-            if (suite == 'buddha') type = 'buddhism';
-            if (suite == 'rice') type = 'eastindia';
-            if (suite == 'samurai') type = 'samurai';
-            if (suite == 'ronin') type = 'ronin';
-            if (suite == 'boat') type = 'sailboat';
+            var type = suite;
+            if (suite == 'religion') type = 'buddhism';
+            if (suite == 'trade') type = 'eastindia';
+            if( suite == 'boat' ) type = 'sailboat';
 
             return '/img/' + type + '64.png';
         };
