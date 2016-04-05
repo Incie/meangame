@@ -6,11 +6,11 @@ var cameracontroller = function(tjs){
     var camera = tjs.getCamera();
 
     function onMouseWheel(event){
-        var zoom = 1;
+        let zoom = -1;
         if( event.deltaY < 0 )
-            zoom = -1;
+            zoom = 1;
 
-        var camera = tjs.getCamera();
+        let camera = tjs.getCamera();
         camera.zoom += zoom * 0.2;
         camera.zoom = Math.max(camera.zoom, 0.3);
         camera.updateProjectionMatrix();

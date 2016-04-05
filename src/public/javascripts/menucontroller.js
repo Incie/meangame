@@ -132,7 +132,7 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
             var gamelink = document.getElementById('gamelink');
             gamelink.innerHTML = $scope.playerName + '<br/>' + $scope.mapservice.selectedMap + '<br/>' + $scope.players;
             gamelink.innerHTML = gamelink.innerHTML + '<br/>';
-            gamelink.innerHTML += '<a href="/game/'+response.data.gameid+'">GAME</a>'
+            gamelink.innerHTML += '<a href="/game/">'+response.data.gameid+'</a>'
         });
     };
 

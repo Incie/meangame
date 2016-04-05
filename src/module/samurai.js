@@ -3,6 +3,21 @@ var response = require('./response');
 var samurai = {};
 var colors = [ 0xff0000, 0x00ff00, 0x0000ff, 0xffff00 ];
 
+const SUITE = {
+    religion: 'religion',
+    politics: 'politics',
+    trade: 'trade',
+    samurai: 'samurai',
+    ronin: 'ronin',
+    boat: 'boat'
+};
+
+const CITYTYPE = {
+    religion: 'religion',
+    trade: 'trade',
+    politics: 'politics'
+};
+
 
 //gameInfo { roomName, ownerName, numPlayers, mapName, password, isPrivate }
 //mapObject { name, size {x,y}, data }
@@ -217,7 +232,7 @@ samurai.processTurn = function(gameObject, player, moves, callback) {
             continue;
 
         function findTilesFor(offset) {
-            let tile = gameObject.map.data.find( tile => { return (tile.x == move.x && tile.y == move.y ) } );
+            let tile = gameObject.map.data.find( tile => { return ( (offset.x+tile.x) == move.x && (offset.y+tile.y) == move.y ) } );
             if( tile && tile.type == 3 )
                 cities.push(tile);
         }
@@ -228,17 +243,17 @@ samurai.processTurn = function(gameObject, player, moves, callback) {
     }
 
     for( let i = 0; i < cities.length; i += 1 ){
-        let city = cities[i];
+        let cityObject = cities[i];
 
         let cityTiles = [];
 
         function findCityTilesAround(offset){
-            let cityTile = gameObject.map.data.find( tile => { return (tile.x == (city.x+offset.x) && tile.y == (city.y+offset.y)) });
+            let cityTile = gameObject.map.data.find( tile => { return (tile.x == (cityObject.x+offset.x) && tile.y == (cityObject.y+offset.y)) });
             if( cityTile )
                 cityTiles.push(cityTile);
         }
 
-        let specialOffset = specialOffsets[ city.x % 2 ];
+        let specialOffset = specialOffsets[ cityObject.x % 2 ];
         specialOffset.forEach(findCityTilesAround);
         tileOffsets.forEach(findCityTilesAround);
         
@@ -247,7 +262,9 @@ samurai.processTurn = function(gameObject, player, moves, callback) {
 
         cityTiles.forEach( tile => {
             if( !tile.move ){
-                isCitySurrounded = false;
+                if( tile.type == 2 ){
+                    isCitySurrounded = false;
+                }
                 return;
             }
 
@@ -260,19 +277,106 @@ samurai.processTurn = function(gameObject, player, moves, callback) {
             if( tile.move.suite == 'boat' || tile.move.suite == 'samurai' || tile.move.suite == 'ronin' )
                 suite = 'all';
 
-            if( cityInfluence[ tile.move.player ][suite] == undefined ){
-                cityInfluence[ tile.move.player ][suite] = 0;
-            }
+            //if( tile.move.suite == move_tile ) continue?
 
-            cityInfluence[ tile.move.player ][suite] += tile.move.size;
+            if( cityInfluence[suite] === undefined )
+                cityInfluence[suite] = {};
+
+            if( cityInfluence[suite][tile.move.player] === undefined )
+                cityInfluence[suite][tile.move.player] = 0;
+
+            cityInfluence[suite][tile.move.player] += tile.move.size;
         });
 
         if( isCitySurrounded ){
             console.log(cityInfluence);
+
+            //prepare score object
+            let score = {};
+            for( let cityType in cityObject.city ){
+                //validate cityType?
+                score[cityType] = [];
+                gameObject.players.forEach( player => {
+                    score[cityType].push( {player: player.name, influence: 0});
+                });
+            }
+
             //calculate score
-            //validate score
-            //commit score
-            //mark city as inactive
+            for( let key in cityInfluence ){
+                if( !cityInfluence.hasOwnProperty(key) ) continue;
+
+                let influence = cityInfluence[key];
+                if( key == 'all' ){
+                    for( let player in influence ){
+                        if( !influence.hasOwnProperty(player) ) continue;
+
+                        for( let cityElement in score ){
+                            let playerInfluence = score[cityElement].find( p => p.player == player );
+                            playerInfluence.influence += influence[player];
+                        }
+                    }
+                }
+                else {
+                    //key is a cityObject
+                    for( let player in influence ){
+                        if( !influence.hasOwnProperty(player) ) continue;
+                        let scoreType = 'square';
+                        if( key == 'hat' ) scoreType = 'circle';
+                        if( key == 'buddha' ) scoreType = 'star';
+
+                        if( score[scoreType] ){
+                            let playerInfluence = score[scoreType].find( p => p.player == player );
+                            playerInfluence.influence += influence[player];
+                        }
+                    }
+                }
+            }
+
+            let pointsAwarded = [];
+            for( let cityType in score ){
+                score[cityType].sort((v0, v1) => {
+                    if (v0.influence < v1.influence) return 1;
+                    if (v0.influence > v1.influence) return -1;
+                    return 0;
+                });
+
+                //no score
+                if (score[cityType].length == 0)
+                    return;
+
+                //give singular player a point
+                if (score[cityType].length == 1){
+                    pointsAwarded.push( {
+                        player: score[cityType][0].player,
+                        cityType: cityType
+                    });
+
+                    return;
+                }
+
+                //no score
+                if( score[cityType][0].influence == score[cityType][1].influence )
+                    return;
+
+                pointsAwarded.push( {
+                    player: score[cityType][0].player,
+                    cityType: cityType
+                });
+            }
+
+            pointsAwarded.forEach( pointObject => {
+                let state = gameObject.state.find( stateObject => stateObject.player == pointObject.player );
+
+                let stateType = undefined;
+                if( pointObject.cityType == 'square' ) stateType = 'trade';
+                if( pointObject.cityType == 'circle' ) stateType = 'politics';
+                if( pointObject.cityType == 'star' ) stateType = 'religion';
+
+                state.score[stateType] += 1;
+                console.log('+1', pointObject.player, stateType );
+            });
+
+            //mark cityObject as inactive
         }
     }
 

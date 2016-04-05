@@ -1,6 +1,6 @@
 var express = require('express');
 var path = require('path');
-var logger = require('morgan');
+var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
@@ -8,7 +8,8 @@ var api = require('./module/api');
 
 var app = express();
 
-app.use(logger('dev'));
+app.use(morgan(':date[iso] - (HTTP :http-version :status :method) [ip] :remote-addr [time] :response-time[3] ms [response-size] :res[content-length] [url] :url'));
+// app.use(morgan('dev'));
 app.use(bodyParser.json({limit: '2mb'}));
 app.use(bodyParser.urlencoded({ extended: false, limit: '2mb'}));
 app.use(cookieParser());
@@ -32,7 +33,7 @@ app.all('*', api.Athenticate() )
 app.get( '/api/maps',                   api.getMapList);
 app.post('/api/maps/',                  api.saveOrUpdateMap);
 app.get( '/api/maps/:name',             api.getMap);
-app.delete('api/maps/:name',            function(res,req){res.send('NYI');})
+app.delete('api/maps/:name',            function(res,req){res.send('NYI');});
 
 app.post('/api/game/',                  api.createGame);
 app.get( '/api/game/:gameid',           api.getGameInfo);
