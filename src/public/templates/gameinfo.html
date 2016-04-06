@@ -2,7 +2,10 @@
     {{game.roomName}} on {{game.mapName}}
 </h5>
 <div ng-repeat="state in game.state" class="clearfix">
-    <span class="col-md-offset-1 col-md-4" style="overflow: hidden; white-space: nowrap;">
+    <span class="col-md-1" ng-style="{'background-color': '{{state.color}}'}" style="border-radius: 4px;">
+         {{playerTurn($index)}}
+    </span>
+    <span class="col-md-4" style="overflow: hidden; white-space: nowrap;">
         {{state.player}}
     </span>
     <span ng-repeat="(k,v) in state.score" class="col-md-2" style="white-space: nowrap">
@@ -11,15 +14,19 @@
 </div>
 
 
-<div style="overflow-x: hidden; background-color: white;">
+<div class="col-md-12" style="overflow-x: hidden; background-color: white;">
     <h5 style="border-bottom: 1px solid grey; margin-left: 5px; margin-right: 5px">
         Moves
     </h5>
 
-    <div ng-repeat="move in game.moveList">
-        <span style="margin-left: 5px">{{$index}}-{{move.player}}:</span>
-        <span ng-repeat="m in move.moves" style="border: 1px solid red; border-radius: 4px">
+    <div ng-repeat="move in game.moveList" class="col-md-12">
+        <span class="col-md-4" style="white-space: nowrap; overflow: hidden;">
+            {{$index}}-{{move.player}}:
+        </span>
+        <span class="col-md-8">
+            <span ng-repeat="m in move.moves" style="border: 1px solid red; border-radius: 4px">
             {{m.suite}}{{m.size}}
+            </span>
         </span>
     </div>
 </div>

@@ -2,6 +2,7 @@ var response = require('./response');
 
 var samurai = {};
 var colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00];
+var hexColors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00'];
 
 const SUITE = {
     religion: 'religion',
@@ -34,10 +35,11 @@ samurai.createGame = function (gameInfo, mapObject, callback) {
     gameObject.players[0].name = gameObject.ownerName;
 
     gameObject.state = [];
-    gameObject.players.forEach(function (player) {
+    gameObject.players.forEach(function (player, index) {
         gameObject.state.push({
             player: player.name,
             turn: player.turn,
+            color: hexColors[index],
             score: {
                 religion: 0,
                 politics: 0,

@@ -235,6 +235,12 @@
             });
         };
 
+        $scope.playerTurn = function(index){
+            if( index == ($scope.game.turnCounter % $scope.game.numPlayers) )
+                return '%';
+            return '\xa0';
+        };
+
         $scope.toggleCard = function (index) {
             $scope.clearSelected();
 
@@ -242,8 +248,18 @@
                 return;
 
             $scope.player.hand[index].selected = !$scope.player.hand[index].selected;
-        }
+        };
+
+        $scope.getCurrentPlayerName = function() {
+            return $scope.game.state[ $scope.game.playerTurn ].player;
+        };
+        $scope.getCurrentPlayerColor = function(){
+            if( $scope.game )
+            return $scope.game.state[ $scope.game.playerTurn ].color;
+            return '-';
+        };
     }]);
+
 
     gameModule.directive('playerInterface', function () {
         return {
@@ -258,6 +274,13 @@
             restrict: 'E',
             templateUrl: '/templates/gameinfo.html'
         }
+    });
+
+    gameModule.directive('turnIndicator', function() {
+        return {
+            restrict: 'E',
+            templateUrl: '/templates/turnindicator.html'
+        };
     });
 
     gameModule.directive('gameBoard', ['$window', function ($window) {
