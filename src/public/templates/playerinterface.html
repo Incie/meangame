@@ -1,3 +1,12 @@
+<div style="position: absolute; right: 0; top: 0; width: 250px; height: 100%; overflow: scroll; background-color: white; border: 1px solid grey;">
+    <div class="col-lg-12" ng-repeat="move in game.moveList | orderBy:'$index':true">
+        <span>{{$index}}-{{move.player}}:</span>
+        <span ng-repeat="m in move.moves" style="border: 1px solid red">
+            {{m.suite}}{{m.size}}
+        </span>
+    </div>
+</div>
+
 <div class="interface col-lg-12" style="width: 350px; background-color: white;">
     <div class="interface">{{game.roomName}}</div>
     <div ng-repeat="state in game.state"> <span class="col-lg-3">({{state.turn}}){{state.player}} </span><span ng-repeat="(k,v) in state.score" class="col-lg-3"><img ng-src="{{getScoreSource(k)}}">({{v}})</span></div>

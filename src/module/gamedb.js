@@ -5,13 +5,18 @@ var db = mongojs('samuraigame', ['samuraigame']);
 var gamedb = {};
 
 gamedb.getGameInfoFor = function(gameid, playerid, callback){
-    db.samuraigame.find({gameid:gameid}, {map:1, roomName: 1, mapName: 1, playerTurn: 1, status: 1, numPlayers: 1, players: 1, turnCounter: 1, state: 1, _id: 0}, function(err, docs){
+    db.samuraigame.find({gameid:gameid}, {map:1, roomName: 1, mapName: 1, playerTurn: 1, status: 1, numPlayers: 1, players: 1, turnCounter: 1, state: 1, moveList: 1, _id: 0}, function(err, docs){
         if( err ){
             callback({success: false, error: err});
             return;
         }
 
         var gameObject = docs[0];
+        if( gameObject === undefined ){
+            callback( {success: false, error: 'gameobject undefined'});
+            return;
+        }
+
         var game = {};
 
         gameObject.players.forEach( function(player) {
@@ -36,6 +41,7 @@ gamedb.getGameInfoFor = function(gameid, playerid, callback){
         game.numPlayers = gameObject.numPlayers;
         game.turnCounter = gameObject.turnCounter;
         game.state = gameObject.state;
+        game.moveList = gameObject.moveList;
 
         callback({success: true,  game: game});
     });

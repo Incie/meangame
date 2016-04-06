@@ -6,6 +6,18 @@ var validate = require('validator');
 
 var API = {};
 
+API.gameTick = function(req, res){
+    let gameid = req.cookies['gameid'];
+    let lastTurn = Number(req.cookies['lastTurn']);
+
+    //TODO: validate
+
+    gamedb.getGameObject(gameid, function(mapObject){
+        let shouldUpdate = (mapObject.game.turnCounter != lastTurn);
+        res.send({update:shouldUpdate});
+    });
+};
+
 API.createGame = function(req, res){
     console.log('gamecreate, incoming data: ' + req.body);
     var gameInfo = req.body;

@@ -1,7 +1,7 @@
 (function () {
     var gameModule = angular.module('gamemodule', ['ngCookies']);
 
-    gameModule.controller('gamecontroller', ['$scope', '$http', '$cookies', '$window', '$timeout', function ($scope, $http, $cookies, $window, $timeout) {
+    gameModule.controller('gamecontroller', ['$scope', '$http', '$cookies', '$window', '$timeout', '$interval', function ($scope, $http, $cookies, $window, $timeout, $interval) {
         $scope.title = 'meow';
         $scope.renderer = {};
         $scope.player = {};
@@ -23,6 +23,21 @@
         $scope.clearMessage = function () {
             $scope.lastmessage = '';
         };
+
+        //UpdateCycle
+        $interval( function() {
+            $cookies.put( 'lastTurn', $scope.game.turnCounter );
+            $http.get( '/api/game/tick' )
+                .then( function(response) {
+                    console.log('tick', response.data);
+                    if( response.data.update ){
+                        $scope.setupGame();
+                    }
+                } )
+                .catch(function(error){
+                    console.log('tick-error', error);
+                });
+        }, 5000);
 
         $scope.setupRenderer = function () {
             var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);

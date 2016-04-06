@@ -36,6 +36,7 @@ app.get( '/api/maps/:name',             api.getMap);
 app.delete('api/maps/:name',            function(res,req){res.send('NYI');});
 
 app.post('/api/game/',                  api.createGame);
+app.get('/api/game/tick',              api.gameTick);
 app.get( '/api/game/:gameid',           api.getGameInfo);
 app.put( '/api/game/:gameid',           api.gameTurn);
 app.post('/api/game/:gameid',           api.joinGame);
