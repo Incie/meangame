@@ -249,9 +249,14 @@
         return {
             restrict: 'E',
             templateUrl: '/templates/playerinterface.html',
-            link: function (scope, element) {
-                console.log(scope, element);
-            }
+            link: function (scope, element) {}
+        }
+    });
+
+    gameModule.directive('gameInfo', function() {
+        return {
+            restrict: 'E',
+            templateUrl: '/templates/gameinfo.html'
         }
     });
 
@@ -259,7 +264,7 @@
         return {
             restrict: 'E',
             transclude: true,
-            template: '<div class="stats" id="stats"></div><player-interface class="playerinterface"></player-interface>',
+            templateUrl: '/templates/gameboard.html',
             link: function (scope, element) {
                 scope.renderer.TJS = tjs();
                 scope.renderer.TJS.setDomElement(element[0]);

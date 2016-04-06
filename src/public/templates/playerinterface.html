@@ -1,20 +1,6 @@
-<div style="position: absolute; right: 0; top: 0; width: 250px; height: 100%; overflow: scroll; background-color: white; border: 1px solid grey;">
-    <div class="col-lg-12" ng-repeat="move in game.moveList | orderBy:'$index':true">
-        <span>{{$index}}-{{move.player}}:</span>
-        <span ng-repeat="m in move.moves" style="border: 1px solid red">
-            {{m.suite}}{{m.size}}
-        </span>
-    </div>
-</div>
-
-<div class="interface col-lg-12" style="width: 350px; background-color: white;">
-    <div class="interface">{{game.roomName}}</div>
-    <div ng-repeat="state in game.state"> <span class="col-lg-3">({{state.turn}}){{state.player}} </span><span ng-repeat="(k,v) in state.score" class="col-lg-3"><img ng-src="{{getScoreSource(k)}}">({{v}})</span></div>
-</div>
-<div class="interface black clearfix col-lg-12">
+<div class="interface black col-md-12 clearfix">
     <span class="col-md-2" ng-style="playerStyle" style="color: black; border-radius: 4px;">{{player.name}}</span>
     <span class="col-md-2">{{game.playerTurn}}</span>
-    <span class="col-md-2">{{game.mapName}}</span>
     <span class="col-md-3 btn btn-xs btn-default" ng-class="{flash:hasNewMessage}" ng-click="clearMessage()">{{lastmessage}}</span>
     <span class="col-md-3 pull-right">
         <button class="btn btn-success btn-xs" ng-click="setupGame()">Update</button>
@@ -22,11 +8,13 @@
         <button class="btn btn-danger btn-xs" ng-click="resetTurn()">Reset Turn</button>
     </span>
 </div>
-<div class="btn btn-default interface"
-     ng-class="{'btn-success': card.played, 'btn-info': card.selected }"
-     ng-click="toggleCard($index)"
-     ng-repeat="card in player.hand">
+<div class="col-md-12">
+    <div class="btn btn-default col-md-2"
+         ng-class="{'btn-success': card.played, 'btn-info': card.selected }"
+         ng-click="toggleCard($index)"
+         ng-repeat="card in player.hand">
 
-    <img class="card" ng-src="{{getSuiteSource(card.suite)}}">
-    <img class="card" ng-src="{{getNumberSource(card.size)}}">
+        <img class="card" ng-src="{{getSuiteSource(card.suite)}}">
+        <img class="card" ng-src="{{getNumberSource(card.size)}}">
+    </div>
 </div>
