@@ -278,22 +278,35 @@ function handleScore(gameObject, moves) {
 
             console.log(kv);
 
-            if( kv.length == 0 )
+            if( kv.length == 0 ) {
+                moves.resolve = moves.resolve || [];
+                moves.resolve.push( {type: cityType, player: 'Tie'} );
                 continue;
+            }
 
             if( kv.length == 1 && kv[0].influence > 0 ){
-                console.log('Winzip', cityTile, cityType, kv[0]);
-                gameObject.state.find( stateObject => stateObject.player == kv[0].player ).score[cityType] += 1;
+                console.log('Score', kv[0].player, cityType, kv[0]);
+                let playerState = gameObject.state.find( stateObject => stateObject.player == kv[0].player );
+                playerState.score[cityType] += 1;
+
+                moves.resolve = moves.resolve || [];
+                moves.resolve.push( {type: cityType, player: playerState.player} );
                 return;
             }
 
             if( kv[0].influence == kv[1].influence ) {
                 console.log( 'Tied', cityTile, cityType, kv);
+                moves.resolve = moves.resolve || [];
+                moves.resolve.push( {type: cityType, player: 'Tie'} );
                 return;
             }
 
-            console.log('Winrar', cityTile, cityType, kv[0]);
-            gameObject.state.find( stateObject => stateObject.player == kv[0].player ).score[cityType] += 1;
+            console.log('Score', kv[0].player, cityType, kv[0]);
+            let playerState = gameObject.state.find( stateObject => stateObject.player == kv[0].player );
+            playerState.score[cityType] += 1;
+
+            moves.resolve = moves.resolve || [];
+            moves.resolve.push( {type: cityType, player: playerState.player} );
         }
 
         gameObject.map.data.find( tile => cityTile.x == tile.x && cityTile.y == tile.y ).occupied = true;

@@ -90,7 +90,7 @@ API.joinGame = function(req, res){
 //req.body.moves = [ {x,y,suite,size} ... ]
 API.gameTurn = function(req, res){
     var gameid = req.cookies['gameid'];
-    var player = req.cookies['player-name'];
+    var player = validate.escape(req.cookies['player-name']);
     var moves = req.body.moves;
 
     console.log('--PROCESS GAME TURN--');

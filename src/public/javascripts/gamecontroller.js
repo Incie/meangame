@@ -25,19 +25,26 @@
         };
 
         //UpdateCycle
-        $interval( function() {
-            $cookies.put( 'lastTurn', $scope.game.turnCounter );
-            $http.get( '/api/game/tick' )
-                .then( function(response) {
-                    console.log('tick', response.data);
-                    if( response.data.update ){
-                        $scope.setupGame();
-                    }
-                } )
-                .catch(function(error){
-                    console.log('tick-error', error);
-                });
-        }, 5000);
+        $scope.updateCycle = function() {
+            if( $scope.game === undefined ){
+                console.log('No game object found');
+                return;
+            }
+
+            $interval( function() {
+                $cookies.put( 'lastTurn', $scope.game.turnCounter );
+                $http.get( '/api/game/tick' )
+                    .then( function(response) {
+                        console.log('tick', response.data);
+                        if( response.data.update ){
+                            $scope.setupGame();
+                        }
+                    } )
+                    .catch(function(error){
+                        console.log('tick-error', error);
+                    });
+            }, 5000);
+        }
 
         $scope.setupRenderer = function () {
             var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
@@ -69,6 +76,12 @@
                 console.log(gameid, 'response', response);
 
                 $scope.renderer.TJS.removeSceneObject('hexagons');
+
+                if( !response.data.success ){
+                    console.log('Error getting game: ', gameid);
+                    console.log('Error message: ', response.data.error);
+                    return;
+                }
 
                 var gameObject = response.data.game;
                 $scope.game = gameObject;
@@ -251,12 +264,13 @@
         };
 
         $scope.getCurrentPlayerName = function() {
+            if( $scope.game === undefined ) return '-,-';
             return $scope.game.state[ $scope.game.playerTurn ].player;
         };
         $scope.getCurrentPlayerColor = function(){
-            if( $scope.game )
+            if( $scope.game === undefined ) return '-,-';
+
             return $scope.game.state[ $scope.game.playerTurn ].color;
-            return '-';
         };
     }]);
 
@@ -289,6 +303,7 @@
             transclude: true,
             templateUrl: '/templates/gameboard.html',
             link: function (scope, element) {
+                console.log('Setting up Samurai..');
                 scope.renderer.TJS = tjs();
                 scope.renderer.TJS.setDomElement(element[0]);
                 scope.setupRenderer();
