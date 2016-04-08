@@ -159,4 +159,20 @@ API.saveOrUpdateMap = function(req, res){
 };
 
 
+API.replayGame = function(req, res){
+    let gameid = req.cookies['gameid'];
+    if( gameid === undefined ) {
+        res.send( response.fail('gameid not found in cookie') );
+        return;
+    }
+
+    gamedb.getGameObject(gameid, function(gameObject){
+        res.send(gameObject);
+    });
+}
+
+API.replayGameTo = function(req, res){
+    res.send('nyi');
+}
+
 module.exports = API;

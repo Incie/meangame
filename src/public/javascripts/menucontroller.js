@@ -67,6 +67,11 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
         location.href = '/game';
     };
 
+    $scope.replayGame = function() {
+        $cookies.put('gameid', $scope.joinGameID);
+        location.href = '/replay';
+    }
+
     $scope.joinGame = function() {
         console.log('/join/'+$scope.joinGameID);
         $http.post( '/api/game/'+$scope.joinGameID, {playerName: $scope.joinGamePlayerID}).then(function(response){

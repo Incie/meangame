@@ -23,7 +23,8 @@ var getAbsolutePath = function(relativePath){
 var files = {
     index: getAbsolutePath('index.html'),
     editor: getAbsolutePath('editor.html'),
-    game: getAbsolutePath('game.html')
+    game: getAbsolutePath('game.html'),
+    replay: getAbsolutePath('gamereplay.html')
 };
 
 /**
@@ -41,6 +42,9 @@ app.get( '/api/game/:gameid',           api.getGameInfo);
 app.put( '/api/game/:gameid',           api.gameTurn);
 app.post('/api/game/:gameid',           api.joinGame);
 
+app.get('/api/game-replay/:gameid',        api.replayGame);
+app.put('/api/game-replay/:gameid/:turnid', api.replayGameTo);
+
 app.get( '/api/game/admin/games',       api.adminGetGames);
 app.delete('/api/game/admin/:gameid',   api.adminDeleteGame);
 app.get( '/api/game/admin/:gameid',     api.adminGetGameStatus);
@@ -53,6 +57,10 @@ app.get('/editor', function(req, res){
     console.log( 'get req on /editor ' + req.connection.remoteAddress );
     res.sendFile(files.editor);
 });
+
+app.get('/replay', function(req, res){
+    res.sendFile(files.replay);
+})
 
 app.get('/', function(req, res){
     console.log( 'get req on / ' + req.connection.remoteAddress );
