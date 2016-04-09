@@ -58,15 +58,17 @@ canvas {
 }
 
 @keyframes flashanimation {
-    from {
-        background-color: #ff0000;
-    }
-    to {
-        background-color: #ffffff;
-    }
+    from { background-color: #ff0000; }
+    to { background-color: #ffffff; }
 }
 
 .flash {
     animation-name: flashanimation;
     animation-duration: 1s;
 }
+
+.smalltile {
+    width:  20px;
+    height: 20px;
+}
+

@@ -8,6 +8,7 @@
         $scope.lastmessage = 'message';
         $scope.hasNewMessage = false;
         $scope.playerStyle = {'background-color': '#ff0000' };
+        $scope.reversedMoves = [];
 
         $scope.message = function (msg) {
             $scope.lastmessage = msg;
@@ -31,11 +32,16 @@
                 return;
             }
 
-            $interval( function() {
+            if( $scope.updateInterval ){
+                $interval.cancel($scope.updateInterval);
+                $scope.updateInterval = null;
+            }
+
+             $scope.updateInterval = $interval( function() {
                 $cookies.put( 'lastTurn', $scope.game.turnCounter );
                 $http.get( '/api/game/tick' )
                     .then( function(response) {
-                        console.log('tick', response.data);
+                        console.log('tick');
                         if( response.data.update ){
                             $scope.setupGame();
                         }
@@ -44,7 +50,7 @@
                         console.log('tick-error', error);
                     });
             }, 5000);
-        }
+        };
 
         $scope.setupRenderer = function () {
             var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
@@ -91,6 +97,9 @@
                 var hexBoard = hexagonboard(map);
                 $scope.renderer.TJS.addSceneObject(hexBoard.sceneObject);
                 $scope.message('Game Updated');
+
+                $scope.reversedMoves = gameObject.moveList.reverse();
+                $scope.updateCycle();
             }).catch(function (error) {
                 console.log(gameid, 'error', error);
             });

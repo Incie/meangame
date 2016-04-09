@@ -19,7 +19,7 @@
 
                 cameracontroller($scope.renderer.TJS);
                 $scope.renderer.TJS.render();
-            }
+            };
 
             $scope.setupBoard = function() {
                 $http.get('/api/game-replay/'+$cookies.get('gameid')).then(function(response){
@@ -39,6 +39,9 @@
 
                     var map = gameObject.map;
                     var hexBoard = hexagonboard(map);
+                    hexBoard.sceneObject.children.forEach( function(tile) {
+                        tile.userData.oldColor = tile.material.color.clone();
+                    });
                     $scope.renderer.TJS.addSceneObject(hexBoard.sceneObject);
                     $scope.message('Game Updated');
                 });
@@ -55,22 +58,24 @@
                 let tileObject = planeGenerator.tile(move);
                 tileObject.name = 'move';
                 tile.add(tileObject);
-                tile.material.color.setHex(move.color);
+                tile.material.color.set(tile.userData.oldColor);
             };
 
             $scope.advanceTurn = function(delta) {
                 $scope.currentTurn += delta;
                 $scope.clearMoves();
 
-                $scope.game.moveList.every(function(moveObject){
-                    moveObject.moves.forEach( function(move, index) {
-                        if( index > $scope.currentTurn ){
-                            return false;
-                        }
+                $scope.game.moveList.every(function(moveObject, index){
+                    console.log('turn', index, moveObject);
 
+                    if( index >= $scope.currentTurn )
+                        return false;
+
+                    moveObject.moves.forEach( function(move) {
                         $scope.simulateMove(move);
-                        return true;
                     });
+
+                    return true;
                 });
             };
 
@@ -85,6 +90,11 @@
                     if( hex.getObjectByName('move') ){
                         //reset color
                         hex.remove(hex.getObjectByName('move'));
+
+                        var color = '#000000';
+                        if( hex.userData.type == 1 ) color = '#6688dd';
+                        else if( hex.userData.type == 2 ) color = '#efde8d';
+                        hex.material.color.setStyle( color );
                     }
                 });
             }

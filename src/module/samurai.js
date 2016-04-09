@@ -316,6 +316,11 @@ function handleScore(gameObject, moves) {
 }
 
 samurai.processTurn = function (gameObject, player, moves, callback) {
+    if( moves.length == 0 ){
+        callback(response.fail('Skipping turns not allowed'));
+        return;
+    }
+
     if (!validPlayerTurn(gameObject, player)) {
         callback(response.fail('Not your turn'));
         return;
@@ -357,7 +362,9 @@ samurai.processTurn = function (gameObject, player, moves, callback) {
     }
 
     //TODO: Mark who made the move
-    gameObject.moveList.push({player: playerObject.name, moves: moves});
+    let moveObject = {player: playerObject.name, moves: moves};
+    if( moves.resolve ) moveObject.resolve = moves.resolve;
+    gameObject.moveList.push(moveObject);
     // gameObject.moveList.push(moves);
     gameObject.turnCounter++;
     gameObject.playerTurn = (gameObject.playerTurn + 1) % gameObject.numPlayers;
