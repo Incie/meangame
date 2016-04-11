@@ -66,6 +66,7 @@ gamedb.getGameInfoFor = function(gameid, playerid, callback){
                 game.player.name = player.name;
                 game.player.hand = player.hand;
                 game.player.color = player.color;
+                game.player.turn = player.turn;
             }
         });
 
@@ -92,6 +93,11 @@ gamedb.getGameObject = function(gameid, callback){
     db.samuraigame.find({gameid:gameid}, function(err, docs){
         if( err ) {
             callback({success: false, error: err});
+            return;
+        }
+
+        if( docs.length == 0 ){
+            callback(response.fail('game not found'));
             return;
         }
 

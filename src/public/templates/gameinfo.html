@@ -20,7 +20,7 @@
     </h5>
 
     <div style="overflow-y: scroll; max-height: 40vh;">
-        <div ng-repeat="move in reversedMoves" class="col-md-12 move-element">
+        <div ng-repeat="move in reversedMoves" class="col-md-12 move-element" ng-mouseover="highlightMove($index)" ng-mouseleave="highlightMove(-1)">
             <div style="white-space: nowrap; overflow: hidden;">
                Turn {{reversedMoves.length - $index}}-{{move.player}}
             </div>

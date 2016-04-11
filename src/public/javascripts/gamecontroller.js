@@ -99,6 +99,7 @@
                 $scope.message('Game Updated');
 
                 $scope.reversedMoves = gameObject.moveList.reverse();
+                $scope.highlightMove(0);
                 $scope.updateCycle();
 
                 if( centerMap ){
@@ -122,6 +123,12 @@
                 return;
 
             $scope.$apply(function () {
+                if( $scope.game.playerTurn != $scope.game.player.turn ){
+                    $scope.message('Wait your turn');
+                    return;
+                }
+
+
                 var card = $scope.getSelectedPlayerCard();
                 if (!card)
                     return;
@@ -268,8 +275,63 @@
             return '\xa0';
         };
 
+        $scope.highlightedHexes = [];
+
+
+        $scope.clearHighlights = function(){
+            if( $scope.highlightedHexes.length > 0 ){
+                $scope.highlightedHexes.forEach(function(hex){
+                    hex.material.emissive.setRGB(0,0,0);
+                });
+
+                $scope.highlightedHexes = [];
+
+                $interval.cancel( $scope.highlightInterval );
+            }
+        };
+
+        $scope.highlightMove = function(moveIndex){
+            var moveObject = $scope.reversedMoves[moveIndex];
+
+            $scope.clearHighlights();
+
+            if( !moveObject )
+                return;
+
+            var hexagons = $scope.renderer.TJS.getSceneObject('hexagons');
+
+            moveObject.moves.forEach( function(move){
+                var hex = hexagons.children.find( function(hex) { return (hex.userData.x == move.x && hex.userData.y == move.y) } );
+                $scope.highlightedHexes.push(hex);
+            });
+
+            var dir = 1;
+            var fraction = 0;
+            $scope.highlightInterval = $interval( function() {
+                $scope.highlightedHexes.forEach( function(hex){
+                    fraction += 0.05 * dir;
+                    if( fraction >= 1 ){
+                        fraction = 1;
+                        dir = -1;
+                    }
+                    else if( fraction <= 0 ){
+                        fraction = 0;
+                        dir = 1;
+                    }
+
+                    var value = 0.2 * fraction;
+                    hex.material.emissive.setRGB(value, value, value);
+                });
+            }, 66);
+        };
+
         $scope.toggleCard = function (index) {
             $scope.clearSelected();
+
+            if( $scope.game.playerTurn != $scope.game.player.turn ){
+                $scope.message('Wait your turn');
+                return;
+            }
 
             if ($scope.player.hand[index].played)
                 return;
