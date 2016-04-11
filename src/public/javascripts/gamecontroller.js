@@ -65,7 +65,7 @@
 
             $scope.renderer.TJS.rendererEventListener('mousedown', $scope.onMouseClick);
 
-            cameracontroller($scope.renderer.TJS);
+            $scope.cameraController = new cameracontroller($scope.renderer.TJS);
             $scope.renderer.TJS.render();
         };
 
@@ -76,7 +76,7 @@
             return '#' + hex;
         }
 
-        $scope.setupGame = function () {
+        $scope.setupGame = function (centerMap) {
             var gameid = $cookies.get('gameid');
             $http.get('/api/game/' + gameid).then(function (response) {
                 console.log(gameid, 'response', response);
@@ -100,6 +100,11 @@
 
                 $scope.reversedMoves = gameObject.moveList.reverse();
                 $scope.updateCycle();
+
+                if( centerMap ){
+                    $scope.cameraController.centerCameraOn( hexBoard.sceneObject );
+                }
+
             }).catch(function (error) {
                 console.log(gameid, 'error', error);
             });
@@ -316,7 +321,7 @@
                 scope.renderer.TJS = tjs();
                 scope.renderer.TJS.setDomElement(element[0]);
                 scope.setupRenderer();
-                scope.setupGame();
+                scope.setupGame(true);
             }
         };
     }]);
