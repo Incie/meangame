@@ -35,10 +35,7 @@ canvas {
 
 .interface {
     margin-left: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding: 5px 10px;
     border-radius: 4px;
 }
 
@@ -71,4 +68,15 @@ canvas {
     width:  20px;
     height: 20px;
 }
+
+.move-element {
+    padding: 5px;
+    border-top: 1px solid black;
+    text-align: center;
+}
+
+.move-element:hover {
+    background-color: #dddddd;
+}
+
 

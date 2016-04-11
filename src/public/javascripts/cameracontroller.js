@@ -45,7 +45,7 @@ var cameracontroller = function(tjs){
     this.centerCameraOn = function centerCameraOn(sceneObject){
         var BBox = new THREE.Box3().setFromObject(sceneObject);
         camera.position.x = -(window.innerWidth/2) + (BBox.max.x - BBox.min.x) / 2;
-        camera.position.y = -(window.innerHeight/2) + (BBox.max.y - BBox.min.y) / 2;
+        camera.position.y = 0;//-(window.innerHeight/2) + (BBox.max.y - BBox.min.y) / 2;
     };
 
     tjs.rendererEventListener('wheel', onMouseWheel);
