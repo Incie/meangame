@@ -1,22 +1,19 @@
 * Frontend
 - Convert to links instead of divs
 - Explain game rules
-- Better score panel
+
 
 * Game
 - hover picking 
-- move summary panel
-- reverse scroll-zoom
 - New icons?
 - Steal a better map configuration from samurai
-- Refactor city types from circle, square, triangle to religion, trade, politics
 - Refactor suite names to correspond to the texture files
 - Indicate a tile to be quick
 - Move resource tile
 - Re-use tile
+- Mark counted city
 
 * Game backend
-- count score for surronded city tiles
 - refactor local functions in samurai.js to samurai-utils.js for testing purposes
 
 * Testing

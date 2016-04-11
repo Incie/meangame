@@ -1,17 +1,26 @@
 <div>
-    <h3>Join Game</h3>
-    <input type="text" placeholder="Game ID" ng-model="$parent.joinGameID">
-    <input type="text" placeholder="Yer Name" ng-model="$parent.joinGamePlayerID">
-    <button class="btn btn-primary" ng-click="joinGame()">Join</button>
+    <h4>Your Name</h4>
+    <input type="text" placeholder="Enter your name" ng-model="$parent.playerName">
+    <button class="btn btn-primary btn-xs" ng-click="fetchLobby()">Refresh List</button>
 </div>
-<div>
-    <h3>Open Game</h3>
-    <input type="text" placeholder="Game ID" ng-model="$parent.joinGameID">
-    <input type="text" placeholder="Yer Name" ng-model="$parent.playerName">
-    <button class="btn btn-primary" ng-click="openGame()">Open</button>
+
+<div class="col-md-offset-2 col-md-4">
+    <h4 style="border-bottom: 1px solid black;"> Available Games </h4>
+
+    <div ng-repeat="game in availableGames" class="clearfix lobbyItem" ng-click="joinGame(game.gameid)">
+        <div style="border-bottom: 1px solid gray;">{{game.roomName}}</div>
+        <div>
+            <span class="pull-left">{{game.mapName}}</span>
+            <span class="pull-right">{{game.numPlayers}} players</span>
+        </div>
+    </div>
 </div>
-<div>
-    <h3>Replay Game</h3>
-    <input type="text" placeholder="Game ID" ng-model="$parent.joinGameID">
-    <button class="btn btn-primary" ng-click="replayGame()">Open</button>
+
+<div class="col-md-4">
+    <h4 style="border-bottom: 1px solid black;"> My Games </h4>
+
+    <div ng-repeat="game in myGames" class="lobbyItem clearfix" style="padding: 5px; border: 1px solid black; border-radius: 4px;" ng-click="openGame(game.gameid)">
+        <span class="pull-left">{{game.roomName}}</span>
+        <span class="pull-right">{{game.numPlayers}}</span>
+    </div>
 </div>

@@ -56,5 +56,21 @@ canvas {
     top: 0px;
 }
 
+.lobbyItem {
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.lobbyItem:hover {
+    border: 1px solid red;
+    background-color: cyan;
+    color: red;
+}
+
+.lobbyItem:active {
+    background-color: lightblue;
+}
+
 /*.navbar-nav > li > a {padding-top:10px !important; padding-bottom:10px !important;}*/
 /*.navbar {min-height:35px !important}*/

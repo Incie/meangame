@@ -55,14 +55,33 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
     $scope.joinGameID = $cookies.get('gameid');
 
     $scope.games = [];
+    $scope.availableGames = [];
+
+    $scope.fetchLobby = function() {
+        $http.get('/api/lobby/available').then(function(response){
+            console.log('available', response);
+            var responseData = response.data;
+            if( responseData.success )
+                $scope.availableGames = responseData.data;
+        });
+
+        $http.post('/api/lobby/mygames', {player: $scope.playerName}).then(function(response){
+            console.log('mygames', response);
+            var responseData = response.data;
+            if( responseData.success )
+                $scope.myGames = responseData.data;
+        });
+    };
+
+    $scope.fetchLobby();
 
     $http.get('/api/game/admin/games').then(function(response){
         console.log(response);
         $scope.games = response.data.games;
     });
 
-    $scope.openGame = function() {
-        $cookies.put('gameid', $scope.joinGameID);
+    $scope.openGame = function(gameid) {
+        $cookies.put('gameid', gameid);
         $cookies.put('player-name', $scope.playerName);
         location.href = '/game';
     };
@@ -70,12 +89,15 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
     $scope.replayGame = function() {
         $cookies.put('gameid', $scope.joinGameID);
         location.href = '/replay';
-    }
+    };
 
-    $scope.joinGame = function() {
-        console.log('/join/'+$scope.joinGameID);
-        $http.post( '/api/game/'+$scope.joinGameID, {playerName: $scope.joinGamePlayerID}).then(function(response){
-            console.log(response);
+    $scope.joinGame = function(gameid) {
+        var joinGameURL = '/api/game/'+gameid;
+        var postData = {playerName: $scope.playerName};
+        $http.post(joinGameURL , postData).then(function(response){
+            if( response.data.success ){
+                $scope.openGame(gameid);
+            }
         });
     };
 
@@ -93,7 +115,7 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
     };
 
     $scope.adminDeleteGame = function(gameid){
-        console.log('deleting gameid: ' + gameid)
+        console.log('deleting gameid: ' + gameid);
         $http.delete('/api/game/admin/'+gameid).then(function(response){
             console.log(response);
             location.reload();

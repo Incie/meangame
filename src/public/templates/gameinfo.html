@@ -33,7 +33,7 @@
                 </span>
             </div>
             <div>
-                <span ng-repeat="resolve in move.resolve" style="background-color: lightgray; border-radius: 3px;">
+                <span ng-repeat="resolve in move.resolve" style="background-color: lightgray; border-radius: 3px; border: 1px solid black; padding: 2px;">
                     {{resolve.player}} => <img ng-src="{{getSuiteSource(resolve.type)}}" class="smalltile">
                 </span>
             </div>

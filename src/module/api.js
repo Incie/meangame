@@ -6,11 +6,34 @@ var validate = require('validator');
 
 var API = {};
 
+
+API.getAvailableGames = function(req, res){
+    gamedb.getAvailableGames(function(availableGames){
+        res.send(availableGames);
+    });
+};
+
+API.getMyGames = function(req, res){
+    let playerName = req.body['player'];
+    if( !playerName ){
+        res.send(response.fail('invalid playername'));
+        return;
+    }
+
+    gamedb.getMyGames(playerName, function(availableGames){
+        res.send(availableGames);
+    });
+};
+
 API.gameTick = function(req, res){
     let gameid = req.cookies['gameid'];
     let lastTurn = Number(req.cookies['lastTurn']);
 
     //TODO: validate
+    if( !lastTurn ){
+        res.send({update:false});
+        return;
+    }
 
     gamedb.getGameObject(gameid, function(mapObject){
         let shouldUpdate = (mapObject.game.turnCounter != lastTurn);
@@ -78,23 +101,24 @@ API.joinGame = function(req, res){
 
     console.log( 'player join game', gameId, playerName );
     if( playerName === undefined ){
+        console.log('playerName undefined');
         res.send(response.fail('Playername undefined'));
         return;
     }
 
     gamedb.registerNewPlayer(gameId, playerName, function(gameObject){
+        console.log('player join response', gameId, playerName, gameObject);
         res.send(gameObject);
     });
 };
 
 //req.body.moves = [ {x,y,suite,size} ... ]
 API.gameTurn = function(req, res){
-    var gameid = req.cookies['gameid'];
-    var player = validate.escape(req.cookies['player-name']);
-    var moves = req.body.moves;
+    let gameid = req.cookies['gameid'];
+    let player = validate.escape(req.cookies['player-name']);
+    let moves = req.body.moves;
 
-    console.log('--PROCESS GAME TURN--');
-    console.log('getting gameid' + gameid);
+    console.log('--PROCESS GAME TURN--> gameid');
     gamedb.getGameObject(gameid, function(gameObject){
         if( !gameObject.success ) {
             console.log(gameObject);

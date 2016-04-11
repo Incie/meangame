@@ -272,41 +272,35 @@ function handleScore(gameObject, moves) {
         for( let cityType in cityInfluence ){
             let kv = [];
             for( let player in cityInfluence[cityType] )
-                kv.push( {player: player, influence: cityInfluence[cityType][player] });
+                kv.push({player: player, influence: cityInfluence[cityType][player]});
 
             kv.sort( (v0, v1) => v1.influence - v0.influence );
-
-            console.log(kv);
 
             if( kv.length == 0 ) {
                 moves.resolve = moves.resolve || [];
                 moves.resolve.push( {type: cityType, player: 'Tie'} );
-                continue;
             }
-
-            if( kv.length == 1 && kv[0].influence > 0 ){
+            else if( kv.length == 1 && kv[0].influence > 0 ){
                 console.log('Score', kv[0].player, cityType, kv[0]);
                 let playerState = gameObject.state.find( stateObject => stateObject.player == kv[0].player );
                 playerState.score[cityType] += 1;
 
                 moves.resolve = moves.resolve || [];
                 moves.resolve.push( {type: cityType, player: playerState.player} );
-                return;
             }
-
-            if( kv[0].influence == kv[1].influence ) {
+            else if( kv[0].influence == kv[1].influence ) {
                 console.log( 'Tied', cityTile, cityType, kv);
                 moves.resolve = moves.resolve || [];
                 moves.resolve.push( {type: cityType, player: 'Tie'} );
-                return;
             }
+            else {
+                console.log('Score', kv[0].player, cityType, kv[0]);
+                let playerState = gameObject.state.find( stateObject => stateObject.player == kv[0].player );
+                playerState.score[cityType] += 1;
 
-            console.log('Score', kv[0].player, cityType, kv[0]);
-            let playerState = gameObject.state.find( stateObject => stateObject.player == kv[0].player );
-            playerState.score[cityType] += 1;
-
-            moves.resolve = moves.resolve || [];
-            moves.resolve.push( {type: cityType, player: playerState.player} );
+                moves.resolve = moves.resolve || [];
+                moves.resolve.push( {type: cityType, player: playerState.player} );
+            }
         }
 
         gameObject.map.data.find( tile => cityTile.x == tile.x && cityTile.y == tile.y ).occupied = true;
@@ -326,9 +320,7 @@ samurai.processTurn = function (gameObject, player, moves, callback) {
         return;
     }
 
-    var playerObject = gameObject.players.find(p => {
-        return p.name == player;
-    });
+    let playerObject = gameObject.players.find( p => p.name == player );
     if (playerObject === undefined) {
         callback({success: false, error: 'player not found in gameobj: ' + player});
         return;

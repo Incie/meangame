@@ -34,15 +34,18 @@ app.all('*', api.Athenticate() )
 app.get( '/api/maps',                   api.getMapList);
 app.post('/api/maps/',                  api.saveOrUpdateMap);
 app.get( '/api/maps/:name',             api.getMap);
-app.delete('api/maps/:name',            function(res,req){res.send('NYI');});
+app.delete('api/maps/:name',            (req,res) => {res.send('NYI');});
+
+app.get('/api/lobby/available',          api.getAvailableGames );
+app.post('/api/lobby/mygames',            api.getMyGames );
 
 app.post('/api/game/',                  api.createGame);
-app.get('/api/game/tick',              api.gameTick);
+app.get('/api/game/tick',               api.gameTick);
 app.get( '/api/game/:gameid',           api.getGameInfo);
 app.put( '/api/game/:gameid',           api.gameTurn);
 app.post('/api/game/:gameid',           api.joinGame);
 
-app.get('/api/game-replay/:gameid',        api.replayGame);
+app.get('/api/game-replay/:gameid',         api.replayGame);
 app.put('/api/game-replay/:gameid/:turnid', api.replayGameTo);
 
 app.get( '/api/game/admin/games',       api.adminGetGames);
@@ -60,7 +63,7 @@ app.get('/editor', function(req, res){
 
 app.get('/replay', function(req, res){
     res.sendFile(files.replay);
-})
+});
 
 app.get('/', function(req, res){
     console.log( 'get req on / ' + req.connection.remoteAddress );

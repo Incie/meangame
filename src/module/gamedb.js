@@ -1,8 +1,49 @@
+var response = require('./response');
 var mongojs = require('mongojs');
 var db = mongojs('samuraigame', ['samuraigame']);
 
 
 var gamedb = {};
+
+gamedb.getAvailableGames = function( callback ){
+    let query = { status: 'waiting for players' };
+    let limitFields = {
+        numPlayers: 1,
+        roomName: 1,
+        mapName: 1,
+        gameid: 1,
+        _id: 0
+    };
+
+    db.samuraigame.find(query, limitFields, (err, docs) => {
+        if( err ){
+            callback( response.fail(err) );
+            return;
+        }
+
+        callback( response.ok(docs) );
+    });
+};
+
+gamedb.getMyGames = function( playername, callback ){
+    let query = { players: { $elemMatch: { name: playername }}};
+    let limitFields = {
+        roomName: 1,
+        numPlayers: 1,
+        mapName: 1,
+        gameid: 1,
+        _id: 0
+    };
+
+    db.samuraigame.find(query, limitFields, (err, docs) => {
+        if( err ){
+            callback( response.fail(err));
+            return;
+        }
+
+        callback( response.ok(docs) );
+    });
+};
 
 gamedb.getGameInfoFor = function(gameid, playerid, callback){
     db.samuraigame.find({gameid:gameid}, {map:1, roomName: 1, mapName: 1, playerTurn: 1, status: 1, numPlayers: 1, players: 1, turnCounter: 1, state: 1, moveList: 1, _id: 0}, function(err, docs){
