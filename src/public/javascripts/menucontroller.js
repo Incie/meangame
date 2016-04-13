@@ -107,17 +107,16 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
         console.log(gameid);
         var adminGameID = gameid || $scope.adminGameID;
 
-        var url = '/api/game/admin/'+adminGameID;
+        var url = '/api/game/'+adminGameID+'/admin';
         $http.get(url).then(function(response){
             $scope.adminGameObject = response.data.gameObject;
-            console.log($scope.adminGameObject);
         });
     };
 
     $scope.adminDeleteGame = function(gameid){
         console.log('deleting gameid: ' + gameid);
-        $http.delete('/api/game/admin/'+gameid).then(function(response){
-            console.log(response);
+        $http.delete('/api/game/'+gameid+'/admin').then(function(response){
+            console.log('delete game', response);
             location.reload();
         });
     };

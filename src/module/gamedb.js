@@ -46,7 +46,8 @@ gamedb.getMyGames = function( playername, callback ){
 };
 
 gamedb.getGameInfoFor = function(gameid, playerid, callback){
-    db.samuraigame.find({gameid:gameid}, {map:1, roomName: 1, mapName: 1, playerTurn: 1, status: 1, numPlayers: 1, players: 1, turnCounter: 1, state: 1, moveList: 1, _id: 0}, function(err, docs){
+    let limitFields = {map:1, roomName: 1, mapName: 1, playerTurn: 1, status: 1, numPlayers: 1, players: 1, turnCounter: 1, state: 1, moveList: 1, gameid: 1, _id: 0};
+    db.samuraigame.find({gameid:gameid}, limitFields, function(err, docs){
         if( err ){
             callback({success: false, error: err});
             return;
@@ -84,6 +85,7 @@ gamedb.getGameInfoFor = function(gameid, playerid, callback){
         game.turnCounter = gameObject.turnCounter;
         game.state = gameObject.state;
         game.moveList = gameObject.moveList;
+        game.gameid = gameObject.gameid;
 
         callback({success: true,  game: game});
     });

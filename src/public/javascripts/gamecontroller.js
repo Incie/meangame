@@ -28,7 +28,7 @@
         //UpdateCycle
         $scope.updateCycle = function() {
             if( $scope.game === undefined ){
-                console.log('No game object found');
+                console.log('UpdateCycle: No game object found');
                 return;
             }
 
@@ -38,10 +38,10 @@
             }
 
              $scope.updateInterval = $interval( function() {
-                $cookies.put( 'lastTurn', $scope.game.turnCounter );
-                $http.get( '/api/game/tick' )
+                var url = '/api/game/'+ $scope.game.gameid +'/tick';
+                var data = {lastTurn: $scope.game.turnCounter};
+                $http.post( url, data )
                     .then( function(response) {
-                        console.log('tick');
                         if( response.data.update ){
                             $scope.setupGame();
                         }
@@ -232,7 +232,6 @@
                 card.selected = false;
                 card.played = false;
             });
-
 
             var hexagons = $scope.renderer.TJS.getSceneObject('hexagons');
             hexagons.children.forEach(function (hex) {
