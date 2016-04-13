@@ -99,7 +99,6 @@
                 $scope.message('Game Updated');
 
                 $scope.reversedMoves = gameObject.moveList.reverse();
-                $scope.highlightMove(0);
                 $scope.updateCycle();
 
                 if( centerMap ){
@@ -167,6 +166,7 @@
 
                     hex.add(planeGenerator.tile(card));
                     hex.material.color.setHex($scope.player.color);
+                    hex.userData.hexColor = $scope.player.color;
 
                     card.played = true;
                     $scope.clearSelected();
@@ -278,15 +278,12 @@
 
 
         $scope.clearHighlights = function(){
-            if( $scope.highlightedHexes.length > 0 ){
-                $scope.highlightedHexes.forEach(function(hex){
-                    hex.material.emissive.setRGB(0,0,0);
-                });
-
-                $scope.highlightedHexes = [];
-
-                $interval.cancel( $scope.highlightInterval );
-            }
+            let hexagons = $scope.renderer.TJS.getSceneObject('hexagons');
+            hexagons.children.forEach( hex => {
+                if( hex.userData.hexColor ){
+                    hex.material.color.setHex(hex.userData.hexColor);
+                }
+            });
         };
 
         $scope.highlightMove = function(moveIndex){
@@ -299,29 +296,15 @@
 
             var hexagons = $scope.renderer.TJS.getSceneObject('hexagons');
 
-            moveObject.moves.forEach( function(move){
-                var hex = hexagons.children.find( function(hex) { return (hex.userData.x == move.x && hex.userData.y == move.y) } );
-                $scope.highlightedHexes.push(hex);
+            hexagons.children.forEach( hex => {
+                if( !hex.userData.hexColor ) return;
+                hex.material.color.multiplyScalar( 0.5 );
             });
 
-            var dir = 1;
-            var fraction = 0;
-            $scope.highlightInterval = $interval( function() {
-                $scope.highlightedHexes.forEach( function(hex){
-                    fraction += 0.05 * dir;
-                    if( fraction >= 1 ){
-                        fraction = 1;
-                        dir = -1;
-                    }
-                    else if( fraction <= 0 ){
-                        fraction = 0;
-                        dir = 1;
-                    }
-
-                    var value = 0.2 * fraction;
-                    hex.material.emissive.setRGB(value, value, value);
-                });
-            }, 66);
+            moveObject.moves.forEach( function(move){
+                var hex = hexagons.children.find( function(hex) { return (hex.userData.x == move.x && hex.userData.y == move.y) } );
+                hex.material.color.setHex( hex.userData.hexColor );
+            });
         };
 
         $scope.toggleCard = function (index) {

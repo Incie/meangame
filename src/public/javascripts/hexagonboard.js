@@ -40,6 +40,7 @@ var hexagonboard = function(map) {
             tileObject.name = 'move';
             hexObject.add(tileObject);
             hexObject.material.color.setHex(tile.move.color);
+            hexObject.userData.hexColor = tile.move.color;
         }
 
         if( tile.type == 3 )
