@@ -386,4 +386,17 @@
             }
         };
     }]);
+
+    gameModule.directive('rules', function() {
+        return {
+            restrict: 'E',
+            templateUrl: '/templates/rules.html',
+            link: function(scope){
+                scope.hideRules = true;
+                scope.toggleRules = function() {
+                    scope.hideRules = !scope.hideRules;
+                }
+            }
+        };
+    })
 })();
