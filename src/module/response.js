@@ -23,4 +23,15 @@ Response.error = function(message){
 
 Response.fail = Response.error;
 
+Response.shouldUpdate = function(shouldUpdate) {
+    return {update: shouldUpdate};
+}
+
+Response.doNotUpdate = Response.shouldUpdate(false);
+
+Response.message = {
+    GAMEIDNOTFOUND: 'Game ID not found.',
+    INVALIDPLAYERNAME: 'Invalid player name'
+};
+
 module.exports = Response;

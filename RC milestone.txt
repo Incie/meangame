@@ -1,7 +1,8 @@
 * Frontend
 - Convert to links instead of divs
 - Explain game rules
-
+- gameid in url ?gameid, uirouter?
+- zoom buttons
 
 * Game
 - hover picking 
@@ -13,6 +14,7 @@
 - Re-use tile
 - Mark counted city
 
+
 * Game backend
 - refactor local functions in samurai.js to samurai-utils.js for testing purposes
 
@@ -21,5 +23,6 @@
 * Server
 - Login
 - JWT
+- HTTP only cookies
 - user database
 - password security
