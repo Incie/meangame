@@ -26,8 +26,8 @@ API.getMyGames = function(req, res){
 };
 
 API.gameTick = function(req, res){
-    let gameid = req.cookies['gameid'];
-    let lastTurn = Number(req.cookies['lastTurn']);
+    let gameid = req.params['gameid'];
+    let lastTurn = Number(req.body['lastTurn']);
 
     //TODO: validate
     if( !lastTurn ){
@@ -36,6 +36,12 @@ API.gameTick = function(req, res){
     }
 
     gamedb.getGameObject(gameid, function(mapObject){
+        if( !mapObject.success ){
+            res.send( {shouldUpdate:false});
+            return;
+        }
+
+
         let shouldUpdate = (mapObject.game.turnCounter != lastTurn);
         res.send(response.update(shouldUpdate));
     });

@@ -28,7 +28,7 @@
         //UpdateCycle
         $scope.updateCycle = function() {
             if( $scope.game === undefined ){
-                console.log('No game object found');
+                console.log('UpdateCycle: No game object found');
                 return;
             }
 
@@ -38,10 +38,10 @@
             }
 
              $scope.updateInterval = $interval( function() {
-                $cookies.put( 'lastTurn', $scope.game.turnCounter );
-                $http.get( '/api/game/tick' )
+                var url = '/api/game/'+ $scope.game.gameid +'/tick';
+                var data = {lastTurn: $scope.game.turnCounter};
+                $http.post( url, data )
                     .then( function(response) {
-                        console.log('tick');
                         if( response.data.update ){
                             $scope.setupGame();
                         }
@@ -65,7 +65,7 @@
 
             $scope.renderer.TJS.rendererEventListener('mousedown', $scope.onMouseClick);
 
-            cameracontroller($scope.renderer.TJS);
+            $scope.cameraController = new cameracontroller($scope.renderer.TJS);
             $scope.renderer.TJS.render();
         };
 
@@ -76,7 +76,7 @@
             return '#' + hex;
         }
 
-        $scope.setupGame = function () {
+        $scope.setupGame = function (centerMap) {
             var gameid = $cookies.get('gameid');
             $http.get('/api/game/' + gameid).then(function (response) {
                 console.log(gameid, 'response', response);
@@ -100,6 +100,11 @@
 
                 $scope.reversedMoves = gameObject.moveList.reverse();
                 $scope.updateCycle();
+
+                if( centerMap ){
+                    $scope.cameraController.centerCameraOn( hexBoard.sceneObject );
+                }
+
             }).catch(function (error) {
                 console.log(gameid, 'error', error);
             });
@@ -117,6 +122,12 @@
                 return;
 
             $scope.$apply(function () {
+                if( $scope.game.playerTurn != $scope.game.player.turn ){
+                    $scope.message('Wait your turn');
+                    return;
+                }
+
+
                 var card = $scope.getSelectedPlayerCard();
                 if (!card)
                     return;
@@ -155,6 +166,7 @@
 
                     hex.add(planeGenerator.tile(card));
                     hex.material.color.setHex($scope.player.color);
+                    hex.userData.hexColor = $scope.player.color;
 
                     card.played = true;
                     $scope.clearSelected();
@@ -221,7 +233,6 @@
                 card.played = false;
             });
 
-
             var hexagons = $scope.renderer.TJS.getSceneObject('hexagons');
             hexagons.children.forEach(function (hex) {
                 var temp = hex.getObjectByName('tempTurn');
@@ -263,8 +274,46 @@
             return '\xa0';
         };
 
+        $scope.highlightedHexes = [];
+
+
+        $scope.clearHighlights = function(){
+            let hexagons = $scope.renderer.TJS.getSceneObject('hexagons');
+            hexagons.children.forEach( hex => {
+                if( hex.userData.hexColor ){
+                    hex.material.color.setHex(hex.userData.hexColor);
+                }
+            });
+        };
+
+        $scope.highlightMove = function(moveIndex){
+            var moveObject = $scope.reversedMoves[moveIndex];
+
+            $scope.clearHighlights();
+
+            if( !moveObject )
+                return;
+
+            var hexagons = $scope.renderer.TJS.getSceneObject('hexagons');
+
+            hexagons.children.forEach( hex => {
+                if( !hex.userData.hexColor ) return;
+                hex.material.color.multiplyScalar( 0.5 );
+            });
+
+            moveObject.moves.forEach( function(move){
+                var hex = hexagons.children.find( function(hex) { return (hex.userData.x == move.x && hex.userData.y == move.y) } );
+                hex.material.color.setHex( hex.userData.hexColor );
+            });
+        };
+
         $scope.toggleCard = function (index) {
             $scope.clearSelected();
+
+            if( $scope.game.playerTurn != $scope.game.player.turn ){
+                $scope.message('Wait your turn');
+                return;
+            }
 
             if ($scope.player.hand[index].played)
                 return;
@@ -316,8 +365,21 @@
                 scope.renderer.TJS = tjs();
                 scope.renderer.TJS.setDomElement(element[0]);
                 scope.setupRenderer();
-                scope.setupGame();
+                scope.setupGame(true);
             }
         };
     }]);
+
+    gameModule.directive('rules', function() {
+        return {
+            restrict: 'E',
+            templateUrl: '/templates/rules.html',
+            link: function(scope){
+                scope.hideRules = true;
+                scope.toggleRules = function() {
+                    scope.hideRules = !scope.hideRules;
+                }
+            }
+        };
+    })
 })();

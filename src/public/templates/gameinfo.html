@@ -14,28 +14,27 @@
 </div>
 
 
-<div class="col-md-12" style="overflow-x: hidden; background-color: white;">
+<div class="col-md-12" style="background-color: white; padding: 0">
     <h5 style="border-bottom: 1px solid grey; margin-left: 5px; margin-right: 5px">
         Moves
     </h5>
 
     <div style="overflow-y: scroll; max-height: 70vh;">
-        <div ng-repeat="move in reversedMoves" class="col-md-12">
-            <div>
-                <span class="col-md-5" style="white-space: nowrap; overflow: hidden;">
-                   {{reversedMoves.length - $index}}-{{move.player}}:
-                </span>
-                <span class="col-md-7">
-                    <span ng-repeat="m in move.moves" style="border: 1px solid grey; border-radius: 4px">
-                        <img ng-src="{{getSuiteSource(m.suite)}}" class="smalltile">
-                        <img ng-src="{{getNumberSource(m.size)}}" class="smalltile">
-                    </span>
+        <div ng-repeat="move in reversedMoves" class="col-md-12 move-element" ng-mouseover="highlightMove($index)" ng-mouseleave="highlightMove(-1)">
+            <div style="white-space: nowrap; overflow: hidden;">
+               Turn {{reversedMoves.length - $index}}-{{move.player}}
+            </div>
+            <div style="margin: auto;">
+                <span ng-repeat="m in move.moves" style="border: 1px solid grey; border-radius: 4px">
+                    <img ng-src="{{getSuiteSource(m.suite)}}" class="smalltile">
+                    <img ng-src="{{getNumberSource(m.size)}}" class="smalltile">
                 </span>
             </div>
-            <div>
-                <span ng-repeat="resolve in move.resolve" style="background-color: lightgray; border-radius: 3px; border: 1px solid black; padding: 2px;">
+            <div ng-show="move.resolve">
+                <div style="margin-top: 5px; border-top: 1px solid gray;">Resolve</div>
+                <div ng-repeat="resolve in move.resolve" style="background-color: lightgray; border-radius: 3px; border: 1px solid black; padding: 2px; width: 50%; margin-left: 25%;">
                     {{resolve.player}} => <img ng-src="{{getSuiteSource(resolve.type)}}" class="smalltile">
-                </span>
+                </div>
             </div>
         </div>
     </div>

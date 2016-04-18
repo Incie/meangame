@@ -1,11 +1,13 @@
 <div class="interface black col-md-12 clearfix">
     <span class="col-md-2" ng-style="playerStyle" style="color: black; border-radius: 4px;">{{player.name}}</span>
-    <span class="col-md-2">{{game.playerTurn}}</span>
-    <span class="col-md-3 btn btn-xs btn-default" ng-class="{flash:hasNewMessage}" ng-click="clearMessage()">{{lastmessage}}</span>
-    <span class="col-md-3 pull-right">
+    <span class="col-md-offset-1 col-md-4 btn btn-xs btn-default" ng-class="{flash:hasNewMessage}" ng-click="clearMessage()">{{lastmessage}}</span>
+    <span class="col-md-4 pull-right">
+        <span class="pull-right">
+        <button class="btn btn-primary btn-xs" ng-click="toggleRules()">Rules</button>
         <button class="btn btn-success btn-xs" ng-click="setupGame()">Update</button>
         <button class="btn btn-success btn-xs" ng-click="finishTurn()">Finish Turn</button>
         <button class="btn btn-danger btn-xs" ng-click="resetTurn()">Reset Turn</button>
+        </span>
     </span>
 </div>
 <div class="col-md-12">

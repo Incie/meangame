@@ -1,8 +1,8 @@
 var response = require('./response');
 
 var samurai = {};
-var colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00];
-var hexColors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00'];
+var colors = [0xff2424, 0x33fa86, 0xff7111, 0xbe5ecf];
+var hexColors = ['#ff2424', '#33fa86', '#ff7111', '#be5ecf'];
 
 const SUITE = {
     religion: 'religion',
