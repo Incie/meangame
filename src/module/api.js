@@ -190,19 +190,19 @@ API.saveOrUpdateMap = function(req, res){
 
 
 API.replayGame = function(req, res){
-    let gameid = req.cookies['gameid'];
+    let gameid = req.params['gameid'];
     if( gameid === undefined ) {
-        res.send( response.fail('gameid not found in cookie') );
+        res.send( response.fail('invalid gameid') );
         return;
     }
 
     gamedb.getGameObject(gameid, function(gameObject){
         res.send(gameObject);
     });
-}
+};
 
 API.replayGameTo = function(req, res){
     res.send('nyi');
-}
+};
 
 module.exports = API;
