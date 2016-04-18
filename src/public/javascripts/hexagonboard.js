@@ -41,10 +41,13 @@ var hexagonboard = function(map) {
             hexObject.add(tileObject);
             hexObject.material.color.setHex(tile.move.color);
             hexObject.userData.hexColor = tile.move.color;
+            hexObject.userData.move = tile.move;
         }
 
-        if( tile.type == 3 )
+        if( tile.type == 3 ) {
             hexObject.add( planeGenerator.city(tile.city) );
+            hexObject.userData.city = tile.city;
+        }
     });
 
     return {
@@ -135,5 +138,37 @@ var planeGenerator = (function() {
     return {
         city: city,
         tile: tile
+    };
+})();
+
+var boardHelper = ( function() {
+    function findSurroundingTiles(tile, mapObject) {
+        const tileOffsets = [{x: 0, y: 1}, {x: 0, y: -1}, {x: 1, y: 0}, {x: -1, y: 0}];
+        const specialOffsets = [
+            [{x: 1, y: -1}, {x: -1, y: -1}], //%2 == 0
+            [{x: 1, y: 1}, {x: -1, y: 1}]  //%2 == 1
+        ];
+
+        let surroundingTiles = [];
+
+        function findTilesFor(offset) {
+            let t = mapObject.children.find(
+                maptile =>
+                    (offset.x + tile.userData.x) == maptile.userData.x &&
+                    (offset.y + tile.userData.y) == maptile.userData.y
+                );
+
+            if (t)
+                surroundingTiles.push(t);
+        }
+
+        let specialOffset = specialOffsets[tile.userData.x % 2];
+        specialOffset.forEach(findTilesFor);
+        tileOffsets.forEach(findTilesFor);
+        return surroundingTiles;
+    }
+
+    return {
+        findTilesAround: findSurroundingTiles
     };
 })();

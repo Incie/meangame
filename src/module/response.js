@@ -25,7 +25,7 @@ Response.fail = Response.error;
 
 Response.shouldUpdate = function(shouldUpdate) {
     return {update: shouldUpdate};
-}
+};
 
 Response.doNotUpdate = Response.shouldUpdate(false);
 

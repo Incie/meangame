@@ -48,13 +48,13 @@ var tjs = function() {
         getSceneObject: function(name){
             return scene.getObjectByName(name);
         },
-        rendererEventListener:function(type, callback, scope){
+        rendererEventListener:function(type, callback){
             renderer.domElement.addEventListener(type, callback);
         },
         getCamera: function() { return camera; },
         raycaster: function(objects, mouseCoord){
             var raycaster = new THREE.Raycaster();
-            var mouse = new THREE.Vector2(mouseCoord.x, mouseCoord.y);
+            var mouse = new THREE.Vector2( (mouseCoord.x / camera.right) * 2 - 1, -(mouseCoord.y / camera.bottom) * 2 + 1);
 
             raycaster.setFromCamera(mouse, camera);
             var intersects = raycaster.intersectObjects(objects);

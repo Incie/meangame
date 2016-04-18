@@ -91,4 +91,12 @@ canvas {
     background-color: #dddddd;
 }
 
+.hover-box {
+    position: absolute;
+    border-radius: 6px;
+    background-color: white;
+    border: 1px solid black;
+    z-index: 100;
+    padding: 5px;
+}
 

@@ -37,13 +37,13 @@ API.gameTick = function(req, res){
 
     gamedb.getGameObject(gameid, function(mapObject){
         if( !mapObject.success ){
-            res.send( {shouldUpdate:false});
+            res.send( response.doNotUpdate );
             return;
         }
 
 
         let shouldUpdate = (mapObject.game.turnCounter != lastTurn);
-        res.send(response.update(shouldUpdate));
+        res.send( response.shouldUpdate(shouldUpdate));
     });
 };
 

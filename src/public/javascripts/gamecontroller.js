@@ -64,6 +64,7 @@
             );
 
             $scope.renderer.TJS.rendererEventListener('mousedown', $scope.onMouseClick);
+            $scope.renderer.TJS.rendererEventListener('mousemove', $scope.onMouseMove);
 
             $scope.cameraController = new cameracontroller($scope.renderer.TJS);
             $scope.renderer.TJS.render();
@@ -108,6 +109,63 @@
             }).catch(function (error) {
                 console.log(gameid, 'error', error);
             });
+        };
+
+        function capitalFirstLetter(str){
+            return str.charAt(0).toUpperCase() + str.substr(1);
+        }
+
+        $scope.onMouseMove = function(event){
+            let hexagons = $scope.renderer.TJS.getSceneObject('hexagons');
+            var obj = $scope.renderer.TJS.raycaster(hexagons.children, {x: event.offsetX, y: event.offsetY} );
+
+            if( !obj.success ){
+                $scope.clearHover();
+                return;
+            }
+
+            var tileText = [];
+            var userData = obj.object.userData;
+
+            if( userData.type == 3 ){
+                tileText.push( 'City Tile' );
+                tileText.push( 'Resources:');
+
+                let tilesAroundCity = boardHelper.findTilesAround(obj.object, hexagons);
+                let players = [];
+                $scope.game.state.forEach( function(playerState) {
+                    players.push( {name: playerState.player, influence: 0 });
+                });
+
+                for( var resource in userData.city ) {
+                    players.forEach( p => {p.influence = 0});
+                    tilesAroundCity.forEach( function(tile){
+                        if( !tile.userData.move ) return;
+
+                        let playerInfluence = players.find( p => p.name == tile.userData.move.player );
+
+                        let suite = tile.userData.move.suite;
+                        if( suite == 'boat' || suite == 'ronin' || suite == 'samurai' || suite == resource )
+                            playerInfluence.influence += tile.userData.move.size;
+                    });
+
+                    let type = capitalFirstLetter(resource);
+                    let resourceString = type +':';
+                    players.forEach(p => {
+                        resourceString += '['+p.name +'('+p.influence+')]';
+                    });
+                    tileText.push( resourceString );
+                }
+            }
+            else if( userData.type == 2 ) tileText.push('Land Tile');
+            else if( userData.type == 1 ) tileText.push('Water Tile');
+
+            if( userData.move )
+                tileText.push( 'Move: ' + userData.move.player+'\'s [' + capitalFirstLetter(userData.move.suite) + ' ' +userData.move.size +']');
+
+
+            $scope.setHover(tileText);
+            $scope.setHoverPosition(event.offsetX, event.offsetY);
         };
 
         $scope.getSelectedPlayerCard = function () {
@@ -381,5 +439,39 @@
                 }
             }
         };
-    })
+    });
+
+    gameModule.directive('hover', function() {
+        return {
+            restrict: 'E',
+            templateUrl: 'templates/hover.html',
+            link: function(scope, elementArray){
+                var el = elementArray[0];
+
+                scope._hover = {
+                    texts: [],
+                    enabled: true
+                };
+
+                scope.setHoverPosition = function(x,y){
+                    el.style.left = (x+50) +'px';
+                    el.style.top = y+'px';
+                };
+
+                scope.setHover = function(hoverText) {
+                    scope.$apply( function() {
+                        scope._hover.texts = hoverText;
+                        scope._hover.enabled = true;
+                    });
+                };
+
+                scope.clearHover = function(){
+                    scope.$apply( function() {
+                        scope._hover.text = [];
+                        scope._hover.enabled = false;
+                    });
+                }
+            }
+        }
+    });
 })();
