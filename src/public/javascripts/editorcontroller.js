@@ -127,8 +127,8 @@ hexEditor.controller('hexcontroller', ['$scope', '$http', function ($scope, $htt
     };
 
     var onMouseMove = function(event) {
-        normalizedMouseCoords.x = (event.clientX / window.innerWidth) * 2 - 1;
-        normalizedMouseCoords.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        normalizedMouseCoords.x = event.clientX;
+        normalizedMouseCoords.y = event.clientY;
 
         if( moveCamera ){
             camera.position.x -= event.movementX;
@@ -261,7 +261,7 @@ hexEditor.directive('hexeditorgui', function () {
 hexEditor.directive('onResize', ['$window', function ($window) {
     return {
         transclude: true,
-        link: function (scope, element, attrs) {
+        link: function (scope) {
             scope.TJS.resize($window.innerWidth, $window.innerHeight);
             angular.element($window).on('resize', function () {
                     scope.TJS.resize($window.innerWidth, $window.innerHeight);
