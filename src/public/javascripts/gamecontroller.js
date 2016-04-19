@@ -25,7 +25,6 @@
             $scope.lastmessage = '';
         };
 
-        //UpdateCycle
         $scope.updateCycle = function() {
             if( $scope.game === undefined ){
                 console.log('UpdateCycle: No game object found');
@@ -65,6 +64,7 @@
 
             $scope.renderer.TJS.rendererEventListener('mousedown', $scope.onMouseClick);
             $scope.renderer.TJS.rendererEventListener('mousemove', $scope.onMouseMove);
+            $scope.renderer.TJS.rendererEventListener('mouseleave', $scope.onMouseLeave);
 
             $scope.cameraController = new cameracontroller($scope.renderer.TJS);
             $scope.renderer.TJS.render();
@@ -96,6 +96,7 @@
                 $scope.playerStyle['background-color'] = toHexString($scope.player.color);
                 var map = gameObject.map;
                 var hexBoard = hexagonboard(map);
+                $scope.hexWire = hexBoard.hexWire;
                 $scope.renderer.TJS.addSceneObject(hexBoard.sceneObject);
                 $scope.message('Game Updated');
 
@@ -115,8 +116,17 @@
             return str.charAt(0).toUpperCase() + str.substr(1);
         }
 
+        $scope.onMouseLeave = function() {
+            $scope.clearHover();
+        };
+
         $scope.onMouseMove = function(event){
             let hexagons = $scope.renderer.TJS.getSceneObject('hexagons');
+            if( !hexagons ) {
+                $scope.clearHover();
+                return;
+            }
+
             var obj = $scope.renderer.TJS.raycaster(hexagons.children, {x: event.offsetX, y: event.offsetY} );
 
             if( !obj.success ){
@@ -197,13 +207,10 @@
                     }
                 }
 
-                var normalizedMouseCoords = {
-                    x: (event.clientX / window.innerWidth) * 2 - 1,
-                    y: -(event.clientY / window.innerHeight) * 2 + 1
-                };
+                var mouseCoords = {x: event.clientX, y: event.clientY};
 
                 var hexagons = $scope.renderer.TJS.getSceneObject('hexagons');
-                var result = $scope.renderer.TJS.raycaster(hexagons.children, normalizedMouseCoords);
+                var result = $scope.renderer.TJS.raycaster(hexagons.children, mouseCoords);
                 if (result.success) {
                     var hex = result.object;
 
@@ -232,23 +239,11 @@
             });
         };
 
-        $scope.getScoreSource = function(scoreType){
-            var type = scoreType;
-            if (scoreType == 'religion') type = 'buddhism';
-            if (scoreType == 'trade') type = 'eastindia';
-
-            return '/img/' + type + '16.png';
-        };
         $scope.getNumberSource = function (number) {
             return '/img/' + number + '.png';
         };
         $scope.getSuiteSource = function (suite) {
-            var type = suite;
-            if (suite == 'religion') type = 'buddhism';
-            if (suite == 'trade') type = 'eastindia';
-            if( suite == 'boat' ) type = 'sailboat';
-
-            return '/img/' + type + '64.png';
+            return '/img/' + suite + '64.png';
         };
 
         $scope.finishTurn = function () {
@@ -340,6 +335,7 @@
             hexagons.children.forEach( hex => {
                 if( hex.userData.hexColor ){
                     hex.material.color.setHex(hex.userData.hexColor);
+                    hex.material.emissive.setRGB(0,0,0);
                 }
             });
         };
@@ -356,12 +352,15 @@
 
             hexagons.children.forEach( hex => {
                 if( !hex.userData.hexColor ) return;
-                hex.material.color.multiplyScalar( 0.5 );
+                hex.material.color.multiplyScalar( 0.3 );
             });
 
             moveObject.moves.forEach( function(move){
                 var hex = hexagons.children.find( function(hex) { return (hex.userData.x == move.x && hex.userData.y == move.y) } );
                 hex.material.color.setHex( hex.userData.hexColor );
+
+                const v = 0.1;
+                hex.material.emissive.setRGB(v,v,v);
             });
         };
 
@@ -444,7 +443,7 @@
     gameModule.directive('hover', function() {
         return {
             restrict: 'E',
-            templateUrl: 'templates/hover.html',
+            templateUrl: '/templates/hover.html',
             link: function(scope, elementArray){
                 var el = elementArray[0];
 

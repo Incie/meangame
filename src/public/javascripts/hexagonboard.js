@@ -10,6 +10,11 @@ var hexagonboard = function(map) {
     var hexWidth = radius * 2;
     var hexHeight = Math.sqrt(3) / 2 * hexWidth;
     var hexGeometry = new THREE.CylinderGeometry( radius, radius-3, 10, 6 );
+
+    var hexWireMesh = new THREE.Mesh( hexGeometry, new THREE.MeshBasicMaterial({color:0xffffff}));
+    var hexWire = new THREE.WireframeHelper(hexWireMesh, 0xffffff);
+    hexWire.name = 'hexWire';
+
     function createHex(posX, posY, type) {
         var color = '#111111';
         if( type == 1 ) color = '#6688dd';
@@ -51,32 +56,32 @@ var hexagonboard = function(map) {
     });
 
     return {
-        sceneObject: sceneObject
+        sceneObject: sceneObject,
+        hexWire: hexWire
     };
 };
 
 var planeGenerator = (function() {
     var cityTextures = {
         textures: [
-            {name: "religion", map: THREE.ImageUtils.loadTexture('/img/buddhism64.png')},
-            {name: "trade", map: THREE.ImageUtils.loadTexture('/img/eastindia64.png')},
+            {name: "religion", map: THREE.ImageUtils.loadTexture('/img/religion64.png')},
+            {name: "trade", map: THREE.ImageUtils.loadTexture('/img/trade64.png')},
             {name: "politics", map: THREE.ImageUtils.loadTexture('/img/politics64.png')},
-
             {name: "samurai", map: THREE.ImageUtils.loadTexture('/img/samurai64.png')},
             {name: "1", map: THREE.ImageUtils.loadTexture('/img/1.png')},
             {name: "2", map: THREE.ImageUtils.loadTexture('/img/2.png')},
             {name: "3", map: THREE.ImageUtils.loadTexture('/img/3.png')},
             {name: "4", map: THREE.ImageUtils.loadTexture('/img/4.png')},
             {name: "ronin", map: THREE.ImageUtils.loadTexture('/img/ronin64.png')},
-            {name: "boat", map: THREE.ImageUtils.loadTexture('/img/sailboat64.png')}
+            {name: "boat", map: THREE.ImageUtils.loadTexture('/img/boat64.png')}
         ],
         get: function(name){return this.textures.find( function(tex){return tex.name==name;} ); }
     };
 
     function getCityProperties(count){
-        if( count == 1 ) return { properties: [ {radius: 20, x: 0, y: 0} ] };
-        if( count == 2 ) return { properties: [ {radius: 10, x: -0, y: -5}, {radius: 10, x: 0, y: 5} ] };
-        return { properties: [ {radius: 10, x: 5, y: 0}, {radius: 10, x: -5, y: 5}, {radius: 10, x: -5, y: -5} ] };
+        if( count == 1 ) return { properties: [ {radius: 13, x: 0, y: 0} ] };
+        if( count == 2 ) return { properties: [ {radius: 13, x: -0, y: -6}, {radius: 13, x: 0, y: 6} ] };
+        return { properties: [ {radius: 11, x: 6, y: 0}, {radius: 11, x: -5, y: 6}, {radius: 11, x: -5, y: -6} ] };
     }
 
     function addSingleObject(name, map, xTranslate, zTranslate, radius, radiusY){
@@ -131,7 +136,7 @@ var planeGenerator = (function() {
         tileObject.name = 'tempTurn';
         tileObject.userData.card = card;
         tileObject.add( addSingleObject(card.suite, typeTexture.map, properties.properties[0].x, properties.properties[0].y, properties.properties[0].radius) );
-        tileObject.add( addSingleObject(card.size, numberTexture.map, properties.properties[1].x, properties.properties[1].y, properties.properties[1].radius) );
+        tileObject.add( addSingleObject(card.size, numberTexture.map, properties.properties[1].x, properties.properties[1].y, properties.properties[1].radius - 3) );
         return tileObject;
     }
 

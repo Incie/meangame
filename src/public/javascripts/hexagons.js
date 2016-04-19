@@ -80,8 +80,8 @@ var HexagonBoard = function() {
         religion: 'religion'
     };
     var textures = [
-        {name: TYPE.religion, map: THREE.ImageUtils.loadTexture('/img/buddhism64.png')},
-        {name: TYPE.trade, map: THREE.ImageUtils.loadTexture('/img/eastindia64.png')},
+        {name: TYPE.religion, map: THREE.ImageUtils.loadTexture('/img/religion64.png')},
+        {name: TYPE.trade, map: THREE.ImageUtils.loadTexture('/img/trade64.png')},
         {name: TYPE.politics, map: THREE.ImageUtils.loadTexture('/img/politics64.png')}
     ];
 
