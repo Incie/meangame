@@ -30,8 +30,14 @@ var tjs = function() {
         render:function () {renderScene();},
         resize:function(width, height){
             renderer.setSize(width, height);
-            camera.right = width;
-            camera.bottom = height;
+
+            var halfSize = { x: width / 2, y: height / 2 };
+            var centerPos = {x: camera.left + (camera.right-camera.left) / 2, y: camera.top + (camera.bottom-camera.top) / 2 };
+
+            camera.left = centerPos.x - halfSize.x;
+            camera.right = centerPos.x + halfSize.x;
+            camera.top = centerPos.y - halfSize.y;
+            camera.bottom = centerPos.y + halfSize.y;
             camera.updateProjectionMatrix();
         },
         setDomElement:function(domElement){
