@@ -313,14 +313,6 @@
             return playedNormal;
         };
 
-        $scope.clearSelected = function (exceptIndex) {
-            $scope.player.hand.forEach(function (card, cardIndex) {
-                if (exceptIndex == cardIndex)
-                    return;
-                card.selected = false;
-            });
-        };
-
         $scope.playerTurn = function(index){
             if( index == ($scope.game.turnCounter % $scope.game.numPlayers) )
                 return '%';
@@ -364,7 +356,26 @@
             });
         };
 
+        $scope.clearSelected = function (exceptIndex) {
+            let hexagons = $scope.renderer.TJS.getSceneObject('hexagons');
+            hexagons.children.forEach( hex => {
+                hex.remove( hex.getObjectByName('hexWire') );
+                hex.material.emissive.setRGB(0,0,0);
+            });
+
+
+            $scope.player.hand.forEach(function (card, cardIndex) {
+                if (exceptIndex == cardIndex)
+                    return;
+                card.selected = false;
+            });
+        };
         $scope.toggleCard = function (index) {
+            if( $scope.player.hand[index].selected ){
+                $scope.clearSelected();
+                return;
+            }
+
             $scope.clearSelected();
 
             if( $scope.game.playerTurn != $scope.game.player.turn ){
@@ -372,10 +383,22 @@
                 return;
             }
 
-            if ($scope.player.hand[index].played)
+            if($scope.player.hand[index].played)
                 return;
 
             $scope.player.hand[index].selected = !$scope.player.hand[index].selected;
+
+            var highlightType = 2;
+            if( $scope.player.hand[index].suite == 'boat' )
+                highlightType = 1;
+
+            var hexagons = $scope.renderer.TJS.getSceneObject('hexagons');
+            hexagons.children.forEach( function(hex) {
+                if( hex.userData.type == highlightType && !hex.userData.move ) {
+                    hex.material.emissive.setRGB(0.07, 0.00, 0.00);
+                    hex.add($scope.hexWire.clone());
+                }
+            });
         };
 
         $scope.getCurrentPlayerName = function() {
@@ -453,8 +476,17 @@
                 };
 
                 scope.setHoverPosition = function(x,y){
-                    el.style.left = (x+50) +'px';
-                    el.style.top = y+'px';
+                    el.style.left = '';
+                    el.style.right = '';
+
+                    if( x > window.innerWidth / 2 ) el.style.left = (x+50) +'px';
+                    else el.style.right = window.innerWidth - (x-50) +'px';
+
+                    el.style.top = '';
+                    el.style.bottom = '';
+
+                    if( y > window.innerHeight / 2) el.style.bottom = (window.innerHeight - y) +'px';
+                    else el.style.top = y+'px';
                 };
 
                 scope.setHover = function(hoverText) {

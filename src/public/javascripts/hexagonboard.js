@@ -11,9 +11,29 @@ var hexagonboard = function(map) {
     var hexHeight = Math.sqrt(3) / 2 * hexWidth;
     var hexGeometry = new THREE.CylinderGeometry( radius, radius-3, 10, 6 );
 
-    var hexWireMesh = new THREE.Mesh( hexGeometry, new THREE.MeshBasicMaterial({color:0xffffff}));
-    var hexWire = new THREE.WireframeHelper(hexWireMesh, 0xffffff);
-    hexWire.name = 'hexWire';
+    function createHexWire( radius ){
+        var material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+        var geometry = new THREE.Geometry();
+
+        for( var i = 0; i <= 6; i += 1 ){
+            var angle = i / 6.0 * (Math.PI * 2.0);
+            var vertex = new THREE.Vector3(
+                Math.sin(angle) * radius,
+                0.0,
+                Math.cos(angle) * radius
+
+            );
+
+            geometry.vertices.push( vertex );
+        }
+
+
+        var line = new THREE.Line( geometry, material );
+        line.name = 'hexWire';
+        return line;
+    }
+
+    var hexWire = createHexWire(17);
 
     function createHex(posX, posY, type) {
         var color = '#111111';
