@@ -1,8 +1,10 @@
 <div class="interface black col-md-12 clearfix">
     <span class="col-md-2" ng-style="playerStyle" style="color: black; border-radius: 4px;">{{player.name}}</span>
     <span class="col-md-offset-1 col-md-4 btn btn-xs btn-default" ng-class="{flash:hasNewMessage}" ng-click="clearMessage()">{{lastmessage}}</span>
-    <span class="col-md-4 pull-right">
+    <span class="col-md-5 pull-right">
         <span class="pull-right">
+        <button class="btn btn-primary btn-xs" ng-click="cameraController.zoomCamera(-1)">+</button>
+        <button class="btn btn-primary btn-xs" ng-click="cameraController.zoomCamera(1)">-</button>
         <button class="btn btn-primary btn-xs" ng-click="toggleRules()">Rules</button>
         <button class="btn btn-success btn-xs" ng-click="setupGame()">Update</button>
         <button class="btn btn-success btn-xs" ng-click="finishTurn()">Finish Turn</button>
@@ -10,13 +12,13 @@
         </span>
     </span>
 </div>
-<div class="col-md-12">
-    <div class="btn btn-default col-md-2"
-         ng-class="{'btn-success': card.played, 'btn-info': card.selected }"
-         ng-click="toggleCard($index)"
-         ng-repeat="card in player.hand">
+<div class="btn btn-default col-md-2"
+     ng-class="{'btn-success': card.played, 'btn-info': card.selected }"
+     ng-click="toggleCard($index)"
+     ng-repeat="card in player.hand">
 
-        <img class="card" ng-src="{{getSuiteSource(card.suite)}}">
-        <img class="card" ng-src="{{getNumberSource(card.size)}}">
-    </div>
+    <img class="card" ng-src="{{getSuiteSource(card.suite)}}">
+    <img class="card" ng-src="{{getNumberSource(card.size)}}">
+</div>
+<div class="col-md-12">
 </div>
