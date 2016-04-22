@@ -3,6 +3,8 @@ var cameracontroller = function(tjs){
         moving: false
     };
 
+    var controller = this;
+
     var camera = tjs.getCamera();
 
     this.zoomCamera = function(direction){
@@ -14,10 +16,10 @@ var cameracontroller = function(tjs){
         camera.zoom += zoom * 0.2;
         camera.zoom = Math.max(camera.zoom, 0.3);
         camera.updateProjectionMatrix();
-    }
+    };
 
     function onMouseWheel(event){
-        zoomCamera(event.deltaY);
+        controller.zoomCamera(event.deltaY);
     }
 
     function onMouseDown(event) {
