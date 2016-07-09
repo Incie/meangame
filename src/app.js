@@ -2,7 +2,9 @@ var express = require('express');
 var path = require('path');
 var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var bodyParser = require('body-parser');
+var users = require('./module/users');
 
 var api = require('./module/api');
 
@@ -13,6 +15,13 @@ app.use(morgan(':date[iso] - (HTTP :http-version :status :method) [ip] :remote-a
 app.use(bodyParser.json({limit: '2mb'}));
 app.use(bodyParser.urlencoded({ extended: false, limit: '2mb'}));
 app.use(cookieParser());
+app.use( session({
+    secret: process.env.SECRET,
+    resave: true,
+    maxAge: 2 * 60 * 60 * 1000,
+    saveUninitialized: true,
+    cookie: { secure: false }
+}));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -21,11 +30,61 @@ var getAbsolutePath = function(relativePath){
 };
 
 var files = {
-    index: getAbsolutePath('index.html'),
+    index: getAbsolutePath('samurai.html'),
     editor: getAbsolutePath('editor.html'),
     game: getAbsolutePath('game.html'),
     replay: getAbsolutePath('gamereplay.html')
 };
+
+app.get('/', function(req, res){
+    console.log( 'get req on / ' + req.connection.remoteAddress );
+    req.session.slash = (req.session.slash || 0) + 1;
+    console.log(req.session);
+    console.log(req.cookies['gameid']);
+    res.sendFile(files.index);
+});
+
+app.get('/game/', function(req, res){
+    res.sendFile(files.game);
+});
+
+app.get('/editor', function(req, res){
+    console.log( 'get req on /editor ' + req.connection.remoteAddress );
+    res.sendFile(files.editor);
+});
+
+app.get('/replay', function(req, res){
+    res.sendFile(files.replay);
+});
+
+app.post('/login', function(req, res){
+    users.login( req.body )
+        .then( function(userObject){
+            req.session.authenticated = true;
+            req.session.user = {
+                id: userObject.id,
+                name: userObject.name
+            };
+            req.session.save( function(err){
+                res.send( {ok:'ok'});
+            });
+        })
+        .catch(function(message){
+            req.session.destroy( function(err){
+                res.status(401).send( {message:"incorrect"} );
+            });
+        });
+});
+
+
+app.all('*', function(req, res, next){
+    if( req.session.authenticated ){
+        next();
+        return;
+    }
+
+    res.status(401).send({message:'forbidden'});
+});
 
 /**
 app.all('*', api.Athenticate() )
@@ -52,24 +111,21 @@ app.get(   '/api/game/admin/games',     api.adminGetGames);
 app.delete('/api/game/:gameid/admin',   api.adminDeleteGame);
 app.get(   '/api/game/:gameid/admin',   api.adminGetGameStatus);
 
-app.get('/game/', function(req, res){
-    res.sendFile(files.game);
+app.post( '/api/user/me', function(req, res){
 });
 
-app.get('/editor', function(req, res){
-    console.log( 'get req on /editor ' + req.connection.remoteAddress );
-    res.sendFile(files.editor);
+app.get('/whoami', function(req, res){
+    if( req.session.authenticated === true ) {
+        res.status(200).send('you are ' + req.session.name);
+        return;
+    }
+
+    res.status(403).send();
 });
 
-app.get('/replay', function(req, res){
-    res.sendFile(files.replay);
+app.all('*', function(req, res){
+    res.status(404).send({message:'The hamster did not find this route in the registry'});
 });
-
-app.get('/', function(req, res){
-    console.log( 'get req on / ' + req.connection.remoteAddress );
-    res.sendFile(files.index);
-});
-
 
 var port = (process.env.PORT || 3000);
 app.listen(port, function() {
