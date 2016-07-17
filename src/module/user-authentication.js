@@ -5,7 +5,7 @@ let bcryptjs = require('bcryptjs');
 
 let authModule = {};
 
-function generatePasswordHash(password){
+authModule.generatePasswordHash = function(password){
     return new Promise( function(success, fail){
         bcryptjs.hash(password, 9, function(err, hash){
             if( err ){
@@ -15,9 +15,9 @@ function generatePasswordHash(password){
             }
         });
     });
-}
+};
 
-function validatePassword(password, hash){
+authModule.validatePassword = function(password, hash){
     return new Promise( function(success, fail){
         bcryptjs.compare(password, hash, function(err, res){
             if( err  ){
@@ -29,11 +29,6 @@ function validatePassword(password, hash){
             }
         });
     });
-}
-
-authModule.__testing__ = {
-    validatePassword: validatePassword,
-    generatePasswordHash: generatePasswordHash
 };
 
 module.exports = authModule;

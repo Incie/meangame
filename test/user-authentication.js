@@ -16,8 +16,8 @@ function trueAssertion(){
 
 describe("Authentication", function() {
     function testPasswordPair(pass0, pass1){
-        return auth.__testing__.generatePasswordHash(pass0).then( function(hash) {
-            return auth.__testing__.validatePassword(pass1, hash);
+        return auth.generatePasswordHash(pass0).then( function(hash) {
+            return auth.validatePassword(pass1, hash);
         });
     }
 
