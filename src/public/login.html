@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Samurai</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <link rel="stylesheet" href="/stylesheets/form.css">
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+        <script src="/javascripts/samurai-login.js"></script>
+    </head>
+    <body ng-app="samurai">
+        <div class="centerBox" ng-controller="samurai-login">
+            <h2 align="center">Samurai Log-In</h2>
+            <a href="/signup">not a member? signup here</a>
+
+            <div class="formBox">
+                Username <input class="formItem" type="text" ng-model="username"/>
+                Password <input class="formItem" type="password" ng-model="password"/>
+                <button class="formItem" ng-click="login()">Log In</button>
+            </div>
+        </div>
+    </body>
+</html>

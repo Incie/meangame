@@ -2,7 +2,7 @@ let userModule = {};
 
 let authModule = require('./user-authentication');
 let mongojs = require('mongojs');
-let usersDb = mongojs('samurai', ['users']);
+let usersDb = mongojs('users', ['users']);
 
 userModule.userExists = function(user){
     return new Promise( function(success, reject){
@@ -24,27 +24,39 @@ userModule.userExists = function(user){
 
 userModule.registerUser = function(user, password, name){
     return new Promise( function(success, reject){
-        let userObject = {
-            user: user,
-            password: password,
-            name: name
-        };
+        userModule.getUserData(user)
+            .then( userObjects => {
+                if( userObjects.length > 0 ) {
+                    reject("User Exists");
+                    return;
+                }
 
-        usersDb.insert(userObject, function(err, docs){
-            if( err ){
-                reject(err);
-                return;
-            }
+                authModule.generatePasswordHash(password)
+                    .then(hash => {
+                        let userObject = {
+                            user: user,
+                            password: hash,
+                            name: name
+                        };
 
-            success(docs);
-        });
+                        usersDb.users.insert(userObject, function(err, docs){
+                            if( err ){
+                                reject(err);
+                                return;
+                            }
+
+                            success();
+                        });
+                    });
+            })
+            .catch( msg => reject(msg) );
     });
 };
 
 userModule.getUserData = function(user){
     return new Promise( function(success, reject){
         let userObject = { user:user };
-        usersDb.find(userObject, {_id: 0}, function(err, docs){
+        usersDb.users.find(userObject, {_id: 0}, function(err, docs){
             if( err ) {
                 reject(err);
                 return;
@@ -59,10 +71,24 @@ userModule.login = function(loginObject){
     let user = loginObject.user;
     let pass = loginObject.pass;
 
-    return userModule.getUserData(user)
-        .then(function(userObject){
-            return authModule.validatePassword(pass, userObject.password);
+    return new Promise( function(success, reject){
+        userModule.getUserData(user)
+            .then(function(userObject){
+                if( userObject.length == 0 ){
+                    reject('invalid');
+                    return;
+                }
+
+                return authModule.validatePassword(pass, userObject[0].password)
+                    .then( validated => {
+                        if( validated ){
+                            success(userObject[0]);
+                            return;
+                        }
+                        reject("not valid");
+                });
         });
+    })
 };
 
 module.exports = userModule;

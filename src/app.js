@@ -33,7 +33,9 @@ var files = {
     index: getAbsolutePath('samurai.html'),
     editor: getAbsolutePath('editor.html'),
     game: getAbsolutePath('game.html'),
-    replay: getAbsolutePath('gamereplay.html')
+    replay: getAbsolutePath('gamereplay.html'),
+    login: getAbsolutePath('login.html'),
+    signup: getAbsolutePath('signup.html')
 };
 
 app.get('/', function(req, res){
@@ -57,9 +59,18 @@ app.get('/replay', function(req, res){
     res.sendFile(files.replay);
 });
 
-app.post('/login', function(req, res){
+app.get('/login', function(req, res){
+    res.sendFile(files.login);
+});
+
+app.get('/signup', function(req, res){
+    res.sendFile(files.signup);
+});
+
+app.post('/api/login', function(req, res){
     users.login( req.body )
         .then( function(userObject){
+            console.log('authenticated user', userObject.user);
             req.session.authenticated = true;
             req.session.user = {
                 id: userObject.id,
@@ -73,6 +84,27 @@ app.post('/login', function(req, res){
             req.session.destroy( function(err){
                 res.status(401).send( {message:"incorrect"} );
             });
+        });
+});
+
+app.post('/api/signup', function(req, res){
+    let user = req.body.user;
+    let password = req.body.pass;
+    let name = req.body.name;
+
+    //validate, escape
+
+    users.registerUser(user, password, name)
+        .then( msg => {
+            if( msg ){
+                res.status(400).send({message: msg });
+                return;
+            }
+
+            res.status(200).send();
+        })
+        .catch( msg => {
+            res.status(400).send({message:msg});
         });
 });
 
@@ -111,23 +143,15 @@ app.get(   '/api/game/admin/games',     api.adminGetGames);
 app.delete('/api/game/:gameid/admin',   api.adminDeleteGame);
 app.get(   '/api/game/:gameid/admin',   api.adminGetGameStatus);
 
-app.post( '/api/user/me', function(req, res){
-});
-
 app.get('/whoami', function(req, res){
-    if( req.session.authenticated === true ) {
-        res.status(200).send('you are ' + req.session.name);
-        return;
-    }
-
-    res.status(403).send();
+    res.status(200).send({name:req.session.user.name});
 });
 
 app.all('*', function(req, res){
     res.status(404).send({message:'The hamster did not find this route in the registry'});
 });
 
-var port = (process.env.PORT || 3000);
+var port = (process.env.PORT || 3001);
 app.listen(port, function() {
     console.log('Node Server ('+process.version+')');
     console.log('Listening on '+port);
