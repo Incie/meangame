@@ -17,6 +17,7 @@
                 Username <input class="formItem" type="text" ng-model="username"/>
                 Password <input class="formItem" type="password" ng-model="password"/>
                 <button class="formItem" ng-click="login()">Log In</button>
+                <p style="margin: 15px">{{feedback}} <br/><a ng-if="loginSuccess" href="/">Click here to go back</a> </p>
             </div>
         </div>
     </body>
