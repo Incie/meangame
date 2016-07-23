@@ -4,9 +4,8 @@ var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var bodyParser = require('body-parser');
-var users = require('./module/users');
 
-var api = require('./module/api');
+var apiRouter = require('./route/api.js');
 
 var app = express();
 
@@ -38,114 +37,14 @@ var files = {
     signup: getAbsolutePath('signup.html')
 };
 
-app.get('/', function(req, res){
-    console.log( 'get req on / ' + req.connection.remoteAddress );
-    req.session.slash = (req.session.slash || 0) + 1;
-    console.log(req.session);
-    console.log(req.cookies['gameid']);
-    res.sendFile(files.index);
-});
+app.get('/', function(req, res){res.sendFile(files.index);});
+app.get('/game/', function(req, res){res.sendFile(files.game);});
+app.get('/editor', function(req, res){res.sendFile(files.editor);});
+app.get('/replay', function(req, res){res.sendFile(files.replay);});
+app.get('/login', function(req, res){res.sendFile(files.login);});
+app.get('/signup', function(req, res){res.sendFile(files.signup);});
 
-app.get('/game/', function(req, res){
-    res.sendFile(files.game);
-});
-
-app.get('/editor', function(req, res){
-    console.log( 'get req on /editor ' + req.connection.remoteAddress );
-    res.sendFile(files.editor);
-});
-
-app.get('/replay', function(req, res){
-    res.sendFile(files.replay);
-});
-
-app.get('/login', function(req, res){
-    res.sendFile(files.login);
-});
-
-app.get('/signup', function(req, res){
-    res.sendFile(files.signup);
-});
-
-app.post('/api/login', function(req, res){
-    users.login( req.body )
-        .then( function(userObject){
-            console.log('authenticated user', userObject.user);
-            req.session.authenticated = true;
-            req.session.user = {
-                id: userObject.id,
-                name: userObject.name
-            };
-            req.session.save( function(err){
-                res.send( {ok:'ok'});
-            });
-        })
-        .catch(function(message){
-            req.session.destroy( function(err){
-                res.status(401).send( {message:"incorrect"} );
-            });
-        });
-});
-
-app.post('/api/signup', function(req, res){
-    let user = req.body.user;
-    let password = req.body.pass;
-    let name = req.body.name;
-
-    //validate, escape
-
-    users.registerUser(user, password, name)
-        .then( msg => {
-            if( msg ){
-                res.status(400).send({message: msg });
-                return;
-            }
-
-            res.status(200).send();
-        })
-        .catch( msg => {
-            res.status(400).send({message:msg});
-        });
-});
-
-
-app.all('*', function(req, res, next){
-    if( req.session.authenticated ){
-        next();
-        return;
-    }
-
-    res.status(401).send({message:'forbidden'});
-});
-
-/**
-app.all('*', api.Athenticate() )
- **/
-
-app.get( '/api/maps',                   api.getMapList);
-app.post('/api/maps/',                  api.saveOrUpdateMap);
-app.get( '/api/maps/:name',             api.getMap);
-app.delete('api/maps/:name',            (req,res) => {res.send('NYI');});
-
-app.get('/api/lobby/available',          api.getAvailableGames );
-app.post('/api/lobby/mygames',            api.getMyGames );
-
-app.post('/api/game/',                  api.createGame);
-app.post('/api/game/:gameid/tick',       api.gameTick);
-app.get( '/api/game/:gameid',           api.getGameInfo);
-app.put( '/api/game/:gameid',           api.gameTurn);
-app.post('/api/game/:gameid',           api.joinGame);
-
-app.get('/api/game-replay/:gameid',         api.replayGame);
-app.put('/api/game-replay/:gameid/:turnid', api.replayGameTo);
-
-app.get(   '/api/game/admin/games',     api.adminGetGames);
-app.delete('/api/game/:gameid/admin',   api.adminDeleteGame);
-app.get(   '/api/game/:gameid/admin',   api.adminGetGameStatus);
-
-app.get('/whoami', function(req, res){
-    res.status(200).send({name:req.session.user.name});
-});
+app.use( '/api', apiRouter );
 
 app.all('*', function(req, res){
     res.status(404).send({message:'The hamster did not find this route in the registry'});
