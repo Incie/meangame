@@ -14,13 +14,8 @@ API.getAvailableGames = function(req, res){
 };
 
 API.getMyGames = function(req, res){
-    let playerName = req.body['player'];
-    if( !playerName ){
-        res.send(response.fail('invalid playername'));
-        return;
-    }
-
-    gamedb.getMyGames(playerName, function(availableGames){
+    let userId = req.session.user.id;
+    gamedb.getMyGames(userId, function(availableGames){
         res.send(availableGames);
     });
 };
@@ -48,8 +43,7 @@ API.gameTick = function(req, res){
 };
 
 API.createGame = function(req, res){
-    console.log('gamecreate, incoming data: ' + req.body);
-    var gameInfo = req.body;
+    let gameInfo = req.body;
 
     //Validate
     if( !validate.isInt(gameInfo.numPlayers, {min: 2, max:4}) ){
@@ -58,7 +52,8 @@ API.createGame = function(req, res){
     }
 
     gameInfo.roomName = validate.escape(gameInfo.roomName);
-    gameInfo.ownerName = validate.escape(gameInfo.ownerName);
+    gameInfo.ownerName = req.session.user.name;
+    gameInfo.ownerUserId = req.session.user.id;
     gameInfo.mapName = validate.escape(gameInfo.mapName);
 
     db.getMap(gameInfo.mapName, function(mapObject){
@@ -71,8 +66,6 @@ API.createGame = function(req, res){
         mapObject.mapData.data = db.optimizeMapData(mapObject.mapData.data);
 
         samurai.createGame(gameInfo, mapObject.mapData, function(gameObject){
-            console.log('create game');
-
             gamedb.createGame(gameObject, function(responseObject){
                 console.log('gamedb createGame' + responseObject);
                 res.send(responseObject);
@@ -102,17 +95,17 @@ API.adminDeleteGame = function(req, res){
 
 
 API.joinGame = function(req, res){
-    var gameId = req.params.gameid;
-    var playerName = req.body.playerName;
+    let gameId = req.params.gameid;
+    let userId = req.session.user.id;
+    let playerName = req.session.user.name;
 
-    console.log( 'player join game', gameId, playerName );
     if( playerName === undefined ){
         console.log('playerName undefined');
         res.send(response.fail('Playername undefined'));
         return;
     }
 
-    gamedb.registerNewPlayer(gameId, playerName, function(gameObject){
+    gamedb.registerNewPlayer(gameId, playerName, userId, function(gameObject){
         console.log('player join response', gameId, playerName, gameObject);
         res.send(gameObject);
     });
@@ -121,7 +114,7 @@ API.joinGame = function(req, res){
 //req.body.moves = [ {x,y,suite,size} ... ]
 API.gameTurn = function(req, res){
     let gameid = req.cookies['gameid'];
-    let player = validate.escape(req.cookies['player-name']);
+    let userId = req.session.user.id;
     let moves = req.body.moves;
 
     console.log('--PROCESS GAME TURN--> gameid');
@@ -133,7 +126,7 @@ API.gameTurn = function(req, res){
         }
 
         console.log('processing turn');
-        samurai.processTurn(gameObject.game, player, moves, function(status){
+        samurai.processTurn(gameObject.game, userId, moves, function(status){
             if( !status.success ) {
                 console.log(status);
                 res.send(status);
@@ -152,20 +145,18 @@ API.gameTurn = function(req, res){
                 res.send(update);
             });
         });
-        // samurai
     });
 };
 
 API.getGameInfo = function(req, res){
-    var gameid = req.cookies['gameid'];
-    var player = req.cookies['player-name'];
-    gamedb.getGameInfoFor(gameid, player, function(responseObject){
+    let gameid = req.cookies['gameid'];
+    let userId = req.session.user.id;
+    gamedb.getGameInfoFor(gameid, userId, function(responseObject){
         res.send(responseObject);
     });
 };
 
 API.getMapList = function(req, res){
-    console.log('/api/maps');
     db.getMapList(function(mapObject){
         res.send(mapObject);
     });
@@ -173,8 +164,6 @@ API.getMapList = function(req, res){
 
 API.getMap = function(req, res) {
     var mapName = req.params.name;
-    console.log(mapName);
-
     db.getMap(mapName, function (mapObject) {
         res.send(mapObject);
     });

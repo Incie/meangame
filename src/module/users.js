@@ -56,7 +56,7 @@ userModule.registerUser = function(user, password, name){
 userModule.getUserData = function(user){
     return new Promise( function(success, reject){
         let userObject = { user:user };
-        usersDb.users.find(userObject, {_id: 0}, function(err, docs){
+        usersDb.users.find(userObject, function(err, docs){
             if( err ) {
                 reject(err);
                 return;

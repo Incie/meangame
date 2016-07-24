@@ -1,6 +1,7 @@
 let express = require('express');
 let users = require('../module/users');
-var api = require('../module/api');
+let validate = require('validator');
+let api = require('../module/api');
 
 let router = express.Router();
 
@@ -10,7 +11,7 @@ router.post('/login', function(req, res){
             console.log('authenticated user', userObject.user);
             req.session.authenticated = true;
             req.session.user = {
-                id: userObject.id,
+                id: userObject._id.toString(),
                 name: userObject.name
             };
             req.session.save( function(err){
@@ -31,11 +32,9 @@ router.post('/logout', function(req, res){
 });
 
 router.post('/signup', function(req, res){
-    let user = req.body.user;
+    let user = validate.escape(req.body.user);
+    let name = validate.escape(req.body.name);
     let password = req.body.pass;
-    let name = req.body.name;
-
-    //validate, escape
 
     users.registerUser(user, password, name)
         .then( error => {

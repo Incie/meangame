@@ -27,12 +27,14 @@ samurai.createGame = function (gameInfo, mapObject, callback) {
     gameObject.roomName = gameInfo.roomName;
     gameObject.numPlayers = gameInfo.numPlayers;
     gameObject.ownerName = gameInfo.ownerName;
+    gameObject.ownerUserId = gameInfo.ownerUserId;
     gameObject.mapName = gameInfo.mapName;
 
     gameObject.map = mapObject;
 
     gameObject.players = createPlayers(gameObject.numPlayers);
     gameObject.players[0].name = gameObject.ownerName;
+    gameObject.players[0]._id = gameObject.ownerUserId;
 
     gameObject.state = [];
     gameObject.players.forEach(function (player, index) {
@@ -128,7 +130,7 @@ function createRandomId(n) {
 
 function validPlayerTurn(gameObject, player) {
     for (let i = 0; i < gameObject.players.length; i += 1) {
-        if (gameObject.players[i].name == player && gameObject.playerTurn == i)
+        if (gameObject.players[i]._id == player && gameObject.playerTurn == i)
             return true;
     }
 
@@ -309,20 +311,20 @@ function handleScore(gameObject, moves) {
     return true;
 }
 
-samurai.processTurn = function (gameObject, player, moves, callback) {
+samurai.processTurn = function (gameObject, userId, moves, callback) {
     if( moves.length == 0 ){
         callback(response.fail('Skipping turns not allowed'));
         return;
     }
 
-    if (!validPlayerTurn(gameObject, player)) {
+    if (!validPlayerTurn(gameObject, userId)) {
         callback(response.fail('Not your turn'));
         return;
     }
-
-    let playerObject = gameObject.players.find( p => p.name == player );
+    //TODO: Investigate '=='
+    let playerObject = gameObject.players.find( p => p._id == userId );
     if (playerObject === undefined) {
-        callback({success: false, error: 'player not found in gameobj: ' + player});
+        callback({success: false, error: 'player not found in gameobj'});
         return;
     }
 
@@ -357,7 +359,6 @@ samurai.processTurn = function (gameObject, player, moves, callback) {
     let moveObject = {player: playerObject.name, moves: moves};
     if( moves.resolve ) moveObject.resolve = moves.resolve;
     gameObject.moveList.push(moveObject);
-    // gameObject.moveList.push(moves);
     gameObject.turnCounter++;
     gameObject.playerTurn = (gameObject.playerTurn + 1) % gameObject.numPlayers;
 

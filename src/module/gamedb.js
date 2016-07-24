@@ -25,8 +25,8 @@ gamedb.getAvailableGames = function( callback ){
     });
 };
 
-gamedb.getMyGames = function( playername, callback ){
-    let query = { players: { $elemMatch: { name: playername }}};
+gamedb.getMyGames = function( userId, callback ){
+    let query = { players: { $elemMatch: { _id: userId }}};
     let limitFields = {
         roomName: 1,
         numPlayers: 1,
@@ -45,7 +45,7 @@ gamedb.getMyGames = function( playername, callback ){
     });
 };
 
-gamedb.getGameInfoFor = function(gameid, playerid, callback){
+gamedb.getGameInfoFor = function(gameid, userId, callback){
     let limitFields = {map:1, roomName: 1, mapName: 1, playerTurn: 1, status: 1, numPlayers: 1, players: 1, turnCounter: 1, state: 1, moveList: 1, gameid: 1, _id: 0};
     db.samuraigame.find({gameid:gameid}, limitFields, function(err, docs){
         if( err ){
@@ -60,9 +60,8 @@ gamedb.getGameInfoFor = function(gameid, playerid, callback){
         }
 
         var game = {};
-
         gameObject.players.forEach( function(player) {
-            if( player.name == playerid ) {
+            if( player._id == userId ) {
                 game['player'] = {};
                 game.player.name = player.name;
                 game.player.hand = player.hand;
@@ -169,7 +168,7 @@ gamedb.createGame = function( gameObject, callback ){
     });
 };
 
-gamedb.registerNewPlayer = function( gameId, playerName, callback ){
+gamedb.registerNewPlayer = function( gameId, playerName, userId, callback ){
     db.samuraigame.find({gameid: gameId}, function(err, docs){
         if( err ) {
             callback({success: false, message: err});
@@ -201,6 +200,7 @@ gamedb.registerNewPlayer = function( gameId, playerName, callback ){
 
         var updateStatement = { $set: {}};
         updateStatement.$set['players.'+freePlayerIndex+'.name'] = playerName;
+        updateStatement.$set['players.'+freePlayerIndex+'._id'] = userId;
         updateStatement.$set['state.'+freePlayerIndex+'.player'] = playerName;
 
         if( (freePlayerIndex+1) == gameObject.numPlayers ) {
