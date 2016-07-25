@@ -98,14 +98,14 @@ function createDeck() {
         deck.push({suite: SUITE.politics, size: cardSize});
     }
 
-    let samurai1 = {suite: SUITE.samurai, size: 1};
-    let samurai2 = {suite: SUITE.samurai, size: 2};
-    let samurai3 = {suite: SUITE.samurai, size: 3};
+    const samurai1 = {suite: SUITE.samurai, size: 1};
+    const samurai2 = {suite: SUITE.samurai, size: 2};
+    const samurai3 = {suite: SUITE.samurai, size: 3};
     deck.push(samurai1, samurai1, samurai2, samurai2, samurai3);
 
-    let ronin = {suite: SUITE.ronin, quick: true, size: 1};
-    let boat1 = {suite: SUITE.boat, quick: true, size: 1};
-    let boat2 = {suite: SUITE.boat, quick: true, size: 2};
+    const ronin = {suite: SUITE.ronin, quick: true, size: 1};
+    const boat1 = {suite: SUITE.boat, quick: true, size: 1};
+    const boat2 = {suite: SUITE.boat, quick: true, size: 2};
     deck.push(ronin, boat1, boat1, boat2);
 
     //TODO: MISSING SWAP AND MOVE TILE
@@ -116,12 +116,11 @@ function createDeck() {
 
 function createRandomId(n) {
     var randomId = [];
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmopqrtuvwxyz123456789";
-
-    var numChars = n || 6;
+    const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmopqrtuvwxyz123456789";
+    const numChars = n || 6;
 
     for (var i = 0; i < numChars; i += 1) {
-        var index = Math.floor(Math.random() * possible.length);
+        const index = Math.floor(Math.random() * possible.length);
         randomId.push(possible[index]);
     }
 

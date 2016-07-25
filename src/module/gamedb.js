@@ -6,8 +6,8 @@ var db = mongojs('samuraigame', ['samuraigame']);
 var gamedb = {};
 
 gamedb.getAvailableGames = function( callback ){
-    let query = { status: 'waiting for players' };
-    let limitFields = {
+    const query = { status: 'waiting for players' };
+    const limitFields = {
         numPlayers: 1,
         roomName: 1,
         mapName: 1,
@@ -26,8 +26,8 @@ gamedb.getAvailableGames = function( callback ){
 };
 
 gamedb.getMyGames = function( userId, callback ){
-    let query = { players: { $elemMatch: { _id: userId }}};
-    let limitFields = {
+    const query = { players: { $elemMatch: { _id: userId }}};
+    const limitFields = {
         roomName: 1,
         numPlayers: 1,
         mapName: 1,
@@ -46,7 +46,7 @@ gamedb.getMyGames = function( userId, callback ){
 };
 
 gamedb.getGameInfoFor = function(gameid, userId, callback){
-    let limitFields = {map:1, roomName: 1, mapName: 1, playerTurn: 1, status: 1, numPlayers: 1, players: 1, turnCounter: 1, state: 1, moveList: 1, gameid: 1, _id: 0};
+    const limitFields = {map:1, roomName: 1, mapName: 1, playerTurn: 1, status: 1, numPlayers: 1, players: 1, turnCounter: 1, state: 1, moveList: 1, gameid: 1, _id: 0};
     db.samuraigame.find({gameid:gameid}, limitFields, function(err, docs){
         if( err ){
             callback({success: false, error: err});
@@ -61,7 +61,7 @@ gamedb.getGameInfoFor = function(gameid, userId, callback){
 
         var game = {};
         gameObject.players.forEach( function(player) {
-            if( player._id == userId ) {
+            if( player._id === userId ) {
                 game['player'] = {};
                 game.player.name = player.name;
                 game.player.hand = player.hand;
@@ -97,7 +97,7 @@ gamedb.getGameObject = function(gameid, callback){
             return;
         }
 
-        if( docs.length == 0 ){
+        if( docs.length === 0 ){
             callback(response.fail('game not found'));
             return;
         }
@@ -107,7 +107,7 @@ gamedb.getGameObject = function(gameid, callback){
 };
 
 gamedb.updateGameObject = function(gameObject, callback){
-    db.samuraigame.update({_id: gameObject._id}, gameObject, function(err, docs){
+    db.samuraigame.update({_id: gameObject._id}, gameObject, function(err){
         if( err ){
             callback({success: false, error: err});
             return;
@@ -123,7 +123,7 @@ gamedb.deleteGameObject = function(gameid, callback){
         return;
     }
 
-    db.samuraigame.remove({gameid:gameid}, function(err, docs){
+    db.samuraigame.remove({gameid:gameid}, function(err){
         if( err ){
             callback({success: false, error: err});
             return;
@@ -156,7 +156,7 @@ gamedb.getAllGames = function(callback){
 };
 
 gamedb.createGame = function( gameObject, callback ){
-    db.samuraigame.insert( gameObject, function(err, docs){
+    db.samuraigame.insert( gameObject, function(err){
         if( err ){
             callback({success: false, message: err });
             return;
@@ -175,7 +175,7 @@ gamedb.registerNewPlayer = function( gameId, playerName, userId, callback ){
             return;
         }
 
-        if( docs.length == 0 ){
+        if( docs.length === 0 ){
             callback({success: false, message: 'invalid gameid'});
             return;
         }
@@ -185,8 +185,6 @@ gamedb.registerNewPlayer = function( gameId, playerName, userId, callback ){
         var players = gameObject.players;
         var freePlayerIndex = -1;
         for( var i = 0; i < players.length; i += 1 ){
-            //TODO: Check Duplicate names
-
             if( players[i].name === 'unassigned' ){
                 freePlayerIndex = i;
                 break;
@@ -203,7 +201,7 @@ gamedb.registerNewPlayer = function( gameId, playerName, userId, callback ){
         updateStatement.$set['players.'+freePlayerIndex+'._id'] = userId;
         updateStatement.$set['state.'+freePlayerIndex+'.player'] = playerName;
 
-        if( (freePlayerIndex+1) == gameObject.numPlayers ) {
+        if( (freePlayerIndex+1) === gameObject.numPlayers ) {
             updateStatement.$set['status'] = 'game started';
         }
 
