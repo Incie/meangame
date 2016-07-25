@@ -147,16 +147,30 @@
                     players.push( {name: playerState.player, influence: 0 });
                 });
 
-                for( var resource in userData.city ) {
+                for( let resource in userData.city ) {
+                    if( !userData.city.hasOwnProperty(resource) )
+                        continue;
+
                     players.forEach( p => {p.influence = 0});
                     tilesAroundCity.forEach( function(tile){
-                        if( !tile.userData.move ) return;
+                        let move = tile.userData.move;
+                        if( move === undefined ){
+                            let tempTile = tile.getObjectByName('tempTurn');
+                            if( tempTile === undefined )
+                                return;
 
-                        let playerInfluence = players.find( p => p.name == tile.userData.move.player );
+                            const card = tempTile.userData.card;
+                            move = {
+                                player: $scope.player.name,
+                                suite: card.suite,
+                                size:card.size
+                            };
+                        }
 
-                        let suite = tile.userData.move.suite;
+                        let playerInfluence = players.find( p => p.name == move.player );
+                        let suite = move.suite;
                         if( suite == 'boat' || suite == 'ronin' || suite == 'samurai' || suite == resource )
-                            playerInfluence.influence += tile.userData.move.size;
+                            playerInfluence.influence += move.size;
                     });
 
                     let type = capitalFirstLetter(resource);
