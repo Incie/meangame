@@ -13,9 +13,9 @@ var loginController = loginModule.controller('samurai-login', ['$scope', '$http'
         setFeedback('Logging in...');
         $scope.loginSuccess = false;
 
-        let url = '/api/login';
-        let payload = {user: $scope.username, pass: $scope.password};
-        let config = { withCredentials: true };
+        const url = '/api/login';
+        const payload = {user: $scope.username, pass: $scope.password};
+        const config = { withCredentials: true };
         $http.post(url, payload, config)
             .then(r => {
                 if( r.status == 200 )

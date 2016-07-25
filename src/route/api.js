@@ -1,9 +1,9 @@
-let express = require('express');
-let users = require('../module/users');
-let validate = require('validator');
-let api = require('../module/api');
+const express = require('express');
+const users = require('../module/users');
+const validate = require('validator');
+const api = require('../module/api');
 
-let router = express.Router();
+const router = express.Router();
 
 router.post('/login', function(req, res){
     users.login( req.body )
@@ -14,27 +14,27 @@ router.post('/login', function(req, res){
                 id: userObject._id.toString(),
                 name: userObject.name
             };
-            req.session.save( function(err){
+            req.session.save( function(){
                 res.send( {message:'Logged In'});
             });
         })
-        .catch(function(message){
-            req.session.destroy( function(err){
+        .catch(function(){
+            req.session.destroy( function(){
                 res.status(401).send( {message:"Incorrect."} );
             });
         });
 });
 
 router.post('/logout', function(req, res){
-    req.session.destroy( function(err){
+    req.session.destroy( function(){
         res.send({message: 'Logged out'});
     });
 });
 
 router.post('/signup', function(req, res){
-    let user = validate.escape(req.body.user);
-    let name = validate.escape(req.body.name);
-    let password = req.body.pass;
+    const user = validate.escape(req.body.user);
+    const name = validate.escape(req.body.name);
+    const password = req.body.pass;
 
     users.registerUser(user, password, name)
         .then( error => {

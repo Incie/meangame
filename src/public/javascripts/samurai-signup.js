@@ -35,16 +35,15 @@ var signupController = signupModule.controller('samurai-signup', ['$scope', '$ht
             return;
         }
 
-        let payload = {
+        const payload = {
             user: $scope.username,
             pass: $scope.password,
             name: $scope.name
         };
-        let config = { useCredentials: true };
-        let url = '/api/signup';
-        $http.post(url, payload, config).then( response => {
+        const config = { useCredentials: true };
+        $http.post('/api/signup', payload, config).then( response => {
             setFeedback('Response: ' + response.data.message);
-            if( response.status == 200 )
+            if( response.status === 200 )
                 $scope.signupSuccess = true;
         }).catch( errorResponse => {
             setFeedback('Failed to sign up: ' + errorResponse.data.message );
