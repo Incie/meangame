@@ -51,6 +51,7 @@ API.createGame = function(req, res){
     let gameInfo = {};
     gameInfo.roomName = validate.escape(req.body.roomName);
     gameInfo.mapName = validate.escape(req.body.mapName);
+    gameInfo.numPlayers = req.body.numPlayers;
     gameInfo.ownerName = req.session.user.name;
     gameInfo.ownerUserId = req.session.user.id;
 
