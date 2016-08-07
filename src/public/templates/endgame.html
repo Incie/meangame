@@ -1,0 +1,22 @@
+<div ng-if="gameFinished">
+    <h3 style="margin-top: 5px; border-bottom: 1px solid black">Caste Support</h3>
+    <div ng-repeat="(key, value) in game.endGameState.cityState">
+        Winner of <img style="width:15px; height: 15px;" ng-src="{{getSuiteSource(key)}}"/> is {{getPlayerByIndex(value)}}
+    </div>
+
+    <div ng-if="hasBalance===true">
+        <h5 style="margin-top: 5px; border-bottom: 1px solid black">Balance Support</h5>
+        <div ng-repeat="obj in game.endGameState.playerState">
+            {{getPlayerByIndex($index)}} : {{getBalanceScoreByIndex($index)}}
+        </div>
+    </div>
+
+    <div ng-if="hasTotal===true">
+        <h5 style="margin-top: 5px; border-bottom: 1px solid black">Total Support</h5>
+        <div ng-repeat="obj in game.endGameState.playerState">
+            {{getPlayerByIndex($index)}} : {{getTotalScoreByIndex($index)}}
+        </div>
+    </div>
+
+    <h2>{{getWinnerString()}}</h2>
+</div>

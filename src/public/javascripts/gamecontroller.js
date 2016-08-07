@@ -9,6 +9,7 @@
         $scope.hasNewMessage = false;
         $scope.playerStyle = {'background-color': '#ff0000' };
         $scope.reversedMoves = [];
+        $scope.gameFinished = false;
 
         $scope.message = function (msg) {
             $scope.lastmessage = msg;
@@ -36,19 +37,21 @@
                 $scope.updateInterval = null;
             }
 
-             $scope.updateInterval = $interval( function() {
-                var url = '/api/game/'+ $scope.game.gameid +'/tick';
-                var data = {lastTurn: $scope.game.turnCounter};
-                $http.post( url, data )
-                    .then( function(response) {
-                        if( response.data.update ){
-                            $scope.setupGame();
-                        }
-                    } )
-                    .catch(function(error){
-                        console.log('tick-error', error);
-                    });
-            }, 5000);
+            if( $scope.gameFinished === false ){
+                 $scope.updateInterval = $interval( function() {
+                    var url = '/api/game/'+ $scope.game.gameid +'/tick';
+                    var data = {lastTurn: $scope.game.turnCounter};
+                    $http.post( url, data )
+                        .then( function(response) {
+                            if( response.data.update ){
+                                $scope.setupGame();
+                            }
+                        } )
+                        .catch(function(error){
+                            console.log('tick-error', error);
+                        });
+                }, 5000);
+            }
         };
 
         $scope.setupRenderer = function () {
@@ -101,8 +104,20 @@
                 $scope.message('Game Updated');
 
                 $scope.reversedMoves = gameObject.moveList.reverse();
-                $scope.updateCycle();
 
+                if( gameObject.status === 'game over' ){
+                    $scope.gameFinished = true;
+                    $scope.hasBalance = false;
+                    $scope.hasTotal = false;
+
+                    if( gameObject.endGameState.playerState[0].balanceSupport !== undefined )
+                        $scope.hasBalance = true;
+
+                    if( gameObject.endGameState.playerState[0].totalSupport !== undefined )
+                        $scope.hasTotal = true;
+                }
+
+                $scope.updateCycle();
                 if( centerMap ){
                     $scope.cameraController.centerCameraOn( hexBoard.sceneObject );
                 }
@@ -253,11 +268,49 @@
             });
         };
 
+        $scope.getWinnerString = function(){
+            let winCondition = $scope.game.endGameState.winCondition;
+
+            if( winCondition === "Tied" ){
+                let tiedPlayers = [];
+                $scope.game.endGameState.winner.forEach(playerIndex => tiedPlayers.push( $scope.game.state[playerIndex].player ));
+                return tiedPlayers.join(' and ') + ' tied';
+            }
+
+            return $scope.game.state[$scope.game.endGameState.winner].player + ' won by ' + winCondition;
+        };
+
         $scope.getNumberSource = function (number) {
             return '/img/' + number + '.png';
         };
         $scope.getSuiteSource = function (suite) {
             return '/img/' + suite + '64.png';
+        };
+
+        $scope.getPlayerByIndex = function(obj){
+            let index = obj;
+
+            if( index instanceof Object )
+                index = obj.winner;
+
+            if( index === -1 )
+                return 'no one';
+
+            return $scope.game.state[index].player;
+        };
+
+        $scope.getTotalScoreByIndex = function(index){
+            const score = $scope.game.endGameState.playerState[index].totalSupport;
+            if( score === undefined )
+                return 'X';
+            return score;
+        };
+
+        $scope.getBalanceScoreByIndex = function(index){
+            const score = $scope.game.endGameState.playerState[index].balanceSupport;
+            if( score === undefined )
+                return 'X';
+            return score;
         };
 
         $scope.finishTurn = function () {
@@ -474,6 +527,13 @@
                     scope.hideRules = !scope.hideRules;
                 }
             }
+        };
+    });
+
+    gameModule.directive('endgame', function(){
+        return {
+            restrict: 'E',
+            templateUrl: '/templates/endgame.html'
         };
     });
 

@@ -46,7 +46,7 @@ gamedb.getMyGames = function( userId, callback ){
 };
 
 gamedb.getGameInfoFor = function(gameid, userId, callback){
-    const limitFields = {map:1, roomName: 1, mapName: 1, playerTurn: 1, status: 1, numPlayers: 1, players: 1, turnCounter: 1, state: 1, moveList: 1, gameid: 1, _id: 0};
+    const limitFields = {map:1, roomName: 1, mapName: 1, playerTurn: 1, status: 1, numPlayers: 1, players: 1, turnCounter: 1, state: 1, moveList: 1, gameid: 1, endGameState: 1, _id: 0};
     db.samuraigame.find({gameid:gameid}, limitFields, function(err, docs){
         if( err ){
             callback({success: false, error: err});
@@ -85,6 +85,9 @@ gamedb.getGameInfoFor = function(gameid, userId, callback){
         game.state = gameObject.state;
         game.moveList = gameObject.moveList;
         game.gameid = gameObject.gameid;
+
+        if( gameObject.endGameState !== undefined )
+            game.endGameState = gameObject.endGameState;
 
         callback({success: true,  game: game});
     });
