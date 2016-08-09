@@ -299,6 +299,10 @@
             return $scope.game.state[index].player;
         };
 
+        $scope.endGame = function() {
+            return $scope.gameFinished;
+        };
+
         $scope.getTotalScoreByIndex = function(index){
             const score = $scope.game.endGameState.playerState[index].totalSupport;
             if( score === undefined )
