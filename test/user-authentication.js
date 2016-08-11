@@ -47,9 +47,3 @@ describe("Authentication", function() {
             .catch(trueAssertion);
     });
 });
-
-
-
-
-
-

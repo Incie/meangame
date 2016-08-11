@@ -22,7 +22,7 @@ authModule.validatePassword = function(password, hash){
         bcryptjs.compare(password, hash, function(err, res){
             if( err  ){
                 fail(err);
-            } else if( res == undefined ) {
+            } else if( res === undefined ) {
                 fail('undefined result');
             } else {
                 success(res);
