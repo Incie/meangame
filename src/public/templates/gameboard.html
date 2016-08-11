@@ -1,8 +1,10 @@
 <div class="stats" id="stats"></div>
 
-<turn-indicator style="position: absolute; left: 0; margin-left: 45%; background-color: black; color: white;"></turn-indicator>
+<turn-indicator style="position: absolute; left: 50%; transform: translate(-50%,0); background-color: black; color: white;"></turn-indicator>
 
 <game-info class="gameinfo" style="max-width:300px;"></game-info>
+
+<endgame ng-if="endGame()" style="font-size: 125%; border-radius: 5px; border: 1px solid gray; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background-color: white; padding: 10px;"></endgame>
 
 <player-interface class="playerinterface col-md-offset-3 col-md-7"></player-interface>
 

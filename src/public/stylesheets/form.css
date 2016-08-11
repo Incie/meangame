@@ -1,0 +1,20 @@
+.centerBox {
+    margin: auto;
+    padding: 25px;
+    width: 90%;
+    height: 90%;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+}
+
+.formBox {
+    max-width: 250px;
+    width: 75%;
+    margin: auto;
+}
+
+.formItem {
+    width: 100%;
+    background-color: #eee;
+    margin: 2px;
+}

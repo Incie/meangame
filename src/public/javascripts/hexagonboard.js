@@ -1,48 +1,37 @@
 var hexagonboard = function(map) {
-    var mapWidth = Number(map.size.x);
-    var mapHeight = Number(map.size.y);
-    var board = new Array(mapWidth*mapHeight);
-
-    var sceneObject = new THREE.Object3D();
+    let sceneObject = new THREE.Object3D();
     sceneObject.name = 'hexagons';
 
-    var radius = 20;
-    var hexWidth = radius * 2;
-    var hexHeight = Math.sqrt(3) / 2 * hexWidth;
-    var hexGeometry = new THREE.CylinderGeometry( radius, radius-3, 10, 6 );
+    const radius = 20;
+    const hexWidth = radius * 2;
+    const hexHeight = Math.sqrt(3) / 2 * hexWidth;
+    const hexGeometry = new THREE.CylinderGeometry( radius, radius-3, 10, 6 );
 
     function createHexWire( radius ){
-        var material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
-        var geometry = new THREE.Geometry();
+        const material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+        const geometry = new THREE.Geometry();
 
-        for( var i = 0; i <= 6; i += 1 ){
-            var angle = i / 6.0 * (Math.PI * 2.0);
-            var vertex = new THREE.Vector3(
-                Math.sin(angle) * radius,
-                0.0,
-                Math.cos(angle) * radius
-
-            );
-
+        for( let i = 0; i <= 6; i += 1 ){
+            const angle = i / 6.0 * (Math.PI * 2.0);
+            const vertex = new THREE.Vector3(Math.sin(angle) * radius, 0.0, Math.cos(angle) * radius);
             geometry.vertices.push( vertex );
         }
 
-
-        var line = new THREE.Line( geometry, material );
+        let line = new THREE.Line( geometry, material );
         line.name = 'hexWire';
         return line;
     }
 
-    var hexWire = createHexWire(17);
+    const hexWire = createHexWire(17);
 
     function createHex(posX, posY, type) {
-        var color = '#111111';
+        let color = '#111111';
         if( type == 1 ) color = '#6688dd';
         else if( type == 2 ) color = '#efde8d';
         else if( type == 3 ) color = '#af8e2d';
 
-        var hexMaterial = new THREE.MeshPhongMaterial( { color: color, wireframe: false, shininess: 1.0} );
-        var hexMesh = new THREE.Mesh( hexGeometry, hexMaterial );
+        const hexMaterial = new THREE.MeshPhongMaterial( { color: color, wireframe: false, shininess: 1.0} );
+        let hexMesh = new THREE.Mesh( hexGeometry, hexMaterial );
 
         hexMesh.rotation.set( 1.57, 1.57, 0);
         hexMesh.position.set( posX * (hexWidth / 4 * 3), posY * hexHeight, 0 );
@@ -105,9 +94,9 @@ var planeGenerator = (function() {
     }
 
     function addSingleObject(name, map, xTranslate, zTranslate, radius, radiusY){
-        var planeMaterial = new THREE.MeshPhongMaterial({color: 0xFFFFFF, shininess: 1.0, map: map, transparent: true});
-        var planeGeometry = new THREE.BoxGeometry(radius, radiusY || radius, 0.1, 1, 1, 1);
-        var planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+        const planeMaterial = new THREE.MeshPhongMaterial({color: 0xFFFFFF, shininess: 1.0, map: map, transparent: true});
+        const planeGeometry = new THREE.BoxGeometry(radius, radiusY || radius, 0.1, 1, 1, 1);
+        let planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
         planeMesh.position.y += 50;
         planeMesh.position.x += xTranslate;
         planeMesh.position.z += zTranslate;
@@ -119,8 +108,8 @@ var planeGenerator = (function() {
     }
 
     function city(properties) {
-        var count = 0;
-        var cities = [];
+        let count = 0;
+        let cities = [];
         for( key in properties ) {
             if( !properties.hasOwnProperty(key) )
                 continue;
@@ -135,12 +124,12 @@ var planeGenerator = (function() {
             cities.push(textureObject);
         }
 
-        var cityObject = new THREE.Object3D();
+        let cityObject = new THREE.Object3D();
         cityObject.name = 'city';
 
-        var cityProperties = getCityProperties(count);
-        for( var i = 0; i < cities.length; i += 1 ){
-            var property = cityProperties.properties[i];
+        let cityProperties = getCityProperties(count);
+        for( let i = 0; i < cities.length; i += 1 ){
+            const property = cityProperties.properties[i];
             cityObject.add( addSingleObject(cities[i].name, cities[i].map, property.x, property.y, property.radius) );
         }
 
@@ -148,11 +137,11 @@ var planeGenerator = (function() {
     }
 
     function tile(card){
-        var numberTexture = cityTextures.get(card.size);
-        var typeTexture = cityTextures.get(card.suite);
-        var properties = getCityProperties(2);
+        const numberTexture = cityTextures.get(card.size);
+        const typeTexture = cityTextures.get(card.suite);
+        const properties = getCityProperties(2);
 
-        var tileObject = new THREE.Object3D();
+        let tileObject = new THREE.Object3D();
         tileObject.name = 'tempTurn';
         tileObject.userData.card = card;
         tileObject.add( addSingleObject(card.suite, typeTexture.map, properties.properties[0].x, properties.properties[0].y, properties.properties[0].radius) );

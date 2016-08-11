@@ -13,12 +13,7 @@ const SUITE = {
     boat: 'boat'
 };
 
-const CITYTYPE = {
-    religion: 'religion',
-    trade: 'trade',
-    politics: 'politics'
-};
-
+const CITYTYPE = ['religion', 'trade', 'politics' ];
 
 //gameInfo { roomName, ownerName, numPlayers, mapName, password, isPrivate }
 //mapObject { name, size {x,y}, data }
@@ -27,12 +22,14 @@ samurai.createGame = function (gameInfo, mapObject, callback) {
     gameObject.roomName = gameInfo.roomName;
     gameObject.numPlayers = gameInfo.numPlayers;
     gameObject.ownerName = gameInfo.ownerName;
+    gameObject.ownerUserId = gameInfo.ownerUserId;
     gameObject.mapName = gameInfo.mapName;
 
     gameObject.map = mapObject;
 
     gameObject.players = createPlayers(gameObject.numPlayers);
     gameObject.players[0].name = gameObject.ownerName;
+    gameObject.players[0]._id = gameObject.ownerUserId;
 
     gameObject.state = [];
     gameObject.players.forEach(function (player, index) {
@@ -96,14 +93,14 @@ function createDeck() {
         deck.push({suite: SUITE.politics, size: cardSize});
     }
 
-    let samurai1 = {suite: SUITE.samurai, size: 1};
-    let samurai2 = {suite: SUITE.samurai, size: 2};
-    let samurai3 = {suite: SUITE.samurai, size: 3};
+    const samurai1 = {suite: SUITE.samurai, size: 1};
+    const samurai2 = {suite: SUITE.samurai, size: 2};
+    const samurai3 = {suite: SUITE.samurai, size: 3};
     deck.push(samurai1, samurai1, samurai2, samurai2, samurai3);
 
-    let ronin = {suite: SUITE.ronin, quick: true, size: 1};
-    let boat1 = {suite: SUITE.boat, quick: true, size: 1};
-    let boat2 = {suite: SUITE.boat, quick: true, size: 2};
+    const ronin = {suite: SUITE.ronin, quick: true, size: 1};
+    const boat1 = {suite: SUITE.boat, quick: true, size: 1};
+    const boat2 = {suite: SUITE.boat, quick: true, size: 2};
     deck.push(ronin, boat1, boat1, boat2);
 
     //TODO: MISSING SWAP AND MOVE TILE
@@ -114,12 +111,11 @@ function createDeck() {
 
 function createRandomId(n) {
     var randomId = [];
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmopqrtuvwxyz123456789";
-
-    var numChars = n || 6;
+    const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmopqrtuvwxyz123456789";
+    const numChars = n || 6;
 
     for (var i = 0; i < numChars; i += 1) {
-        var index = Math.floor(Math.random() * possible.length);
+        const index = Math.floor(Math.random() * possible.length);
         randomId.push(possible[index]);
     }
 
@@ -128,7 +124,7 @@ function createRandomId(n) {
 
 function validPlayerTurn(gameObject, player) {
     for (let i = 0; i < gameObject.players.length; i += 1) {
-        if (gameObject.players[i].name == player && gameObject.playerTurn == i)
+        if (gameObject.players[i]._id == player && gameObject.playerTurn == i)
             return true;
     }
 
@@ -309,20 +305,144 @@ function handleScore(gameObject, moves) {
     return true;
 }
 
-samurai.processTurn = function (gameObject, player, moves, callback) {
+function countFreeTiles(mapObject){
+    let freeTiles = 0;
+    mapObject.data.forEach( tile => {
+        if( tile.type === 2 && tile.move === undefined )
+            freeTiles+=1;
+    });
+    return freeTiles;
+}
+
+function finishGame(gameObject){
+    let endGameObject = {
+        cityState: {},
+        playerState: []
+    };
+
+    gameObject.players.forEach(() => endGameObject.playerState.push({
+        casteSupport: 0,
+        castes: []
+    }));
+
+    CITYTYPE.forEach( city => {
+        let high = -1;
+        let player = -1;
+        gameObject.state.forEach( (playerState, playerIndex) => {
+            let playerScore = playerState.score[city];
+            if( playerScore > high ){
+                high = playerScore;
+                player = playerIndex;
+            } else if( playerScore === high ){
+                player = -1;
+            }
+        });
+
+        if( player !== -1 ) {
+            endGameObject.playerState[player].casteSupport += 1;
+            endGameObject.playerState[player].castes.push(city);
+        }
+
+        endGameObject.cityState[city] = {
+            winner: player,
+            score: high
+        };
+    });
+
+    let highestCasteSupport = 0;
+    endGameObject.playerState.forEach( ps => { highestCasteSupport = Math.max(highestCasteSupport, ps.casteSupport); });
+
+    let highestCastePlayers = [];
+    endGameObject.playerState.forEach( (ps, index) => {
+        if( ps.casteSupport != highestCasteSupport )
+            return;
+
+        highestCastePlayers.push(index);
+    });
+
+    if( highestCasteSupport >= 2 ){
+        endGameObject.winner = highestCastePlayers[0];
+        endGameObject.winCondition = "Caste Support";
+        return endGameObject;
+    }
+
+
+    highestCastePlayers.forEach( playerIndex => {
+        const playerState = gameObject.state[playerIndex];
+
+        let totalSupport = 0;
+        let balanceSupport = 0;
+        CITYTYPE.forEach( city => {
+            totalSupport += playerState.score[city];
+            if( endGameObject.playerState[playerIndex].castes[0] !== city )
+                balanceSupport += playerState.score[city];
+        });
+
+        endGameObject.playerState[playerIndex].totalSupport = totalSupport;
+        endGameObject.playerState[playerIndex].balanceSupport = balanceSupport;
+    });
+
+
+    let highestBalance = -1;
+    highestCastePlayers.forEach( playerIndex => highestBalance = Math.max(endGameObject.playerState[playerIndex].balanceSupport, highestBalance) );
+
+    let highestBalancePlayers = [];
+    highestCastePlayers.forEach( playerIndex => {
+        if( endGameObject.playerState[playerIndex].balanceSupport !== highestBalance )
+            return;
+        highestBalancePlayers.push(playerIndex);
+    });
+
+    if( highestBalancePlayers.length === 1 ){
+        endGameObject.winner = highestBalancePlayers[0];
+        endGameObject.winCondition = "Balance Support";
+        return;
+    }
+
+    let highestTotal = -1;
+    highestCastePlayers.forEach( playerIndex => highestTotal = Math.max(endGameObject.playerState[playerIndex].totalSupport, highestTotal) );
+
+    let highestTotalPlayers = [];
+    highestCastePlayers.forEach( playerIndex => {
+        if( endGameObject.playerState[playerIndex].totalSupport !== highestTotal )
+            return;
+        highestTotalPlayers.push(playerIndex);
+    });
+
+    if( highestTotalPlayers.length === 1 ){
+        endGameObject.winner = highestTotalPlayers[0];
+        endGameObject.winCondition = "Total Support";
+        return;
+    }
+
+    endGameObject.winner = highestTotalPlayers;
+    endGameObject.winCondition = "Tied";
+
+    return endGameObject;
+}
+
+samurai.processTurn = function (gameObject, userId, moves, callback) {
+    const freeTilesPreTurn = countFreeTiles(gameObject.map);
+    console.log("Free Tiles", freeTilesPreTurn);
+
+    if( freeTilesPreTurn === 0 || gameObject.state == "game over"){
+        callback(response.fail("Game is finished"));
+        return;
+    }
+
     if( moves.length == 0 ){
         callback(response.fail('Skipping turns not allowed'));
         return;
     }
 
-    if (!validPlayerTurn(gameObject, player)) {
+    if (!validPlayerTurn(gameObject, userId)) {
         callback(response.fail('Not your turn'));
         return;
     }
-
-    let playerObject = gameObject.players.find( p => p.name == player );
+    //TODO: Investigate '=='
+    let playerObject = gameObject.players.find( p => p._id == userId );
     if (playerObject === undefined) {
-        callback({success: false, error: 'player not found in gameobj: ' + player});
+        callback({success: false, error: 'player not found in gameobj'});
         return;
     }
 
@@ -342,9 +462,7 @@ samurai.processTurn = function (gameObject, player, moves, callback) {
     }
 
     //Add cards to the spent pile
-    moves.forEach(move => {
-        playerObject.usedCards.push(move);
-    });
+    moves.forEach(move => playerObject.usedCards.push(move) );
 
     //Draw new cards
     while (playerObject.hand.length < 6 && playerObject.deck.length != 0) {
@@ -357,9 +475,14 @@ samurai.processTurn = function (gameObject, player, moves, callback) {
     let moveObject = {player: playerObject.name, moves: moves};
     if( moves.resolve ) moveObject.resolve = moves.resolve;
     gameObject.moveList.push(moveObject);
-    // gameObject.moveList.push(moves);
     gameObject.turnCounter++;
     gameObject.playerTurn = (gameObject.playerTurn + 1) % gameObject.numPlayers;
+
+    if( countFreeTiles(gameObject.map) === 0 || playerObject.hand.length === 0 ){
+        gameObject.status = "game over";
+        gameObject.endGameState = finishGame(gameObject);
+        console.log(gameObject.endGameState);
+    }
 
     callback({success: true, game: gameObject});
 };

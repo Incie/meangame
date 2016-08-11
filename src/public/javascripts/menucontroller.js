@@ -45,6 +45,16 @@ playModule.config(function($stateProvider, $urlRouterProvider) {
 playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies', 'MapService', '$location', function($scope, $http, $window, $cookies, mapservice, $location){
     $scope.navClass = { 'btn':true, 'btn-sm':true, 'btn-primary':true };
 
+    $scope.login = function(){
+        let payload = {
+            user: document.getElementById('username').value,
+            pass: document.getElementById('password').value
+        };
+        let config = { withCredentials: true };
+        $http.post('/login', payload, config)
+            .then(response => console.log(response));
+    };
+
     console.log('' + $location.search('game') );
 
     $scope.mapservice = mapservice;

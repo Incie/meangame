@@ -5,13 +5,13 @@ var db = mongojs('samurai', ['samurai']);
 var dbModule = {};
 
 var updateMap = function(map, docs, callback){
-    if( map.size.x*map.size.y != map.data.length ){
+    if( map.size.x*map.size.y !== map.data.length ){
         console.log('error updating map: size mismatch');
         callback(response.fail(response, 'size mismatch'));
         return;
     }
 
-    db.samurai.update( {_id: docs[0]._id}, { $set : {data: map.data, size: map.size}}, function(err, docs){
+    db.samurai.update( {_id: docs[0]._id}, { $set : {data: map.data, size: map.size}}, function(err){
         if( err ){
             console.log('error updating map: ', err);
             callback(response.fail(response, 'could not update map'));
@@ -32,7 +32,7 @@ dbModule.saveOrUpdateMap = function(map, callback){
         else if( docs.length > 0 )
             return updateMap(map, docs, callback);
 
-        db.samurai.insert( map, function(err, docs){
+        db.samurai.insert( map, function(err){
             if( err ) {
                 console.log('error inserting map, ', err);
                 callback(response.fail(response, 'err'));
@@ -79,7 +79,7 @@ dbModule.getMap = function(mapName, callback){
 };
 
 dbModule.optimizeMapData = function(mapData){
-    return mapData.filter( tile =>  { return (tile.type != 0) } );
+    return mapData.filter( tile => tile.type !== 0 );
 };
 
 module.exports = dbModule;
