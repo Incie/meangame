@@ -6,6 +6,17 @@ var validate = require('validator');
 
 var API = {};
 
+API.importMapJson = function(req, res){
+    if( req.session.user.role !== 'admin' ){
+        res.status(401).send({message: 'forbidden'});
+        return;
+    }
+
+    db.importJson(req.body.json, function(err){
+        res.send({message: err});
+    });
+};
+
 
 API.getAvailableGames = function(req, res){
     gamedb.getAvailableGames(function(availableGames){
@@ -161,6 +172,11 @@ API.getMap = function(req, res) {
 
 
 API.saveOrUpdateMap = function(req, res){
+    if( req.session.user.role === "admin" ){
+        res.status(401).send({message: "no"});
+        return;
+    }
+
     const mapData = req.body;
     db.saveOrUpdateMap(mapData, function(mapObject){
         res.send(mapObject);

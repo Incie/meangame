@@ -44,6 +44,12 @@ dbModule.saveOrUpdateMap = function(map, callback){
     });
 };
 
+dbModule.importJson = function(json, callback){
+    db.samurai.insert(json, function(err){
+        callback(err)
+    });
+};
+
 dbModule.getMapList = function(callback){
     var limitResponse = {name:1, size:1,_id:0};
     db.samurai.find({},limitResponse, function( err, docs ) {

@@ -12,7 +12,8 @@ router.post('/login', function(req, res){
             req.session.authenticated = true;
             req.session.user = {
                 id: userObject._id.toString(),
-                name: userObject.name
+                name: userObject.name,
+                role: userObject.role || "user"
             };
             req.session.save( function(){
                 res.send( {message:'Logged In'});
@@ -80,6 +81,8 @@ router.put('/game-replay/:gameid/:turnid', api.replayGameTo);
 router.get(   '/game/admin/games',     api.adminGetGames);
 router.delete('/game/:gameid/admin',   api.adminDeleteGame);
 router.get(   '/game/:gameid/admin',   api.adminGetGameStatus);
+
+router.post( '/import/json', api.importMapJson );
 
 router.get('/whoami', function(req, res){
     res.status(200).send({name:req.session.user.name});

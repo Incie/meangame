@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Import</title>
+</head>
+<body>
+    <textarea id="json-data"></textarea>
+    <button onclick="importJson()">Import</button>
+
+    <script>
+        function importJson(){
+            let data = {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: "POST",
+                body: JSON.stringify( document.getElementById('json-data'))
+            };
+            fetch("/api/import/json", data).then( r => r.json() ).then( j => console.log(j) );
+        }
+    </script>
+</body>
+</html>
