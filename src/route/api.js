@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/login', function(req, res){
     users.login( req.body )
         .then( function(userObject){
-            console.log('authenticated user', userObject.user);
+            console.log('authenticated user', userObject.user, userObject.role);
             req.session.authenticated = true;
             req.session.user = {
                 id: userObject._id.toString(),
@@ -53,12 +53,13 @@ router.post('/signup', function(req, res){
 
 
 router.all('*', function(req, res, next){
+    console.log(req.session);
     if( req.session.authenticated ){
         next();
         return;
     }
 
-    res.status(401).send({message:'forbidden'});
+    res.status(401).send({message:'not authenticated'});
 });
 
 router.get( '/maps',                    api.getMapList);

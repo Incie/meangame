@@ -15,7 +15,7 @@ app.use(bodyParser.json({limit: '2mb'}));
 app.use(bodyParser.urlencoded({ extended: false, limit: '2mb'}));
 app.use(cookieParser());
 app.use( session({
-    secret: process.env.SECRET,
+    secret: "privatStatiskIngentingHovedStrengArgumenter",
     resave: true,
     maxAge: 2 * 60 * 60 * 1000,
     saveUninitialized: true,

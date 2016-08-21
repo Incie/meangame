@@ -15,8 +15,9 @@
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
+		credentials: "include",
                 method: "POST",
-                body: JSON.stringify( document.getElementById('json-data'))
+                body: JSON.parse(document.getElementById('json-data').value)
             };
             fetch("/api/import/json", data).then( r => r.json() ).then( j => console.log(j) );
         }

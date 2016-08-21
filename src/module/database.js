@@ -45,6 +45,7 @@ dbModule.saveOrUpdateMap = function(map, callback){
 };
 
 dbModule.importJson = function(json, callback){
+   console.log(json.name, json.size);
     db.samurai.insert(json, function(err){
         callback(err)
     });
