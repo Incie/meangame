@@ -53,7 +53,6 @@ router.post('/signup', function(req, res){
 
 
 router.all('*', function(req, res, next){
-    console.log(req.session);
     if( req.session.authenticated ){
         next();
         return;

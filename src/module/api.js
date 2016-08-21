@@ -9,7 +9,6 @@ var API = {};
 API.importMapJson = function(req, res){
 	console.log('trying to import map');
     if( req.session.user.role !== 'admin' ){
-	console.log(req.session.user);
         res.status(401).send({message: 'forbidden'});
         return;
     }
