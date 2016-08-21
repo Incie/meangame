@@ -15,10 +15,11 @@
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-		credentials: "include",
+		        credentials: "include",
                 method: "POST",
-                body: JSON.parse(document.getElementById('json-data').value)
+                body: JSON.stringify( JSON.parse(document.getElementById('json-data').value) )
             };
+            console.log(data);
             fetch("/api/import/json", data).then( r => r.json() ).then( j => console.log(j) );
         }
     </script>
