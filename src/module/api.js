@@ -14,12 +14,24 @@ API.importMapJson = function(req, res){
     }
 
     if( req.body === undefined ){
-	res.status(404).send({message:'json not found'});
-	return;
+        res.status(404).send({message:'json not found'});
+        return;
     }	
 
     db.importJson(req.body, function(err){
         res.send({message: err});
+    });
+};
+
+API.exportGameJson = function(req, res){
+    if( req.session.user.role !== 'admin' ){
+        res.status(401).send({message:'I can\'t allow that'});
+        return;
+    }
+
+    const gameid = req.params['gameid'];
+    gamedb.getGameObject(gameid, function(retObject){
+        res.send(retObject);
     });
 };
 
