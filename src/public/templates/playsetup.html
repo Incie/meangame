@@ -5,10 +5,6 @@
         <input class="col-lg-9" id="name" type="text" ng-model="$parent.roomName" placeholder="Enter a room name"/>
     </div>
     <div class="form-group col-lg-12 smallpadding">
-        <label class="control-label col-lg-3">Your Name </label>
-        <input class="col-lg-9" type="text" ng-model="$parent.playerName" placeholder="Enter your name"/>
-    </div>
-    <div class="form-group col-lg-12 smallpadding">
         <label class="control-label col-lg-3">Players</label>
             <span class="col-lg-3">
                 <button class="btn btn-xs" ng-class="{'btn-primary': $parent.players == 2}" ng-click="$parent.players = 2;">2</button>
@@ -19,10 +15,6 @@
         <select class="col-lg-3" ng-model="$parent.mapservice.selectedMap">
             <option ng-repeat="map in $parent.mapservice.maps" value="{{map.name}}">{{map.name}}</option>
         </select>
-    </div>
-    <div class="form-group col-lg-12 smallpadding">
-        <label class="col-lg-3">Password</label> <input class="col-lg-3" type="password" ng-model="$parent.password"/>
-        <label class="col-lg-3">Private</label>  <input class="col-lg-1" type="checkbox" ng-model="$parent.isPrivate"/>
     </div>
     <div class="form-group col-lg-12 smallpadding">
         <button class="btn btn-primary" ng-click="$parent.createNewGame()">Create Game</button>

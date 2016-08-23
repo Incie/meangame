@@ -15,11 +15,12 @@ app.use(bodyParser.json({limit: '2mb'}));
 app.use(bodyParser.urlencoded({ extended: false, limit: '2mb'}));
 app.use(cookieParser());
 
+const TIME = { minute: 60 * 1000 };
 let sessionConfig = {
     secret: process.env.SECRET,
     resave: false,
     proxy: true,
-    maxAge: 2 * 60 * 60 * 1000,
+    maxAge: 120 * TIME.minute,
     saveUninitialized: false,
     cookie: { secure: true }
 };
