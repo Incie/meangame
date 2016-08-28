@@ -396,7 +396,7 @@ function finishGame(gameObject){
     if( highestBalancePlayers.length === 1 ){
         endGameObject.winner = highestBalancePlayers[0];
         endGameObject.winCondition = "Balance Support";
-        return;
+        return endGameObject;
     }
 
     let highestTotal = -1;
@@ -425,7 +425,7 @@ samurai.processTurn = function (gameObject, userId, moves, callback) {
     const freeTilesPreTurn = countFreeTiles(gameObject.map);
     console.log("Free Tiles", freeTilesPreTurn);
 
-    if( freeTilesPreTurn === 0 || gameObject.state == "game over"){
+    if( freeTilesPreTurn === 0 || gameObject.status === "game over"){
         callback(response.fail("Game is finished"));
         return;
     }
