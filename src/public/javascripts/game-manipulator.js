@@ -13,7 +13,8 @@ function parseGameObject(json){
         name: json.roomName,
         numPlayers: json.numPlayers,
         owner: json.ownerName,
-        gameid: json.gameid
+        gameid: json.gameid,
+        state: json.state
     }, null, 1);
 
     let moveListElement = document.getElementById('movelist');
@@ -32,18 +33,16 @@ function parseGameObject(json){
     let gameElement = document.getElementById('board');
     gameElement.innerHTML = '';
     json.map.data.forEach(tile=>{
-        let left = tile.x * 35 + gameElement.offsetTop;
-        let top = tile.y * 35 + gameElement.offsetLeft;
+        let left = tile.x * 35 + gameElement.offsetTop - 17;
+        let top = tile.y * 20 + gameElement.offsetLeft;
         if( tile.y % 2 == 0 )
             left += 35 / 2;
         let color = hexColors[tile.type];
 
         if( tile.move !== undefined )
             color = intToRGB(tile.move.color);
-        let s = '<div style="position:absolute; width:35px; height: 35px; left:'+left+'px;top: '+top+'px;background-color: '+color+'"></div>'
-        gameElement.innerHTML += s;
+        gameElement.innerHTML += '<div style="position:absolute; width:20px; height: 20px; left:' + left + 'px;top: ' + top + 'px;background-color: ' + color + '"></div>';
     });
-
 
     game = json;
 }
@@ -54,7 +53,21 @@ function rewindTo(moveIndex){
         moveSplice.moves.forEach( move => {
             tile = game.map.data.find( t => move.x==t.x && move.y==t.y );
             delete tile.move;
-        })
+        });
+
+        let playerObject = game.players.find( p => p.name === moveSplice.player );
+        moveSplice.moves.forEach( move => {
+            playerObject.hand.push( move.playerCard[0] );
+        });
+
+        if( moveSplice.resolve !== undefined ){
+            moveSplice.resolve.forEach( resolve => {
+                if( resolve.player === "Tie" )
+                    return;
+
+                game.state.find( state => state.player === resolve.player ).score[resolve.type] -= 1;
+            });
+        }
     });
 
     parseGameObject(game);

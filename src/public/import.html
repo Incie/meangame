@@ -5,11 +5,17 @@
     <title>Import</title>
 </head>
 <body>
-    <textarea id="json-data"></textarea>
-    <button onclick="importJson()">Import</button>
+    <textarea id="json-data" style="height: 90%; width:50%"></textarea>
+    <button onclick="importJson()">Import Map</button>
+    <button onclick="importJson(true)">Import Game</button>
+    <div id="response"></div>
 
     <script>
-        function importJson(){
+        function importJson(importGame){
+            let url = "/api/import/map/json";
+            if( importGame )
+                url = "/api/import/game/json";
+
             let data = {
                 headers: {
                     'Accept': 'application/json',
@@ -20,7 +26,10 @@
                 body: JSON.stringify( JSON.parse(document.getElementById('json-data').value) )
             };
             console.log(data);
-            fetch("/api/import/json", data).then( r => r.json() ).then( j => console.log(j) );
+            fetch(url, data).then( r => r.json() ).then( j => {
+                console.log(j);
+                document.getElementById('response').innerHTML = JSON.stringify(j);
+            } );
         }
     </script>
 </body>

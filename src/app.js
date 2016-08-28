@@ -19,7 +19,7 @@ app.use( session({
     resave: true,
     maxAge: 2 * 60 * 60 * 1000,
     saveUninitialized: true,
-    cookie: { secure: true }
+    cookie: { secure: false }
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));

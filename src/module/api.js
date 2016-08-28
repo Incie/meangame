@@ -23,6 +23,24 @@ API.importMapJson = function(req, res){
     });
 };
 
+API.importGameJson = function(req, res){
+    if( req.session.user.role !== 'admin' ){
+        res.status(401).send({message: 'Not allowed'});
+        return;
+    }
+
+    let gameObject = req.body;
+    gameObject.gameid = "temp" + Math.floor(Math.random() * 1000000000);
+    gamedb.importGameObject( gameObject, function(response){
+        if( response.success ){
+            res.send(response);
+            return;
+        }
+
+        res.status(400).send(response);
+    });
+};
+
 API.exportGameJson = function(req, res){
     if( req.session.user.role !== 'admin' ){
         res.status(401).send({message:'I can\'t allow that'});
