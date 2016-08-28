@@ -93,6 +93,17 @@ gamedb.getGameInfoFor = function(gameid, userId, callback){
     });
 };
 
+gamedb.importGameObject = function(gameObject, callback){
+    db.samuraigame.insert( gameObject, function(err){
+        if( err ){
+            callback(response.fail(err));
+            return;
+        }
+
+       callback(response.success("game imported"));
+    })
+};
+
 gamedb.getGameObject = function(gameid, callback){
     db.samuraigame.find({gameid:gameid}, function(err, docs){
         if( err ) {

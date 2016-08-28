@@ -83,6 +83,8 @@ router.delete('/game/:gameid/admin',   api.adminDeleteGame);
 router.get(   '/game/:gameid/admin',   api.adminGetGameStatus);
 
 router.post( '/import/json', api.importMapJson );
+router.get(  '/export/:gameid/json', api.exportGameJson );
+router.post( '/import/game/json', api.importGameJson );
 
 router.get('/whoami', function(req, res){
     res.status(200).send({name:req.session.user.name});

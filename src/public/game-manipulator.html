@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/javascripts/game-manipulator.js"></script>
+</head>
+<body>
+    <div>
+        <button onclick="getGame()">Get</button>
+    </div>
+    <div style="height: 150px; border: 1px solid black;">
+        <textarea type="text" id="gameinfo" style="width: 500px; height:95%"disabled></textarea>
+    </div>
+    <div id="gamedata" style="width:100%; border: 1px solid red; padding: 5px; margin: 3px">
+        <span id="movelist" style="display: block; width: 25%; border: 1px solid green;"></span>
+        <span id="board" style="display: block; width: 75%"></span>
+    </div>
+</body>
+</html>

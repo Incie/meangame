@@ -14,12 +14,42 @@ API.importMapJson = function(req, res){
     }
 
     if( req.body === undefined ){
-	res.status(404).send({message:'json not found'});
-	return;
+        res.status(404).send({message:'json not found'});
+        return;
     }	
 
     db.importJson(req.body, function(err){
         res.send({message: err});
+    });
+};
+
+API.importGameJson = function(req, res){
+    if( req.session.user.role !== 'admin' ){
+        res.status(401).send({message: 'Not allowed'});
+        return;
+    }
+
+    let gameObject = req.body;
+    gameObject.gameid = "temp" + Math.floor(Math.random() * 1000000000);
+    gamedb.importGameObject( gameObject, function(response){
+        if( response.success ){
+            res.send(response);
+            return;
+        }
+
+        res.status(400).send(response);
+    });
+};
+
+API.exportGameJson = function(req, res){
+    if( req.session.user.role !== 'admin' ){
+        res.status(401).send({message:'I can\'t allow that'});
+        return;
+    }
+
+    const gameid = req.params['gameid'];
+    gamedb.getGameObject(gameid, function(retObject){
+        res.send(retObject);
     });
 };
 
