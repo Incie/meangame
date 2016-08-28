@@ -360,12 +360,12 @@ function finishGame(gameObject){
         highestCastePlayers.push(index);
     });
 
-    if( highestCasteSupport >= 2 ){
+    // A Player Won if caste support >= 2 or is the only one with caste support
+    if( highestCasteSupport >= 2 || highestCastePlayers.length === 1){
         endGameObject.winner = highestCastePlayers[0];
         endGameObject.winCondition = "Caste Support";
         return endGameObject;
     }
-
 
     highestCastePlayers.forEach( playerIndex => {
         const playerState = gameObject.state[playerIndex];
@@ -393,6 +393,7 @@ function finishGame(gameObject){
         highestBalancePlayers.push(playerIndex);
     });
 
+    //A Player wins with highest balance sum
     if( highestBalancePlayers.length === 1 ){
         endGameObject.winner = highestBalancePlayers[0];
         endGameObject.winCondition = "Balance Support";
@@ -409,6 +410,7 @@ function finishGame(gameObject){
         highestTotalPlayers.push(playerIndex);
     });
 
+    //A Player wins with highest total support
     if( highestTotalPlayers.length === 1 ){
         endGameObject.winner = highestTotalPlayers[0];
         endGameObject.winCondition = "Total Support";
