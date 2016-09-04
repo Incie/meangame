@@ -226,7 +226,7 @@
 
                 hoverObject.move.push({
                     player: userData.move.player,
-                    type: userData.move.suite,
+                    type: capitalFirstLetter(userData.move.suite),
                     color: toHexString(userData.move.color),
                     influence: userData.move.size,
                     influenceType: capitalFirstLetter(type)

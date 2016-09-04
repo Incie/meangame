@@ -8,7 +8,7 @@
     </span>
 </div>
 <div ng-repeat="move in _hover.move">
-    <div>{{move.player}}'s <img ng-src="{{getSuiteSource(move.type)}}" class="smalltile"/><span ng-style="{'color': move.color}" class="hover-cityscore">{{move.influence}}</span></div>
+    <div>{{move.player}}'s {{move.type}} <span ng-style="{'color': move.color}" class="hover-cityscore">{{move.influence}}</span> tile</div>
     <div style="padding-top: 5px">
         Gives <span ng-style="{'color': move.color}" class="hover-cityscore">{{move.influence}}</span> influence to {{move.influenceType}} in adjacent city tiles
     </div>
