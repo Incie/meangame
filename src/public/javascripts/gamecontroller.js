@@ -135,59 +135,62 @@
             $scope.clearHover();
         };
 
-        $scope.onMouseMove = function(event){
+        $scope.onMouseMove = function(event) {
             let hexagons = $scope.renderer.TJS.getSceneObject('hexagons');
-            if( !hexagons ) {
+            if (!hexagons) {
                 $scope.clearHover();
                 return;
             }
 
-            var obj = $scope.renderer.TJS.raycaster(hexagons.children, {x: event.offsetX, y: event.offsetY} );
+            var obj = $scope.renderer.TJS.raycaster(hexagons.children, {x: event.offsetX, y: event.offsetY});
 
-            if( !obj.success ){
+            if (!obj.success) {
                 $scope.clearHover();
                 return;
             }
 
             let hoverObject = {
                 texts: [],
-                cityScores: []
+                cityScores: [],
+                move: []
             };
             var userData = obj.object.userData;
 
-            if( userData.type == 3 ){
-                hoverObject.texts.push( 'City Tile' );
-                hoverObject.texts.push( 'Resources:');
+            if (userData.type == 3) {
+                hoverObject.texts.push('City Tile');
+                hoverObject.texts.push('Resources:');
 
                 let tilesAroundCity = boardHelper.findTilesAround(obj.object, hexagons);
                 let players = [];
-                $scope.game.state.forEach( function(playerState) {
-                    players.push( {name: playerState.player, influence: 0, color: playerState.color });
+                $scope.game.state.forEach(function (playerState) {
+                    players.push({name: playerState.player, influence: 0, color: playerState.color});
                 });
 
-                for( let resource in userData.city ) {
-                    if( !userData.city.hasOwnProperty(resource) )
+                for (let resource in userData.city) {
+                    if (!userData.city.hasOwnProperty(resource))
                         continue;
 
-                    players.forEach( p => {p.influence = 0});
-                    tilesAroundCity.forEach( function(tile){
+                    players.forEach(p => {
+                        p.influence = 0
+                    });
+                    tilesAroundCity.forEach(function (tile) {
                         let move = tile.userData.move;
-                        if( move === undefined ){
+                        if (move === undefined) {
                             let tempTile = tile.getObjectByName('tempTurn');
-                            if( tempTile === undefined )
+                            if (tempTile === undefined)
                                 return;
 
                             const card = tempTile.userData.card;
                             move = {
                                 player: $scope.player.name,
                                 suite: card.suite,
-                                size:card.size
+                                size: card.size
                             };
                         }
 
-                        let playerInfluence = players.find( p => p.name == move.player );
+                        let playerInfluence = players.find(p => p.name == move.player);
                         let suite = move.suite;
-                        if( suite == 'boat' || suite == 'ronin' || suite == 'samurai' || suite == resource )
+                        if (suite == 'boat' || suite == 'ronin' || suite == 'samurai' || suite == resource)
                             playerInfluence.influence += move.size;
                     });
 
@@ -197,14 +200,14 @@
                     };
 
                     players.forEach(p => {
-                        scoreObject.scores.push( {
+                        scoreObject.scores.push({
                             player: p.name,
                             color: p.color,
                             influence: p.influence
                         });
                     });
 
-                    if( scoreObject.scores.length === 0 )
+                    if (scoreObject.scores.length === 0)
                         scoreObject.scores.push({
                             influence: '<>',
                             color: 'black'
@@ -213,14 +216,27 @@
                     hoverObject.cityScores.push(scoreObject);
                 }
             }
-            else if( userData.type == 2 ) hoverObject.texts.push('Land Tile');
-            else if( userData.type == 1 ) hoverObject.texts.push('Water Tile');
+            else if (userData.type == 2) hoverObject.texts.push('Land Tile');
+            else if (userData.type == 1) hoverObject.texts.push('Water Tile');
 
-            if( userData.move )
-                hoverObject.texts.push( 'Move: ' + userData.move.player+'\'s [' + capitalFirstLetter(userData.move.suite) + ' ' +userData.move.size +']');
+            if (userData.move) {
+                let type = userData.move.suite;
+                if( type === 'samurai' || type === 'ronin' || type === 'boat' )
+                    type = "ALL";
+
+                hoverObject.move.push({
+                    player: userData.move.player,
+                    type: userData.move.suite,
+                    color: toHexString(userData.move.color),
+                    influence: userData.move.size,
+                    influenceType: capitalFirstLetter(type)
+                });
+            }
+
+                // hoverObject.texts.push( 'Move: ' + userData.move.player+'\'s [' +  + ' ' +userData.move.size +']');
 
 
-            $scope.setHover(hoverObject.texts, hoverObject.cityScores);
+            $scope.setHover(hoverObject.texts, hoverObject.cityScores, hoverObject.move);
             $scope.setHoverPosition(event.offsetX, event.offsetY);
         };
 
@@ -584,8 +600,9 @@
                     else el.style.top = y+'px';
                 };
 
-                scope.setHover = function(hoverText, cityScores) {
+                scope.setHover = function(hoverText, cityScores, move) {
                     scope.$apply( function() {
+                        scope._hover.move = move;
                         scope._hover.cityScores = cityScores;
                         scope._hover.texts = hoverText;
                         scope._hover.enabled = true;
@@ -594,6 +611,7 @@
 
                 scope.clearHover = function(){
                     scope.$apply( function() {
+                        scope._hover.move = [];
                         scope._hover.cityScores = [];
                         scope._hover.texts = '';
                         scope._hover.enabled = false;
