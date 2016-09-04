@@ -2,12 +2,9 @@
     <div>{{t}}</div>
 </div>
 <div ng-repeat="score in _hover.cityScores">
-    <div>
-        {{score.type}}
-    </div>
-    <div>
-        <span class="hover-cityscore" ng-style="{'color': player.color}" ng-repeat="player in score.scores">
-            {{player.influence}}
-        </span>
-    </div>
+     <img ng-src="{{getSuiteSource(score.type)}}" class="smalltile">
+    <span class="hover-cityscore" ng-style="{'color': player.color}" ng-repeat="player in score.scores">
+        {{player.influence}}
+    </span>
+
 </div>
