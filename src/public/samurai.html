@@ -22,6 +22,9 @@
                         <button ng-class="navClass" ui-sref="join">Join</button>
                         <button ng-class="navClass" ui-sref="about">About</button>
                         <button ng-class="navClass" class="btn-warning" ui-sref="admin">Admin</button>
+
+                        <a ng-if="notLoggedIn()" href="/login" style="margin: auto; position: absolute; top: 5px; right: 0" class="btn btn-xs btn-danger">Log In</a>
+                        <button ng-click="logout()" ng-if="loggedIn()" href="/logout" style="margin: auto; position: absolute; top: 5px; right: 0" class="btn btn-xs btn-success">Log Out - {{whoami}}</button>
                     </div>
 
                     <div style="padding-top:50px;">

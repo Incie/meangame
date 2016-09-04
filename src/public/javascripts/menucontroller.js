@@ -24,7 +24,7 @@ playModule.factory('MapService', ['$http', function($http) {
             mapservice.selectedMap = mapservice.maps[0];
         },
         function(errorResponse){
-            postMessage('Error fetching maps: ' + errorResponse.message);
+            // postMessage('Error fetching maps: ' + errorResponse.message);
         }
     );
 
@@ -44,6 +44,9 @@ playModule.config(function($stateProvider, $urlRouterProvider) {
 
 playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies', 'MapService', '$location', function($scope, $http, $window, $cookies, mapservice, $location){
     $scope.navClass = { 'btn':true, 'btn-sm':true, 'btn-primary':true };
+
+    $scope.isLoggedIn = true;
+    $scope.whoami = '';
 
     $scope.login = function(){
         let payload = {
@@ -149,6 +152,39 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
         $window.location.href = '/editor?clone=' + selectedMap;
     };
 
+    $scope.loggedIn = function() {
+        return $scope.isLoggedIn;
+    };
+
+    $scope.notLoggedIn = function() {
+        return !$scope.isLoggedIn;
+    };
+
+    $http.get('/api/whoami').then( response => {
+        if( response.status >= 400 ){
+            $scope.isLoggedIn = false;
+            $scope.whoami = '';
+            console.log("logged out");
+
+            return;
+        }
+        console.log("logged in");
+        $scope.isLoggedIn = true;
+        $scope.whoami = response.data.name;
+    }).catch(e => {
+        $scope.isLoggedIn = false;
+        $scope.whoami = '';
+        console.log("not logged in");
+    });
+
+    $scope.logout = function() {
+        $http.post( '/api/logout' ).then( response => {
+            if( response.code === 200 ){
+                $scope.isLoggedIn = false;
+            }
+        })
+    };
+
     $scope.createNewGame = function(){
         var newGameObject = {
             ownerName:$scope.playerName,
@@ -172,7 +208,7 @@ playModule.controller('menucontroller', ['$scope', '$http', '$window', '$cookies
         });
     };
 
-    var postMessage = function(msg){
+    $scope.postMessage = function(msg){
         console.log(msg);
         var element = document.getElementById('messages');
         element.innerHTML = msg + '<br/>' + element.innerHTML;
