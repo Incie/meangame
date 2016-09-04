@@ -60,7 +60,7 @@ var tjs = function() {
         getCamera: function() { return camera; },
         raycaster: function(objects, mouseCoord){
             var raycaster = new THREE.Raycaster();
-            var mouse = new THREE.Vector2( (mouseCoord.x / camera.right) * 2 - 1, -(mouseCoord.y / camera.bottom) * 2 + 1);
+            var mouse = new THREE.Vector2( (mouseCoord.x / (camera.right-camera.left)) * 2 - 1, -(mouseCoord.y / (camera.bottom-camera.top)) * 2 + 1);
 
             raycaster.setFromCamera(mouse, camera);
             var intersects = raycaster.intersectObjects(objects);
