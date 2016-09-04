@@ -199,6 +199,11 @@ gamedb.registerNewPlayer = function( gameId, playerName, userId, callback ){
         var players = gameObject.players;
         var freePlayerIndex = -1;
         for( var i = 0; i < players.length; i += 1 ){
+            if( players[i]._id === userId ){
+                callback({success: false, message: 'You are already in the game'});
+                return;
+            }
+
             if( players[i].name === 'unassigned' ){
                 freePlayerIndex = i;
                 break;
