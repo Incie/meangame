@@ -586,7 +586,6 @@
 
                 scope.setHover = function(hoverText, cityScores) {
                     scope.$apply( function() {
-                        console.log(cityScores);
                         scope._hover.cityScores = cityScores;
                         scope._hover.texts = hoverText;
                         scope._hover.enabled = true;
@@ -595,9 +594,9 @@
 
                 scope.clearHover = function(){
                     scope.$apply( function() {
-                        // scope._hover.cityScores = [];
-                        // scope._hover.texts = '';
-                        scope._hover.enabled = true;
+                        scope._hover.cityScores = [];
+                        scope._hover.texts = '';
+                        scope._hover.enabled = false;
                     });
                 }
             }
