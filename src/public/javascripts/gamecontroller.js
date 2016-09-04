@@ -149,17 +149,20 @@
                 return;
             }
 
-            var tileText = [];
+            let hoverObject = {
+                texts: [],
+                cityScores: []
+            };
             var userData = obj.object.userData;
 
             if( userData.type == 3 ){
-                tileText.push( 'City Tile' );
-                tileText.push( 'Resources:');
+                hoverObject.texts.push( 'City Tile' );
+                hoverObject.texts.push( 'Resources:');
 
                 let tilesAroundCity = boardHelper.findTilesAround(obj.object, hexagons);
                 let players = [];
                 $scope.game.state.forEach( function(playerState) {
-                    players.push( {name: playerState.player, influence: 0 });
+                    players.push( {name: playerState.player, influence: 0, color: playerState.color });
                 });
 
                 for( let resource in userData.city ) {
@@ -188,22 +191,36 @@
                             playerInfluence.influence += move.size;
                     });
 
-                    let type = capitalFirstLetter(resource);
-                    let resourceString = type +':';
+                    let scoreObject = {
+                        type: capitalFirstLetter(resource),
+                        scores: []
+                    };
+
                     players.forEach(p => {
-                        resourceString += '['+p.name +'('+p.influence+')]';
+                        scoreObject.scores.push( {
+                            player: p.name,
+                            color: p.color,
+                            influence: p.influence
+                        });
                     });
-                    tileText.push( resourceString );
+
+                    if( scoreObject.scores.length === 0 )
+                        scoreObject.scores.push({
+                            influence: '<>',
+                            color: 'black'
+                        });
+
+                    hoverObject.cityScores.push(scoreObject);
                 }
             }
-            else if( userData.type == 2 ) tileText.push('Land Tile');
-            else if( userData.type == 1 ) tileText.push('Water Tile');
+            else if( userData.type == 2 ) hoverObject.texts.push('Land Tile');
+            else if( userData.type == 1 ) hoverObject.texts.push('Water Tile');
 
             if( userData.move )
-                tileText.push( 'Move: ' + userData.move.player+'\'s [' + capitalFirstLetter(userData.move.suite) + ' ' +userData.move.size +']');
+                hoverObject.texts.push( 'Move: ' + userData.move.player+'\'s [' + capitalFirstLetter(userData.move.suite) + ' ' +userData.move.size +']');
 
 
-            $scope.setHover(tileText);
+            $scope.setHover(hoverObject.texts, hoverObject.cityScores);
             $scope.setHoverPosition(event.offsetX, event.offsetY);
         };
 
@@ -567,8 +584,10 @@
                     else el.style.top = y+'px';
                 };
 
-                scope.setHover = function(hoverText) {
+                scope.setHover = function(hoverText, cityScores) {
                     scope.$apply( function() {
+                        console.log(cityScores);
+                        scope._hover.cityScores = cityScores;
                         scope._hover.texts = hoverText;
                         scope._hover.enabled = true;
                     });
@@ -576,8 +595,9 @@
 
                 scope.clearHover = function(){
                     scope.$apply( function() {
-                        scope._hover.text = [];
-                        scope._hover.enabled = false;
+                        // scope._hover.cityScores = [];
+                        // scope._hover.texts = '';
+                        scope._hover.enabled = true;
                     });
                 }
             }

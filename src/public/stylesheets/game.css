@@ -100,3 +100,13 @@ canvas {
     padding: 5px;
 }
 
+.hover-cityscore {
+    background-color: black;
+    display: inline-block;
+    text-align: center;
+    margin: 1px;
+    border-radius: 3px;
+    font-weight: bold;
+    width: 20px;
+}
+

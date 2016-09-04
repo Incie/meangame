@@ -1,3 +1,13 @@
 <div ng-repeat="t in _hover.texts">
-    {{t}}
+    <div>{{t}}</div>
+</div>
+<div ng-repeat="score in _hover.cityScores">
+    <div>
+        {{score.type}}
+    </div>
+    <div>
+        <span class="hover-cityscore" ng-style="{'color': player.color}" ng-repeat="player in score.scores">
+            {{player.influence}}
+        </span>
+    </div>
 </div>
