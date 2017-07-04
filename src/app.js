@@ -38,11 +38,11 @@ app.use(session(sessionConfig));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-var getAbsolutePath = function(relativePath){
+function getAbsolutePath(relativePath){
     return path.join(__dirname, '/public/', relativePath);
-};
+}
 
-var files = {
+const files = {
     index: getAbsolutePath('samurai.html'),
     editor: getAbsolutePath('editor.html'),
     game: getAbsolutePath('game.html'),
@@ -51,6 +51,7 @@ var files = {
     signup: getAbsolutePath('signup.html')
 };
 
+app.post('/', function(req, res){req.abort(); res.status(400).end(); });
 app.get('/', function(req, res){res.sendFile(files.index);});
 app.get('/game/', function(req, res){res.sendFile(files.game);});
 app.get('/editor', function(req, res){res.sendFile(files.editor);});
