@@ -51,7 +51,7 @@ const files = {
     signup: getAbsolutePath('signup.html')
 };
 
-app.post('/', function(req, res){req.abort(); res.status(400).end(); });
+app.post('/', function(req, res){req.pause(); res.status(400).end(); });
 app.get('/', function(req, res){res.sendFile(files.index);});
 app.get('/game/', function(req, res){res.sendFile(files.game);});
 app.get('/editor', function(req, res){res.sendFile(files.editor);});
