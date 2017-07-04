@@ -9,7 +9,7 @@ let apiRouter = require('./route/api.js');
 
 let app = express();
 
-app.use(morgan(':date[iso] - (HTTP :http-version :status :method) [ip] :remote-addr [time] :response-time[3] ms [response-size] :res[content-length] [url] :url'));
+app.use(morgan(':date[iso] - (HTTP :http-version :status :method) [ip] :real-ip [time] :response-time[3] ms [response-size] :res[content-length] [url] :url'));
 
 app.use(bodyParser.json({limit: '2mb'}));
 app.use(bodyParser.urlencoded({ extended: false, limit: '2mb'}));
@@ -29,17 +29,20 @@ if( process.env.ENVIRONMENT === "DEVELOPMENT" ){
     console.log('Setting DEVELOPMENT session configs');
     sessionConfig.proxy = false;
     sessionConfig.cookie.secure = false;
+    morgan.token('real-ip', function(req, res) { return req.connection.remoteAddress; });
+} else {
+    morgan.token('real-ip', function(req, res) { return req.headers['x-real-ip']; });
 }
 
 app.use(session(sessionConfig));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-var getAbsolutePath = function(relativePath){
+function getAbsolutePath(relativePath){
     return path.join(__dirname, '/public/', relativePath);
-};
+}
 
-var files = {
+const files = {
     index: getAbsolutePath('samurai.html'),
     editor: getAbsolutePath('editor.html'),
     game: getAbsolutePath('game.html'),
@@ -48,6 +51,7 @@ var files = {
     signup: getAbsolutePath('signup.html')
 };
 
+app.post('/', function(req, res){req.abort(); res.status(400).end(); });
 app.get('/', function(req, res){res.sendFile(files.index);});
 app.get('/game/', function(req, res){res.sendFile(files.game);});
 app.get('/editor', function(req, res){res.sendFile(files.editor);});
