@@ -16,14 +16,17 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '2mb'}));
 app.use(cookieParser());
 
 const TIME = { minute: 60 * 1000 };
+const secretValue = Math.floor(Math.random() * 1000000);
 let sessionConfig = {
-    secret: process.env.SECRET,
+    secret: process.env.SECRET || `secret${secretValue}`,
     resave: false,
     proxy: true,
     maxAge: 120 * TIME.minute,
     saveUninitialized: false,
     cookie: { secure: true }
 };
+
+console.log("Secret is" + sessionConfig.secret + '  ' + secretValue);
 
 if( process.env.ENVIRONMENT === "DEVELOPMENT" ){
     console.log('Setting DEVELOPMENT session configs');
