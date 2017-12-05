@@ -1,15 +1,15 @@
 let express = require('express');
 let path = require('path');
-let morgan = require('morgan');
 let cookieParser = require('cookie-parser');
 let session = require('express-session');
 let bodyParser = require('body-parser');
+let logging = require('./module/logging');
 
 let apiRouter = require('./route/api.js');
 
 let app = express();
 
-app.use(morgan(':date[iso] - (HTTP :http-version :status :method) [ip] :real-ip [time] :response-time[3] ms [response-size] :res[content-length] [url] :url'));
+logging(app);
 
 app.use(bodyParser.json({limit: '2mb'}));
 app.use(bodyParser.urlencoded({ extended: false, limit: '2mb'}));
@@ -29,9 +29,6 @@ if( process.env.ENVIRONMENT === "DEVELOPMENT" ){
     console.log('Setting DEVELOPMENT session configs');
     sessionConfig.proxy = false;
     sessionConfig.cookie.secure = false;
-    morgan.token('real-ip', function(req, res) { return req.connection.remoteAddress; });
-} else {
-    morgan.token('real-ip', function(req, res) { return req.headers['x-real-ip']; });
 }
 
 app.use(session(sessionConfig));
