@@ -22,4 +22,31 @@ function setupLogging( app ){
     }
 }
 
-module.exports = setupLogging;
+let bannedIps = [];
+
+function getIPList(){
+    return bannedIps;
+}
+
+function banIp(ip){
+    bannedIps.push(ip);
+    console.log(`banned ip ${ip}`);
+}
+
+function ipFilterMiddleware(req, res, next){
+    for (let ipKey in bannedIps) {
+        if( req.ip === bannedIps[ipKey] ) {
+            res.end();
+            return;
+        }
+    }
+
+    next();
+}
+
+module.exports = {
+    setupLogging,
+    banIp,
+    ipFilterMiddleware,
+    getIPList
+};

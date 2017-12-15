@@ -9,7 +9,8 @@ let apiRouter = require('./route/api.js');
 
 let app = express();
 
-logging(app);
+logging.setupLogging(app);
+app.use(logging.ipFilterMiddleware);
 
 app.use(bodyParser.json({limit: '2mb'}));
 app.use(bodyParser.urlencoded({ extended: false, limit: '2mb'}));
@@ -48,13 +49,21 @@ const files = {
     signup: getAbsolutePath('signup.html')
 };
 
-app.post('/', function(req, res){req.pause(); res.status(400).end(); });
+app.post('/', function(req, res){ logging.banIp(req.ip); res.status(400).end(); });
 app.get('/', function(req, res){res.sendFile(files.index);});
 app.get('/game/', function(req, res){res.sendFile(files.game);});
 app.get('/editor', function(req, res){res.sendFile(files.editor);});
 app.get('/replay', function(req, res){res.sendFile(files.replay);});
 app.get('/login', function(req, res){res.sendFile(files.login);});
 app.get('/signup', function(req, res){res.sendFile(files.signup);});
+app.get('/bannedips', function(req,res){
+    if( req.session.user.role !== 'admin' ){
+        res.status(401).send({message: 'forbidden'});
+        return;
+    }
+
+    res.send(logging.getIPList());
+});
 
 app.use( '/api', apiRouter );
 
