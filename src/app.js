@@ -57,7 +57,9 @@ app.get('/replay', function(req, res){res.sendFile(files.replay);});
 app.get('/login', function(req, res){res.sendFile(files.login);});
 app.get('/signup', function(req, res){res.sendFile(files.signup);});
 app.get('/bannedips', function(req,res){
-    if( req.session.user.role !== 'admin' ){
+    if( req.session.user === undefined ||
+        req.session.user.role === undefined ||
+        req.session.user.role !== 'admin' ){
         res.status(401).send({message: 'forbidden'});
         return;
     }
