@@ -49,7 +49,12 @@ const files = {
     signup: getAbsolutePath('signup.html')
 };
 
-app.post('/', function(req, res){ logging.banIp(req.ip); res.status(400).end(); });
+app.post('/', function(req, res){
+    if(process.env.ENVIRONMENT === 'DEVELOPMENT' )
+        logging.banIp(req.connection.remoteAddress);
+    else
+        logging.banIp(req.headers['x-real-ip']); res.status(400).end();
+});
 app.get('/', function(req, res){res.sendFile(files.index);});
 app.get('/game/', function(req, res){res.sendFile(files.game);});
 app.get('/editor', function(req, res){res.sendFile(files.editor);});

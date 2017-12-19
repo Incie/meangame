@@ -4,7 +4,7 @@ let rfs = require('rotating-file-stream');
 
 
 function setupLogging( app ){
-    //NOTE __dirname = meangame/src/ for loggin.js
+    //NOTE __dirname = meangame/src/module for logging.js
     const logDirectory = path.join(__dirname, '../../logs');
     let accessLogStream = rfs('access.log', {
         interval: '1d', // rotate daily
@@ -29,8 +29,14 @@ function getIPList(){
 }
 
 function banIp(ip){
-    bannedIps.push(ip);
-    console.log(`banned ip ${ip}`);
+    if( bannedIps.length < 5000 ){
+        bannedIps.push(ip);
+        console.log(`banned ip ${ip}`);
+    }
+    else {
+        console.log("bannedIps full.. clearing");
+        bannedIps = [];
+    }
 }
 
 function ipFilterMiddleware(req, res, next){
