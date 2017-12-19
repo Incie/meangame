@@ -6,8 +6,11 @@ let session = require('express-session');
 let bodyParser = require('body-parser');
 
 let apiRouter = require('./route/api.js');
+let siteRouter = require('./route/site.js');
 
 let app = express();
+
+app.disable('x-powered-by');
 
 app.use(morgan(':date[iso] - (HTTP :http-version :status :method) [ip] :remote-addr [time] :response-time[3] ms [response-size] :res[content-length] [url] :url'));
 
@@ -35,26 +38,9 @@ app.use(session(sessionConfig));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-var getAbsolutePath = function(relativePath){
-    return path.join(__dirname, '/public/', relativePath);
-};
 
-var files = {
-    index: getAbsolutePath('samurai.html'),
-    editor: getAbsolutePath('editor.html'),
-    game: getAbsolutePath('game.html'),
-    replay: getAbsolutePath('gamereplay.html'),
-    login: getAbsolutePath('login.html'),
-    signup: getAbsolutePath('signup.html')
-};
 
-app.get('/', function(req, res){res.sendFile(files.index);});
-app.get('/game/', function(req, res){res.sendFile(files.game);});
-app.get('/editor', function(req, res){res.sendFile(files.editor);});
-app.get('/replay', function(req, res){res.sendFile(files.replay);});
-app.get('/login', function(req, res){res.sendFile(files.login);});
-app.get('/signup', function(req, res){res.sendFile(files.signup);});
-
+app.use( '/', siteRouter );
 app.use( '/api', apiRouter );
 
 app.all('*', function(req, res){
