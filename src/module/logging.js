@@ -40,8 +40,12 @@ function banIp(ip){
 }
 
 function ipFilterMiddleware(req, res, next){
+    let ip = req.headers['x-real-ip'];
+    if( process.env.ENVIRONMENT === "DEVELOPMENT" )
+        ip = req.connection.remoteAddress;
+
     for (let ipKey in bannedIps) {
-        if( req.ip === bannedIps[ipKey] ) {
+        if( ip === bannedIps[ipKey] ) {
             res.end();
             return;
         }
