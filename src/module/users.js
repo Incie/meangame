@@ -36,7 +36,8 @@ userModule.registerUser = function(user, password, name){
                         let userObject = {
                             user: user,
                             password: hash,
-                            name: name
+                            name: name,
+                            role: "user"
                         };
 
                         usersDb.users.insert(userObject, function(err, docs){
@@ -74,7 +75,7 @@ userModule.login = function(loginObject){
     return new Promise( function(success, reject){
         userModule.getUserData(user)
             .then(function(userObject){
-                if( userObject.length == 0 ){
+                if( userObject.length === 0 ){
                     reject('invalid');
                     return;
                 }

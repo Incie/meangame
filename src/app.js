@@ -1,15 +1,17 @@
 let express = require('express');
 let path = require('path');
-let morgan = require('morgan');
 let cookieParser = require('cookie-parser');
 let session = require('express-session');
 let bodyParser = require('body-parser');
+let logging = require('./module/logging');
 
 let apiRouter = require('./route/api.js');
 let siteRouter = require('./route/site.js');
 
 let app = express();
 
+logging.setupLogging(app);
+app.use(logging.ipFilterMiddleware);
 app.disable('x-powered-by');
 
 app.use(morgan(':date[iso] - (HTTP :http-version :status :method) [ip] :remote-addr [time] :response-time[3] ms [response-size] :res[content-length] [url] :url'));
@@ -19,14 +21,17 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '2mb'}));
 app.use(cookieParser());
 
 const TIME = { minute: 60 * 1000 };
+const secretValue = Math.floor(Math.random() * 1000000);
 let sessionConfig = {
-    secret: process.env.SECRET,
+    secret: process.env.SECRET || `secret${secretValue}`,
     resave: false,
     proxy: true,
     maxAge: 120 * TIME.minute,
     saveUninitialized: false,
     cookie: { secure: true }
 };
+
+console.log("Secret is" + sessionConfig.secret + '  ' + secretValue);
 
 if( process.env.ENVIRONMENT === "DEVELOPMENT" ){
     console.log('Setting DEVELOPMENT session configs');
@@ -41,6 +46,29 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use( '/', siteRouter );
+app.post('/', function(req, res){
+    if(process.env.ENVIRONMENT === 'DEVELOPMENT' )
+        logging.banIp(req.connection.remoteAddress);
+    else
+        logging.banIp(req.headers['x-real-ip']); res.status(400).end();
+});
+app.get('/', function(req, res){res.sendFile(files.index);});
+app.get('/game/', function(req, res){res.sendFile(files.game);});
+app.get('/editor', function(req, res){res.sendFile(files.editor);});
+app.get('/replay', function(req, res){res.sendFile(files.replay);});
+app.get('/login', function(req, res){res.sendFile(files.login);});
+app.get('/signup', function(req, res){res.sendFile(files.signup);});
+app.get('/bannedips', function(req,res){
+    if( req.session.user === undefined ||
+        req.session.user.role === undefined ||
+        req.session.user.role !== 'admin' ){
+        res.status(401).send({message: 'forbidden'});
+        return;
+    }
+
+    res.send(logging.getIPList());
+});
+
 app.use( '/api', apiRouter );
 
 app.all('*', function(req, res){
