@@ -19,6 +19,9 @@ API.importMapJson = function(req, res){
     }	
 
     db.importJson(req.body, function(err){
+        if( err !== null )
+            console.log("Error != null");
+
         res.send({message: err});
     });
 };
@@ -91,7 +94,7 @@ API.gameTick = function(req, res){
 
 API.createGame = function(req, res){
     //Validate
-    if( !validate.isInt(req.body.numPlayers, {min: 2, max:4}) ){
+    if( !validate.isInt('' + req.body.numPlayers, {min: 2, max:4}) ){
         res.send( response.error('Num players must be a number between 2 and 4') );
         return;
     }
