@@ -1,10 +1,10 @@
-var samurai = require('./samurai');
-var db = require('./database');
-var gamedb = require('./gamedb');
-var response = require('./response');
-var validate = require('validator');
+let samurai = require('./samurai');
+let db = require('./database');
+let gamedb = require('./gamedb');
+let response = require('./response');
+let validate = require('validator');
 
-var API = {};
+let API = {};
 
 API.importMapJson = function(req, res){
 	console.log('trying to import map');
