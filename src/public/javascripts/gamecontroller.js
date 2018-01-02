@@ -317,7 +317,7 @@
             return '/img/' + number + '.png';
         };
         $scope.getSuiteSource = function (suite) {
-            return '/img/' + suite + '64.png';
+            return '/img/' + suite.toLowerCase() + '64.png';
         };
 
         $scope.getPlayerByIndex = function(obj){
