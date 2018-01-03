@@ -7,7 +7,7 @@ let validate = require('validator');
 let API = {};
 
 API.importMapJson = function(req, res){
-	console.log('trying to import map');
+    winston.info('trying to import map');
     if( req.session.user.role !== 'admin' ){
         res.status(401).send({message: 'forbidden'});
         return;
@@ -20,7 +20,7 @@ API.importMapJson = function(req, res){
 
     db.importJson(req.body, function(err){
         if( err !== null )
-            console.log("Error != null");
+            winston.error("Error != null");
 
         res.send({message: err});
     });
@@ -107,7 +107,7 @@ API.createGame = function(req, res){
 
     db.getMap(gameInfo.mapName, function(mapObject){
         if( !mapObject.success ) {
-            console.log('getmap failed', mapObject);
+            winston.info('getmap failed', mapObject);
             res.send(mapObject);
             return;
         }
@@ -116,7 +116,7 @@ API.createGame = function(req, res){
 
         samurai.createGame(gameInfo, mapObject.mapData, function(gameObject){
             gamedb.createGame(gameObject, function(responseObject){
-                console.log('gamedb createGame' + responseObject);
+                winston.info('gamedb createGame' + responseObject);
                 res.send(responseObject);
             });
         });
@@ -171,7 +171,7 @@ API.gameTurn = function(req, res){
 
         samurai.processTurn(gameObject.game, userId, moves, function(status){
             if( !status.success ) {
-                console.log(status);
+                winston.info(status);
                 res.send(status);
                 return;
             }

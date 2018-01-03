@@ -7,6 +7,7 @@ let logging = require('./module/logging');
 
 let apiRouter = require('./route/api.js');
 let siteRouter = require('./route/site.js');
+let winston = require('winston');
 
 let app = express();
 
@@ -30,16 +31,15 @@ let sessionConfig = {
     cookie: { secure: true }
 };
 
-console.log("Secret is: " + sessionConfig.secret + ';' + secretValue);
+winston.info("Secret is: " + sessionConfig.secret + ';' + secretValue);
 
 if( process.env.ENVIRONMENT === "DEVELOPMENT" ){
-    console.log('Setting DEVELOPMENT session configs');
+    winston.info('Setting DEVELOPMENT session configs');
     sessionConfig.proxy = false;
     sessionConfig.cookie.secure = false;
 }
 
 app.use(session(sessionConfig));
-
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -71,8 +71,10 @@ app.all('*', function(req, res){
 
 const port = (process.env.PORT || 3001);
 app.listen(port, function() {
-    console.log('Node Server ('+process.version+')');
-    console.log('Listening on '+port);
-    console.log('Platform: '+process.platform + ' '+process.arch+'('+process.pid+')');
-    console.log('cwd: '+process.cwd() );
+    winston.info('Node Server ('+process.version+')');
+    winston.info('Listening on '+port);
+    winston.info('Platform: '+process.platform + ' '+process.arch+'('+process.pid+')');
+    winston.info('cwd: '+process.cwd() );
+
+    winston.info(`server start ${new Date(Date.now()).toLocaleString()}`);
 });

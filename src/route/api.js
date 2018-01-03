@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/login', function(req, res){
     users.login( req.body )
         .then( function(userObject){
-            console.log('authenticated user', userObject.user, userObject.role);
+            winston.info('authenticated user', userObject.user, userObject.role);
             req.session.authenticated = true;
             req.session.user = {
                 id: userObject._id.toString(),

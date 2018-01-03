@@ -117,7 +117,7 @@ var planeGenerator = (function() {
             count ++;
             var textureObject = cityTextures.get(key);
             if( textureObject === undefined ){
-                console.log('invalid city type', key);
+                winston.error('invalid city type', key);
                 continue;
             }
 

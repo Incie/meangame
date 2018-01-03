@@ -4,6 +4,8 @@ let authModule = require('./user-authentication');
 let mongojs = require('mongojs');
 let usersDb = mongojs('users', ['users']);
 
+let winston = require('winston');
+
 userModule.userExists = function(user){
     return new Promise( function(success, reject){
         usersDb.find({user:user}, {user:1, _id:0}, function(err, docs){
