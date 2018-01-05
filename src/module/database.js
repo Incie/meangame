@@ -6,14 +6,14 @@ var dbModule = {};
 
 var updateMap = function(map, docs, callback){
     if( map.size.x*map.size.y !== map.data.length ){
-        console.log('error updating map: size mismatch');
+        winston.error('error updating map: size mismatch');
         callback(response.fail(response, 'size mismatch'));
         return;
     }
 
     db.samurai.update( {_id: docs[0]._id}, { $set : {data: map.data, size: map.size}}, function(err){
         if( err ){
-            console.log('error updating map: ', err);
+            winston.error('error updating map: ', err);
             callback(response.fail(response, 'could not update map'));
             return;
         }
@@ -25,7 +25,7 @@ var updateMap = function(map, docs, callback){
 dbModule.saveOrUpdateMap = function(map, callback){
     db.samurai.find({name: map.name}, function(err, docs){
         if( err ){
-            console.log('error saving map: ', err);
+            winston.error('error saving map: ', err);
             callback(response.fail(response, 'error saving map'));
             return;
         }
@@ -34,7 +34,7 @@ dbModule.saveOrUpdateMap = function(map, callback){
 
         db.samurai.insert( map, function(err){
             if( err ) {
-                console.log('error inserting map, ', err);
+                winston.error('error inserting map, ', err);
                 callback(response.fail(response, 'err'));
                 return;
             }
@@ -45,7 +45,7 @@ dbModule.saveOrUpdateMap = function(map, callback){
 };
 
 dbModule.importJson = function(json, callback){
-   console.log(json.name, json.size);
+    winston.info(json.name, json.size);
     db.samurai.insert(json, function(err){
         callback(err)
     });

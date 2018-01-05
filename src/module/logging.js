@@ -1,6 +1,7 @@
 let morgan = require('morgan');
 let path = require('path');
 let rfs = require('rotating-file-stream');
+let winston = require('winston');
 
 
 function setupLogging( app ){
@@ -20,6 +21,15 @@ function setupLogging( app ){
     } else {
         morgan.token('real-ip', function(req, res) { return req.headers['x-real-ip']; });
     }
+
+    winston.configure({
+        transports: [
+            new (winston.transports.Console)(),
+            new (winston.transports.File)({ filename: 'logs/winston.log' })
+        ]
+    });
+
+    winston.info('winston initialized');
 }
 
 let bannedIps = [];
@@ -31,10 +41,10 @@ function getIPList(){
 function banIp(ip){
     if( bannedIps.length < 5000 ){
         bannedIps.push(ip);
-        console.log(`banned ip ${ip}`);
+        winston.warn(`banned ip ${ip}`);
     }
     else {
-        console.log("bannedIps full.. clearing");
+        winston.warn("bannedIps full.. clearing");
         bannedIps = [];
     }
 }

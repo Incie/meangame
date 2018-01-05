@@ -2,13 +2,13 @@ const express = require('express');
 const users = require('../module/users');
 const validate = require('validator');
 const api = require('../module/api');
-
+const winston = require('winston');
 const router = express.Router();
 
 router.post('/login', function(req, res){
     users.login( req.body )
         .then( function(userObject){
-            console.log('authenticated user', userObject.user, userObject.role);
+            winston.info('authenticated user', userObject.user, userObject.role);
             req.session.authenticated = true;
             req.session.user = {
                 id: userObject._id.toString(),
@@ -16,21 +16,34 @@ router.post('/login', function(req, res){
                 role: userObject.role || "user"
             };
             req.session.save( function(){
+                winston.warn(`'${userObject.user}' logged in`);
                 res.send( {message:'Logged In'});
             });
         })
         .catch(function(){
             req.session.destroy( function(){
+                winston.warn(`wrong password for '${userObject.user}'`);
                 res.status(401).send( {message:"Incorrect."} );
             });
         });
 });
 
 router.post('/logout', function(req, res){
+    if( !(req.session.authenticated === true) ){
+        sendError(res, 'not authenticated');
+        return;
+    }
+
+    winston.info(`'${req.session.user.name}' (${req.session.user.role}) logging out`);
     req.session.destroy( function(){
         res.send({message: 'Logged out'});
     });
 });
+
+function sendError(res, error){
+    winston.error(error);
+    res.status(400).send({message:error});
+}
 
 router.post('/signup', function(req, res){
     const user = validate.escape(req.body.user);
@@ -40,14 +53,15 @@ router.post('/signup', function(req, res){
     users.registerUser(user, password, name)
         .then( error => {
             if( error ){
-                res.status(400).send({message: error });
+                sendError(res,error);
                 return;
             }
 
+            winston.info(`'${user}' signed up!`);
             res.status(200).send({message:'Signup Successful'});
         })
         .catch( msg => {
-            res.status(400).send({message:msg});
+            sendError(res,msg);
         });
 });
 

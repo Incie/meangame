@@ -1,4 +1,5 @@
-var Response = {};
+let Response = {};
+const winston = require('winston');
 
 Response.success = function(message){
     return {
@@ -15,6 +16,8 @@ Response.ok = function(object){
 };
 
 Response.error = function(message){
+    winston.error(message);
+
     return {
         success: false,
         error: message

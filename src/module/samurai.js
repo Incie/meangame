@@ -239,7 +239,7 @@ function handleScore(gameObject, moves) {
 
         let unoccupiedLand = cityTiles.filter( tile => tile.type == TILE.LAND && tile.move === undefined );
         if( unoccupiedLand.length > 0 ) {
-            console.log('City has unoccupied land', cityTile);
+            winston.info('City has unoccupied land', cityTile);
             return;
         }
 
@@ -263,7 +263,7 @@ function handleScore(gameObject, moves) {
             }
         });
 
-        console.log( cityTile, cityInfluence );
+        winston.info( cityTile, cityInfluence );
 
         for( let cityType in cityInfluence ){
             let kv = [];
@@ -277,7 +277,7 @@ function handleScore(gameObject, moves) {
                 moves.resolve.push( {type: cityType, player: 'Tie'} );
             }
             else if( kv.length == 1 && kv[0].influence > 0 ){
-                console.log('Score', kv[0].player, cityType, kv[0]);
+                winston.info('Score', kv[0].player, cityType, kv[0]);
                 let playerState = gameObject.state.find( stateObject => stateObject.player == kv[0].player );
                 playerState.score[cityType] += 1;
 
@@ -285,12 +285,12 @@ function handleScore(gameObject, moves) {
                 moves.resolve.push( {type: cityType, player: playerState.player} );
             }
             else if( kv[0].influence == kv[1].influence ) {
-                console.log( 'Tied', cityTile, cityType, kv);
+                winston.info( 'Tied', cityTile, cityType, kv);
                 moves.resolve = moves.resolve || [];
                 moves.resolve.push( {type: cityType, player: 'Tie'} );
             }
             else {
-                console.log('Score', kv[0].player, cityType, kv[0]);
+                winston.info('Score', kv[0].player, cityType, kv[0]);
                 let playerState = gameObject.state.find( stateObject => stateObject.player == kv[0].player );
                 playerState.score[cityType] += 1;
 
@@ -425,7 +425,7 @@ function finishGame(gameObject){
 
 samurai.processTurn = function (gameObject, userId, moves, callback) {
     const freeTilesPreTurn = countFreeTiles(gameObject.map);
-    console.log("Free Tiles", freeTilesPreTurn);
+    winston.info("Free Tiles", freeTilesPreTurn);
 
     if( freeTilesPreTurn === 0 || gameObject.status === "game over"){
         callback(response.fail("Game is finished"));
@@ -483,7 +483,7 @@ samurai.processTurn = function (gameObject, userId, moves, callback) {
     if( countFreeTiles(gameObject.map) === 0 || playerObject.hand.length === 0 ){
         gameObject.status = "game over";
         gameObject.endGameState = finishGame(gameObject);
-        console.log(gameObject.endGameState);
+        winston.info(gameObject.endGameState);
     }
 
     callback({success: true, game: gameObject});
